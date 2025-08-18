@@ -1,11 +1,88 @@
-export default function sitemap() {
-  const base = 'https://ghostai.solutions';
-  const routes = ['', '/services', '/process', '/work', '/pricing', '/faq', '/contact', '/privacy', '/terms'];
+// app/sitemap.js
+// Auto-discovers routes by scanning the /app directory for page files.
+// Skips dynamic routes ([slug]), API, and grouping segments (e.g., (marketing)).
+
+export const runtime = "nodejs"; // ensure Node runtime so fs works
+
+import fs from "fs";
+import path from "path";
+
+const APP_DIR = path.join(process.cwd(), "app");
+const PAGE_FILENAMES = ["page.js", "page.jsx", "page.tsx", "page.mdx"];
+const EXCLUDE_DIRS = new Set([
+  "api",
+  "_components",
+  "components",
+  "_lib",
+  "lib",
+  "_assets",
+  "assets",
+]);
+
+function isDynamicSegment(seg) {
+  return seg.startsWith("[") && seg.endsWith("]");
+}
+
+function isGroupSegment(seg) {
+  // Next.js grouping route: (group)
+  return seg.startsWith("(") && seg.endsWith(")");
+}
+
+function hasPageFile(dir) {
+  return PAGE_FILENAMES.some((f) => fs.existsSync(path.join(dir, f)));
+}
+
+function discoverRoutes(dir = APP_DIR, rel = "") {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  const routes = [];
+
+  // If this folder itself has a page file, register a route for it
+  if (hasPageFile(dir)) {
+    // Convert "" to "/" for root, otherwise prefix with "/"
+    const routePath = rel === "" ? "/" : `/${rel}`;
+    routes.push(routePath);
+  }
+
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const name = entry.name;
+
+    // Skip excluded & special directories
+    if (EXCLUDE_DIRS.has(name)) continue;
+    if (isDynamicSegment(name)) continue; // skip dynamic routes
+    // Remove grouping segments by not including them in the route path,
+    // but still recurse into them.
+    const nextRel = isGroupSegment(name)
+      ? rel
+      : rel
+      ? `${rel}/${name}`
+      : name;
+
+    const subdir = path.join(dir, name);
+    routes.push(...discoverRoutes(subdir, nextRel));
+  }
+
+  // Ensure unique, sorted
+  return Array.from(new Set(routes)).sort((a, b) => a.localeCompare(b));
+}
+
+export default async function sitemap() {
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+    "https://ghostai.solutions";
+
+  const discovered = discoverRoutes();
+
+  // You can still add any extra canonical routes manually here if needed:
+  // const extras = ["/sitemap.xml"]; // (usually not necessary)
+  // const routes = Array.from(new Set([...discovered, ...extras]));
+
   const now = new Date().toISOString();
-  return routes.map((r) => ({
-    url: `${base}${r}`,
+
+  return discovered.map((route) => ({
+    url: `${base}${route === "/" ? "" : route}`,
     lastModified: now,
-    changeFrequency: 'monthly',
-    priority: r === '' ? 1.0 : 0.7,
+    changeFrequency: route === "/" ? "weekly" : "monthly",
+    priority: route === "/" ? 1.0 : 0.7,
   }));
 }
