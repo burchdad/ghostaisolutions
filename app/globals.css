@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+
+body { @apply bg-white text-slate-900; }
+
+/* Gradients used in hero */
+.gradient-hero {
+  background:
+    radial-gradient(1000px 500px at 50% -20%, rgba(39,154,255,.25), rgba(39,154,255,0) 60%),
+    radial-gradient(800px 400px at 10% 10%, rgba(124,58,237,.18), rgba(124,58,237,0) 60%),
+    radial-gradient(900px 500px at 90% 10%, rgba(16,185,129,.18), rgba(16,185,129,0) 60%),
+    #0b1020;
+}
