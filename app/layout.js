@@ -18,6 +18,7 @@ export const metadata = {
   },
   twitter: { card: 'summary_large_image', images: ['/og-image.png'] },
   icons: { icon: '/favicon.ico' },
+  other: {'google-site-verification': 'cYd-MHdQLNPrphUbMzn5QbwOt8Excs4CP3Q'},
 };
 
 export default function RootLayout({ children }) {
