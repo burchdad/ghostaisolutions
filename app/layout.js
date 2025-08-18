@@ -1,11 +1,11 @@
 export const metadata = {
-  metadataBase: new URL('https://ghostaisolutions.com'),
+  metadataBase: new URL('https://ghostai.solutions'),
   title: 'Ghost AI Solutions — Automate Smarter. Scale Faster.',
   description: 'AI agents for measurable business impact — strategy, custom agents, and ethical governance.',
   openGraph: {
     title: 'Ghost AI Solutions — Automate Smarter. Scale Faster.',
     description: 'AI agents for measurable business impact — strategy, custom agents, and ethical governance.',
-    url: 'https://ghostaisolutions.com',
+    url: 'https://ghostai.solutions',
     siteName: 'Ghost AI Solutions',
     images: ['/og-image.png'],
     type: 'website',

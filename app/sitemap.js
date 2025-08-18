@@ -1,5 +1,5 @@
 export default function sitemap() {
-  const base = 'https://ghostaisolutions.com';
+  const base = 'https://ghostai.solutions';
   const routes = ['', '/services', '/process', '/work', '/pricing', '/faq', '/contact', '/privacy', '/terms'];
   const now = new Date().toISOString();
   return routes.map((r) => ({
