@@ -10,7 +10,10 @@ export const metadata = {
     images: ['/og-image.png'],
     type: 'website',
   },
-  twitter: { card: 'summary_large_image' },
+  twitter: { card: 'summary_large_image', images: ['/og-image.png'] },
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 import './globals.css';
@@ -29,6 +32,7 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
 
 function ScriptBundle(){
   // little helpers: theme toggle text & footer year
