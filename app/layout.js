@@ -7,7 +7,7 @@ export const metadata = {
     description: 'AI agents for measurable business impact — strategy, custom agents, and ethical governance.',
     url: 'https://ghostaisolutions.com',
     siteName: 'Ghost AI Solutions',
-    images: ['/og-image.jpg'],
+    images: ['/og-image.png'],
     type: 'website',
   },
   twitter: { card: 'summary_large_image' },
@@ -25,7 +25,6 @@ export default function RootLayout({ children }) {
         <Header />
         <main id="main">{children}</main>
         <Footer />
-        <ScriptBundle />
       </body>
     </html>
   );

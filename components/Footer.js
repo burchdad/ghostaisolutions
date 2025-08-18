@@ -11,7 +11,11 @@ export default function Footer(){
               </span>
               <span className="font-semibold">Ghost AI Solutions</span>
             </div>
-            <p className="mt-4 text-sm text-slate-600 max-w-md">AI agents that drive real outcomes with governance by design. © <span id="year"></span> Ghost AI Solutions. All rights reserved.</p>
+            <p className="mt-4 text-sm text-slate-600 max-w-md">
+  AI agents that drive real outcomes with governance by design.
+  © {new Date().getFullYear()} Ghost AI Solutions. All rights reserved.
+</p>
+
           </div>
           <nav className="grid gap-2 text-sm">
             <Link className="hover:text-brand-700" href="/services">Services</Link>
@@ -29,7 +33,7 @@ export default function Footer(){
           <p>Built with accessibility and performance in mind.</p>
           <div className="flex items-center gap-3">
             <a className="underline" href="https://www.linkedin.com/company/ghostaisolutions">LinkedIn</a>
-            <a className="underline" href="mailto:hello@ghostaisolutions.com">Email</a>
+            <a className="underline" href="mailto:support@ghostdefenses.com">Email</a>
           </div>
         </div>
       </div>

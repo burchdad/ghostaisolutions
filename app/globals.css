@@ -14,3 +14,13 @@ body { @apply bg-white text-slate-900; }
     radial-gradient(900px 500px at 90% 10%, rgba(16,185,129,.18), rgba(16,185,129,0) 60%),
     #0b1020;
 }
+
+/* --- Dark theme overrides to make the WHOLE site dark --- */
+.dark body { background-color: #0b1020; color: rgb(241 245 249); }
+.dark .bg-white { background-color: #0b1020 !important; }
+.dark .bg-slate-50 { background-color: #0f152b !important; }
+.dark .text-slate-600 { color: rgb(203 213 225) !important; }
+.dark .text-slate-500 { color: rgb(203 213 225 / 0.8) !important; }
+.dark .border { border-color: rgb(255 255 255 / 0.08) !important; }
+.dark .ring-1, .dark .ring-2 { --tw-ring-color: rgb(255 255 255 / 0.08); }
+.dark header, .dark footer { background-color: transparent; }
