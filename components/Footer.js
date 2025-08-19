@@ -39,6 +39,9 @@ export default function Footer(){
               <span>Remote‑first, US‑based company</span>
               <span className="hidden sm:inline">•</span>
               <a className="underline" href="mailto:support@ghostdefenses.com">support@ghostdefenses.com</a>
+              <a className="underline" href="https://buttondown.com/burch" target="_blank" rel="noopener noreferrer">
+  Newsletter
+</a>
             </div>
           </div>
 
