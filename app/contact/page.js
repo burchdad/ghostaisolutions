@@ -1,4 +1,7 @@
 import TrackCTA from "@/components/TrackCTA";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import Newsletter from "@/components/Newsletter";
+
 
 export const metadata = { title: 'Contact — Ghost AI Solutions' };
 
@@ -6,6 +9,7 @@ export default function Contact(){
   return (
     <section className="py-20 bg-slate-50 dark:bg-ink">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs />
         <div className="grid lg:grid-cols-2 gap-10 items-start">
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight">Let’s talk</h1>
@@ -48,6 +52,7 @@ export default function Contact(){
                 Our contact form requires scripts. Email us at support@ghostdefenses.com or book a call.
               </div>
             </noscript>
+            <Newsletter />
           </div>
         </div>
       </div>
