@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { posts } from "@/content/posts";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export async function generateMetadata({ params }) {
   const post = posts.find((p) => p.slug === params.slug);
@@ -20,6 +21,7 @@ export default function PostPage({ params }) {
   return (
     <section className="py-20">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs />
         <h1 className="text-4xl font-extrabold tracking-tight">{title}</h1>
         <p className="mt-2 inline-block rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
           Published: {new Date(date).toLocaleDateString()}
