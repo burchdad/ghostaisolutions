@@ -21,6 +21,13 @@ export default function Privacy(){
           <li>Project information you share for scoping and delivery.</li>
         </ul>
 
+        <h2 id="analytics" className="mt-8 text-xl font-semibold">Analytics</h2>
+        <p className="mt-2 text-slate-600 dark:text-slate-300">
+          <li></li>We use Vercel Analytics and Speed Insights to measure anonymous traffic and performance (page views, navigation timing, Core Web Vitals). 
+          <li></li>These tools do not store personally identifiable information. You can dismiss the analytics banner and your choice will be
+          saved in your browser.
+        </p>
+
         <h2 className="mt-8 text-xl font-semibold">How We Use Information</h2>
         <ul className="mt-2 list-disc pl-6 text-slate-600 dark:text-slate-300">
           <li>Respond to inquiries and deliver services.</li>

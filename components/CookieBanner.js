@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
@@ -14,12 +15,32 @@ export default function CookieBanner() {
     setVisible(false);
   };
 
+  // allow dismiss via ESC
+  useEffect(() => {
+    if (!visible) return;
+    const onKey = (e) => e.key === "Escape" && setVisible(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [visible]);
+
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 max-w-lg w-full bg-slate-900 text-white p-4 rounded-xl shadow-lg z-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div
+      role="dialog"
+      aria-live="polite"
+      aria-label="Cookie and analytics notice"
+      className="fixed bottom-4 left-1/2 -translate-x-1/2 max-w-lg w-[92%] sm:w-full bg-slate-900 text-white p-4 rounded-xl shadow-lg z-50 flex flex-col sm:flex-row items-center justify-between gap-4"
+    >
       <p className="text-sm">
-        We use minimal analytics to improve site performance. No personal data is stored.
+        We use minimal analytics to improve site performance. No personal data is stored.{" "}
+        <Link
+          href="/privacy#analytics"
+          className="underline text-brand-300 hover:text-brand-200"
+        >
+          Learn more
+        </Link>
+        .
       </p>
       <button
         onClick={accept}
@@ -30,13 +51,3 @@ export default function CookieBanner() {
     </div>
   );
 }
-// This component displays a cookie consent banner that appears at the bottom of the screen.
-// It checks local storage for consent and shows the banner if not accepted.
-// The user can accept cookies, which stores their consent in local storage and hides the banner.
-// The banner is styled with Tailwind CSS classes for a modern look.
-// The component is designed to be responsive, adapting to different screen sizes.
-// It uses React hooks for state management and side effects.
-// The banner is fixed at the bottom of the viewport, ensuring visibility without obstructing content.
-// The component is client-side only, as indicated by "use client" at the top.
-// The banner includes a brief message about cookie usage and a button to accept cookies.
-// The component is reusable and can be imported into any page or layout in a Next.js application
