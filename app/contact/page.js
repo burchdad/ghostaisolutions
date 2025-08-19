@@ -1,3 +1,5 @@
+import TrackCTA from "@/components/TrackCTA";
+
 export const metadata = { title: 'Contact — Ghost AI Solutions' };
 
 export default function Contact(){
@@ -16,12 +18,13 @@ export default function Contact(){
               <li>• NDA available on request</li>
               <li>• Remote-first, global clients</li>
             </ul>
-            <a
+            <TrackCTA
               href="https://calendly.com/stephen-burch-ghostdefenses/strategy-call"
               className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 font-semibold text-white hover:bg-brand-700"
+              event="book_call_click_header"
             >
               Book a Call
-            </a>
+            </TrackCTA>
           </div>
 
           {/* Replace the src with your real Google Form when ready */}

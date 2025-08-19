@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import TrackCTA from "@/components/TrackCTA";
 
 export default function Header() {
   const [isDark, setIsDark] = useState(true);
@@ -53,12 +54,13 @@ export default function Header() {
             >
               <span suppressHydrationWarning>{themeLabel}</span>
             </button>
-            <a
-              href="https://calendly.com/stephen-burch-ghostdefenses/strategy-call"
-              className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-glow hover:bg-brand-700"
-            >
-              Book a Call
-            </a>
+            <TrackCTA
+  href="https://calendly.com/stephen-burch-ghostdefenses/strategy-call"
+  className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-glow hover:bg-brand-700"
+  event="book_call_click_header"
+>
+  Book a Call
+</TrackCTA>
           </div>
 
           {/* Mobile hamburger */}
@@ -93,13 +95,14 @@ export default function Header() {
             <button onClick={toggleTheme} className="rounded-xl border px-3 py-2">
               {mounted ? (isDark ? "Light" : "Dark") : "Theme"}
             </button>
-            <a
-              href="https://calendly.com/stephen-burch-ghostdefenses/strategy-call"
-              className="rounded-xl bg-brand-600 px-4 py-2 font-semibold text-white"
-              onClick={() => setOpen(false)}
-            >
-              Book a Call
-            </a>
+            <TrackCTA
+  href="https://calendly.com/stephen-burch-ghostdefenses/strategy-call"
+  className="rounded-xl bg-brand-600 px-4 py-2 font-semibold text-white"
+  onClick={() => setOpen(false)}
+  event="book_call_click_mobile"
+>
+  Book a Call
+</TrackCTA>
           </div>
         </div>
       </div>

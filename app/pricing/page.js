@@ -17,7 +17,7 @@ export default function Pricing(){
               <ul className="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-300 list-disc list-inside">
                 {t.points.map(p=> <li key={p}>{p}</li>)}
               </ul>
-              <a href="https://calendly.com/stephen-burch-ghostdefenses/strategy-call" className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand-600 px-4 py-2 font-semibold text-white hover:bg-brand-700">{t.cta}</a>
+              <TrackCTA href="https://calendly.com/stephen-burch-ghostdefenses/strategy-call" className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand-600 px-4 py-2 font-semibold text-white hover:bg-brand-700" event="book_call_click_header">{t.cta}</TrackCTA>
             </div>
           ))}
         </div>
