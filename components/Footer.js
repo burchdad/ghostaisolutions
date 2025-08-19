@@ -48,6 +48,7 @@ export default function Footer(){
           {/* Column 1 */}
           <nav className="grid gap-2 text-sm">
             <Link className="hover:text-brand-700" href="/services">Services</Link>
+            <Link className="hover:text-brand-700" href="/demo">Demo</Link>
             <Link className="hover:text-brand-700" href="/process">Process</Link>
             <Link className="hover:text-brand-700" href="/work">Case Studies</Link>
             <Link className="hover:text-brand-700" href="/blog">Blog</Link>
