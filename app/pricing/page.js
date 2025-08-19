@@ -1,3 +1,5 @@
+import TrackCTA from "@/components/TrackCTA";
+
 export const metadata = { title: 'Pricing — Ghost AI Solutions' };
 export default function Pricing(){
   const tiers=[
