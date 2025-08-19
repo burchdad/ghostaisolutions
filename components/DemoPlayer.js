@@ -15,7 +15,7 @@ export default function DemoPlayer() {
     return (
       <div className="mt-8 aspect-video rounded-2xl overflow-hidden border bg-black">
         <video
-          src="/demo.mp4"
+          src="D:\Stephen's Stuff\Ghost Ai Solutions\Business Videos\demo.mp4"
           autoPlay
           muted
           loop
