@@ -1,3 +1,5 @@
+import Breadcrumbs from "@/components/Breadcrumbs";
+
 export const metadata = { title: 'FAQ — Ghost AI Solutions' };
 export default function FAQ(){
   const faqs=[
@@ -8,6 +10,7 @@ export default function FAQ(){
   return (
     <section className="py-20">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs />
         <h1 className="text-4xl font-extrabold tracking-tight text-center">FAQ</h1>
         <div className="mt-10 divide-y rounded-2xl border">
           {faqs.map(([q,a],i)=> (

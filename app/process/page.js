@@ -1,3 +1,5 @@
+import Breadcrumbs from "@/components/Breadcrumbs";
+
 export const metadata = { title: 'Process — Ghost AI Solutions' };
 
 export default function Process(){
@@ -11,6 +13,7 @@ export default function Process(){
   return (
     <section className="py-20 bg-slate-50 dark:bg-ink">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <Breadcrumbs />
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">How we deliver</h2>
           <p className="mt-4 text-slate-600 dark:text-slate-300">A proven 4-step method with measurable checkpoints.</p>

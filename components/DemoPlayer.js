@@ -6,7 +6,7 @@ export default function DemoPlayer() {
 
   useEffect(() => {
     // Try a lightweight HEAD request to see if /demo.mp4 exists
-    fetch("/demo.mp4", { method: "HEAD" })
+    fetch("D:\Stephen's Stuff\Ghost Ai Solutions\Business Videos\demo.mp4", { method: "HEAD" })
       .then((res) => setHasVideo(res.ok))
       .catch(() => setHasVideo(false));
   }, []);

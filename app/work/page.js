@@ -1,3 +1,5 @@
+import Breadcrumbs from "@/components/Breadcrumbs";
+
 export const metadata = { title: 'Case Studies — Ghost AI Solutions' };
 export default function Work(){
   const items=[
@@ -7,6 +9,7 @@ export default function Work(){
   return (
     <section className="py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs />
         <h1 className="text-4xl font-extrabold tracking-tight">Case Studies</h1>
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           {items.map((it)=> (

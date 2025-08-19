@@ -1,4 +1,5 @@
 import TrackCTA from "@/components/TrackCTA";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata = { title: 'Pricing — Ghost AI Solutions' };
 export default function Pricing(){
@@ -10,6 +11,7 @@ export default function Pricing(){
   return (
     <section className="py-20 bg-slate-50 dark:bg-ink">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs />
         <h1 className="text-4xl font-extrabold tracking-tight">Simple plans</h1>
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {tiers.map((t)=> (
