@@ -47,6 +47,7 @@ export default function Footer(){
             <Link className="hover:text-brand-700" href="/services">Services</Link>
             <Link className="hover:text-brand-700" href="/process">Process</Link>
             <Link className="hover:text-brand-700" href="/work">Case Studies</Link>
+            <Link className="hover:text-brand-700" href="/blog">Blog</Link>
           </nav>
 
           {/* Column 2 */}

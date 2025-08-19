@@ -6,6 +6,7 @@ export const runtime = "nodejs"; // ensure Node runtime so fs works
 
 import fs from "fs";
 import path from "path";
+import { posts } from "@/content/posts";
 
 const APP_DIR = path.join(process.cwd(), "app");
 const PAGE_FILENAMES = ["page.js", "page.jsx", "page.tsx", "page.mdx"];
@@ -68,21 +69,27 @@ function discoverRoutes(dir = APP_DIR, rel = "") {
 
 export default async function sitemap() {
   const base =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-    "https://ghostai.solutions";
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") || "https://ghostai.solutions";
 
-  const discovered = discoverRoutes();
-
-  // You can still add any extra canonical routes manually here if needed:
-  // const extras = ["/sitemap.xml"]; // (usually not necessary)
-  // const routes = Array.from(new Set([...discovered, ...extras]));
-
+  const discovered = discoverRoutes(); // from your existing file walker
   const now = new Date().toISOString();
 
-  return discovered.map((route) => ({
+  // concrete blog URLs from content
+  const blogUrls = posts.map((p) => `${base}/blog/${p.slug}`);
+
+  const staticEntries = discovered.map((route) => ({
     url: `${base}${route === "/" ? "" : route}`,
     lastModified: now,
     changeFrequency: route === "/" ? "weekly" : "monthly",
     priority: route === "/" ? 1.0 : 0.7,
   }));
+
+  const blogEntries = blogUrls.map((url) => ({
+    url,
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
+
+  return [...staticEntries, ...blogEntries];
 }
