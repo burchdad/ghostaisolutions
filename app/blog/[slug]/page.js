@@ -33,12 +33,10 @@ export default function PostPage({ params }) {
         <p className="mt-2 inline-block rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-300">
           Published: {new Date(date).toLocaleDateString()}
         </p>
-
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }}
         />
-
         <article className="prose prose-slate dark:prose-invert mt-6 max-w-none">
           <Content />
         </article>
