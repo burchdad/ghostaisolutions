@@ -1,9 +1,23 @@
-// app/components/DemoPlayer.js
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function DemoPlayer() {
+  const videoRef = useRef(null);
   const [failed, setFailed] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+
+  const handleUnmute = async () => {
+    try {
+      if (!videoRef.current) return;
+      videoRef.current.muted = false;
+      setIsMuted(false);
+      // Ensure playback continues with sound (iOS requires calling play() after a gesture)
+      await videoRef.current.play();
+    } catch {
+      // If it fails (e.g., codec issue), keep muted to avoid a dead button
+      setIsMuted(true);
+    }
+  };
 
   if (failed) {
     return (
@@ -26,11 +40,12 @@ export default function DemoPlayer() {
   }
 
   return (
-    <div className="mt-8 aspect-video rounded-2xl overflow-hidden border bg-black">
+    <div className="mt-8 relative aspect-video rounded-2xl overflow-hidden border bg-black">
       <video
+        ref={videoRef}
         className="w-full h-full object-cover"
         autoPlay
-        muted
+        muted={isMuted}
         loop
         playsInline
         controls
@@ -39,9 +54,18 @@ export default function DemoPlayer() {
         onError={() => setFailed(true)}
       >
         <source src="/demo.mp4" type="video/mp4" />
-        {/* If the browser can’t play MP4, show fallback */}
         Sorry, your browser doesn’t support embedded videos.
       </video>
+
+      {isMuted && (
+        <button
+          type="button"
+          onClick={handleUnmute}
+          className="absolute bottom-4 right-4 rounded-full bg-white/20 px-4 py-2 text-white backdrop-blur hover:bg-white/30"
+        >
+          🔊 Tap to unmute
+        </button>
+      )}
     </div>
   );
 }
