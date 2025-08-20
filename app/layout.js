@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import CookieBanner from "@/components/CookieBanner";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
+import StickyCTA from "@/components/StickyCTA";
 
 export const metadata = {
   metadataBase: new URL('https://ghostai.solutions'),
@@ -22,6 +23,17 @@ export const metadata = {
   icons: { icon: '/favicon.ico' },
   authors: [{ name: 'Ghost AI Solutions', url: 'mailto:support@ghostdefenses.com' }],
   creator: 'Ghost AI Solutions',
+
+  // 👇 add these two new sections
+  other: {
+    'google-site-verification': 'YOUR_GOOGLE_CODE',
+    'msvalidate.01': 'YOUR_BING_CODE',
+  },
+  alternates: {
+    types: {
+      'application/rss+xml': '/feed',
+    },
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -62,6 +74,7 @@ export default function RootLayout({ children }) {
         <Header />
         <main id="main">{children}</main>
         <Footer />
+        <StickyCTA />
         <CookieBanner />
         <SpeedInsights />
         <Analytics />
