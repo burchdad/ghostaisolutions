@@ -1,0 +1,40 @@
+/* Ghostbot Floating Widget Styles */
+#ghostbot-launcher {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #1db954;
+  color: #121217;
+  width: 60px;
+  height: 60px;
+  font-size: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 9999;
+}
+
+#ghostbot-widget {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 360px;
+  height: 540px;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 9998;
+}
+
+@media (max-width: 768px) {
+  #ghostbot-widget {
+    width: 95vw;
+    height: 85vh;
+    bottom: 80px;
+    right: 10px;
+  }
+}
