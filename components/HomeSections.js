@@ -92,6 +92,12 @@ function CTA(){
           >
             Contact Us
           </a>
+          <a
+            href="/chatbot"
+            className="inline-flex items-center gap-2 rounded-xl border px-6 py-3 font-semibold hover:bg-slate-50 dark:hover:bg-slate-900"
+          >
+            Chatbot
+          </a>
         </div>
       </div>
     </section>

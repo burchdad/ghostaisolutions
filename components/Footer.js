@@ -51,13 +51,14 @@ export default function Footer(){
             <Link className="hover:text-brand-700" href="/demo">Demo</Link>
             <Link className="hover:text-brand-700" href="/process">Process</Link>
             <Link className="hover:text-brand-700" href="/work">Case Studies</Link>
-            <Link className="hover:text-brand-700" href="/blog">Blog</Link>
+            <Link className="hover:text-brand-700" href="/chatbot">Chatbot</Link>
           </nav>
 
           {/* Column 2 */}
           <nav className="grid gap-2 text-sm">
             <Link className="hover:text-brand-700" href="/pricing">Pricing</Link>
             <Link className="hover:text-brand-700" href="/faq">FAQ</Link>
+            <Link className="hover:text-brand-700" href="/blog">Blog</Link>
             <Link className="hover:text-brand-700" href="/privacy">Privacy</Link>
             <Link className="hover:text-brand-700" href="/terms">Terms</Link>
           </nav>

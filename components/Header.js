@@ -39,6 +39,7 @@ export default function Header() {
           <nav aria-label="Main" className="hidden md:flex items-center gap-8 text-sm">
             <Link className="hover:text-brand-300" href="/services">Services</Link>
             <Link className="hover:text-brand-300" href="/demo">Demo</Link>
+            <Link className="hover:text-brand-300" href="/chatbot">Chatbot</Link>
             <Link className="hover:text-brand-300" href="/process">Process</Link>
             <Link className="hover:text-brand-300" href="/work">Case Studies</Link>
             <Link className="hover:text-brand-300" href="/pricing">Pricing</Link>
@@ -88,7 +89,7 @@ export default function Header() {
         }`}
       >
         <div className="mx-auto max-w-7xl px-4 py-4 grid gap-3 text-sm">
-          {["/services", "/demo","/process", "/work", "/pricing", "/blog","/faq", "/contact"].map(href => (
+          {["/services", "/demo", "/chatbot","/process", "/work", "/pricing", "/blog","/faq", "/contact"].map(href => (
             <Link key={href} className="py-2" href={href} onClick={() => setOpen(false)}>
               {href.slice(1).replace("-", " ").replace(/\b\w/g, s => s.toUpperCase())}
             </Link>
