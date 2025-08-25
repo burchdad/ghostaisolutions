@@ -6,6 +6,7 @@ import CookieBanner from "@/components/CookieBanner";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 import StickyCTA from "@/components/StickyCTA";
+import FloatingBot from "@/components/FloatingBot";
 
 export const metadata = {
   metadataBase: new URL('https://ghostai.solutions'),
@@ -76,6 +77,7 @@ export default function RootLayout({ children }) {
         <Footer />
         <StickyCTA />
         <CookieBanner />
+        <FloatingBot />
         <SpeedInsights />
         <Analytics />
       </body>
