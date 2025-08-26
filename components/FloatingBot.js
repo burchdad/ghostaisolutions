@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 
 export default function FloatingBot({
-  src = "https://ghostbot-chat.vercel.app/?embed=1&theme=dark",
+  src = "https://ghostbot-chat.vercel.app/?embed=1&theme=dark&minimal=1",
   title = "Ghostbot",
 }) {
   const [open, setOpen] = useState(false);
