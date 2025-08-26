@@ -8,14 +8,12 @@ export default function FloatingBot({
   const [open, setOpen] = useState(false);
   const panelRef = useRef(null);
 
-  // Close with ESC
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Click outside to close
   useEffect(() => {
     if (!open) return;
     const onClick = (e) => {
@@ -31,7 +29,6 @@ export default function FloatingBot({
 
   return (
     <>
-      {/* Trigger bubble */}
       <button
         id="ghostbot-trigger"
         onClick={() => setOpen((v) => !v)}
@@ -46,45 +43,21 @@ export default function FloatingBot({
         </svg>
       </button>
 
-      {/* Chat panel */}
       <div
         id="ghostbot-widget"
         ref={panelRef}
         className={`fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-[99997]
-                   w-[90vw] max-w-[400px] h-[85vh] max-h-[600px]
-                   rounded-xl shadow-xl
+                   w-[320px] sm:w-[400px] h-[500px] sm:h-[600px]
                    transform transition-all duration-300
                    ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
       >
-        <div className="flex flex-col h-full rounded-xl overflow-hidden border border-white/10 bg-slate-900">
-          {/* Header */}
-          <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 bg-slate-900 text-white">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-brand-600">
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
-                  <path d="M12 2C7.58 2 4 5.58 4 10v7a1 1 0 0 0 1.58.81l1.84-1.38a1 1 0 0 1 1.2 0l1.84 1.38a1 1 0 0 0 1.2 0l1.84-1.38a1 1 0 0 1 1.2 0l1.84 1.38A1 1 0 0 0 20 17v-7c0-4.42-3.58-8-8-8Z" />
-                </svg>
-              </span>
-              <span className="text-sm font-semibold">{title}</span>
-            </div>
-            <button
-              onClick={() => setOpen(false)}
-              className="rounded-md border border-white/10 px-2 py-1 text-xs hover:bg-white/10"
-              aria-label="Close chat"
-            >
-              Close
-            </button>
-          </div>
-
-          {/* Chat content */}
-          <iframe
-            src={src}
-            title="Ghostbot"
-            className="w-full h-full"
-            allow="clipboard-write; microphone; camera"
-            style={{ border: 0, background: "transparent" }}
-          />
-        </div>
+        <iframe
+          src={src}
+          title="Ghostbot"
+          className="w-full h-full"
+          allow="clipboard-write; microphone; camera"
+          style={{ border: 0, background: "transparent" }}
+        />
       </div>
     </>
   );
