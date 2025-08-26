@@ -62,16 +62,20 @@ export default function FloatingBot({
                    transform transition-all duration-300
                    ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
       >
-        <div className="flex flex-col h-full rounded-xl overflow-hidden border border-white/10">
-          <div className="flex items-center justify-between px-3 py-2 bg-[#1db954] text-black">
-            <div className="font-semibold">{title} 💬</div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowSettings((prev) => !prev)}
-                className="text-xs hover:underline"
-              >
-                Settings
-              </button>
+        <iframe
+  src={src}
+  title="Ghostbot"
+  className="w-full h-full rounded-xl shadow-xl border-none"
+  allow="clipboard-write; microphone; camera"
+  style={{ background: "transparent" }}
+
+            />
+        <button
+          onClick={() => setShowSettings((prev) => !prev)}
+          className="text-xs hover:underline"
+        >
+          Settings
+        </button>
               <button
                 onClick={() => setOpen(false)}
                 className="text-xs hover:underline"
@@ -96,12 +100,12 @@ export default function FloatingBot({
           )}
 
           <iframe
-            src={src}
-            title="Ghostbot"
-            className="w-full h-full"
-            allow="clipboard-write; microphone; camera"
-            style={{ border: 0, background: "transparent" }}
-          />
+  src={src}
+  title="Ghostbot"
+  className="w-full h-full rounded-xl shadow-xl border-none"
+  allow="clipboard-write; microphone; camera"
+  style={{ background: "transparent" }}
+/>
         </div>
       </div>
     </>
