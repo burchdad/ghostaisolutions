@@ -61,46 +61,44 @@ export default function FloatingBot({
                    bg-slate-900 transform transition-all duration-300
                    ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
       >
-        <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between px-3 py-2 bg-[#1db954] text-black">
-            <div className="font-semibold">{title} 💬</div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowSettings((prev) => !prev)}
-                className="text-xs hover:underline"
-              >
-                Settings
-              </button>
-              <button
-                onClick={() => setOpen(false)}
-                className="text-xs hover:underline"
-              >
-                Close
-              </button>
-            </div>
+        <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-brand-600 rounded-t-xl">
+          <span className="font-bold text-white">{title}</span>
+          <div>
+            <button
+              onClick={() => setShowSettings((prev) => !prev)}
+              className="text-xs text-white hover:underline mr-2"
+            >
+              Settings
+            </button>
+            <button
+              onClick={() => setOpen(false)}
+              className="text-xs text-white hover:underline"
+            >
+              Close
+            </button>
           </div>
-
-          {showSettings && (
-            <div className="text-sm text-white bg-slate-900 border-b border-white/10 p-3">
-              <div className="mb-2">⚙️ <strong>Settings</strong></div>
-              <ul className="space-y-1">
-                <li className="opacity-50">🔈 Turn off sound (coming soon)</li>
-                <li className="opacity-50">🌐 Change language (coming soon)</li>
-                <li className="opacity-50">📧 Email transcript (coming soon)</li>
-                <li>
-                  🧹 <button onClick={clearChatHistory} className="text-red-400 underline">Clear chat history</button>
-                </li>
-              </ul>
-            </div>
-          )}
-
-          <iframe
-            src={src}
-            title="Ghostbot"
-            className="w-full h-full border-none bg-transparent"
-            allow="clipboard-write; microphone; camera"
-          />
         </div>
+
+        {showSettings && (
+          <div className="text-sm text-white bg-slate-900 border-b border-white/10 p-3">
+            <div className="mb-2">⚙️ <strong>Settings</strong></div>
+            <ul className="space-y-1">
+              <li className="opacity-50">🔈 Turn off sound (coming soon)</li>
+              <li className="opacity-50">🌐 Change language (coming soon)</li>
+              <li className="opacity-50">📧 Email transcript (coming soon)</li>
+              <li>
+                🧹 <button onClick={clearChatHistory} className="text-red-400 underline">Clear chat history</button>
+              </li>
+            </ul>
+          </div>
+        )}
+
+        <iframe
+          src={src}
+          title="Ghostbot"
+          className="w-full h-full border-none bg-transparent"
+          allow="clipboard-write; microphone; camera"
+        />
       </div>
     </>
   );
