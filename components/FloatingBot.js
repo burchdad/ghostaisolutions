@@ -46,19 +46,18 @@ export default function FloatingBot({
         </svg>
       </button>
 
-      {/* Panel */}
+      {/* Chat panel */}
       <div
-        className={`fixed z-[99999] right-4 bottom-20 sm:right-6 sm:bottom-24
-                    transition-all duration-200 ${open ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none"}`}
+        id="ghostbot-widget"
+        ref={panelRef}
+        className={`fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-[99997]
+                   w-[320px] sm:w-[400px] h-[500px] sm:h-[600px]
+                   rounded-xl shadow-lg
+                   bg-transparent
+                   transform transition-all duration-300
+                   ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
       >
-        <div
-          ref={panelRef}
-          className="rounded-2xl overflow-hidden shadow-2xl border border-white/10
-                     bg-white dark:bg-slate-900 backdrop-blur"
-          style={{
-            width: "min(92vw, 400px)",
-            height: "min(78vh, 600px)",
-          }}
+        <div className="flex flex-col h-full rounded-xl overflow-hidden border border-white/10 bg-slate-900"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-3 py-2 border-b border-white/10 bg-slate-900 text-white">
