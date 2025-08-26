@@ -48,7 +48,7 @@ export default function FloatingBot({
                    bg-brand-600 text-white hover:bg-brand-700"
       >
         <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
-          <path d="M20 2H4a2 2 0 00-2 2v17l4-3h14a2 2 0 002-2V4a2 2 0 00-2-2z"/>
+          <path d="M20 2H4a2 2 0 00-2 2v17l4-3h14a2 2 0 002-2V4a2 2 0 00-2-2z" />
         </svg>
       </button>
 
@@ -57,25 +57,20 @@ export default function FloatingBot({
         ref={panelRef}
         className={`fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-[99997]
                    w-[320px] sm:w-[400px] h-[500px] sm:h-[600px]
-                   rounded-xl shadow-lg
-                   bg-transparent
-                   transform transition-all duration-300
+                   rounded-xl shadow-xl border border-white/10
+                   bg-slate-900 transform transition-all duration-300
                    ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
       >
-        <iframe
-  src={src}
-  title="Ghostbot"
-  className="w-full h-full rounded-xl shadow-xl border-none"
-  allow="clipboard-write; microphone; camera"
-  style={{ background: "transparent" }}
-
-            />
-        <button
-          onClick={() => setShowSettings((prev) => !prev)}
-          className="text-xs hover:underline"
-        >
-          Settings
-        </button>
+        <div className="flex flex-col h-full">
+          <div className="flex items-center justify-between px-3 py-2 bg-[#1db954] text-black">
+            <div className="font-semibold">{title} 💬</div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowSettings((prev) => !prev)}
+                className="text-xs hover:underline"
+              >
+                Settings
+              </button>
               <button
                 onClick={() => setOpen(false)}
                 className="text-xs hover:underline"
@@ -100,12 +95,11 @@ export default function FloatingBot({
           )}
 
           <iframe
-  src={src}
-  title="Ghostbot"
-  className="w-full h-full rounded-xl shadow-xl border-none"
-  allow="clipboard-write; microphone; camera"
-  style={{ background: "transparent" }}
-/>
+            src={src}
+            title="Ghostbot"
+            className="w-full h-full border-none bg-transparent"
+            allow="clipboard-write; microphone; camera"
+          />
         </div>
       </div>
     </>
