@@ -1,40 +1,148 @@
-/* Ghostbot Floating Widget Styles */
-#ghostbot-launcher {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #1db954;
-  color: #121217;
-  width: 60px;
-  height: 60px;
-  font-size: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  cursor: pointer;
-  z-index: 9999;
+:root {
+  --bg: #121217;
+  --fg: #e5e7eb;
+  --accent: #1db954;
+}
+html[data-theme="light"] {
+  --bg: #ffffff;
+  --fg: #0f172a;
+  --accent: #115fb8;
+}
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--bg);
+  color: var(--fg);
 }
 
 #ghostbot-widget {
   position: fixed;
-  bottom: 90px;
+  bottom: 20px;
   right: 20px;
-  width: 360px;
-  height: 540px;
-  border: none;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  width: 90vw;
+  max-width: 400px;
+  height: 80vh;
+  max-height: 600px;
+  background: #1e1e28;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
   display: none;
-  z-index: 9998;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9999;
 }
 
-@media (max-width: 768px) {
-  #ghostbot-widget {
-    width: 95vw;
-    height: 85vh;
-    bottom: 80px;
-    right: 10px;
-  }
+#ghostbot-header {
+  background: var(--accent);
+  color: var(--bg);
+  padding: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+#ghostbot-chatbox {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  background: #1e1e28;
+  color: var(--fg);
+  max-height: 100%;
+}
+
+.message {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  max-width: 85%;
+  word-wrap: break-word;
+}
+
+.bot {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.user {
+  background: #333;
+  color: var(--accent);
+  align-self: flex-end;
+  text-align: right;
+}
+
+#ghostbot-input {
+  display: flex;
+  padding: 8px;
+  background: #14141f;
+  flex-shrink: 0;
+}
+
+#ghostbot-input input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px 0 0 8px;
+  border: none;
+  outline: none;
+}
+
+#ghostbot-input button {
+  padding: 8px 12px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+}
+
+.quick-reply {
+  background: #292d3e;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 6px 10px;
+  margin: 5px 5px 0 0;
+  display: inline-block;
+  cursor: pointer;
+}
+
+#ghostbot-launcher {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9998;
+  font-size: 28px;
+}
+
+/* Embed adjustments */
+html.embed, body.embed {
+  background: transparent !important;
+  overflow: hidden;
+}
+
+.embed #ghostbot-launcher,
+.embed .branding-badge,
+.embed .cookie-banner {
+  display: none !important;
+}
+
+.embed #ghostbot-widget {
+  position: static !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  background: transparent !important;
 }
