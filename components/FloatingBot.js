@@ -55,7 +55,11 @@ export default function FloatingBot({
       <div
         id="ghostbot-widget"
         ref={panelRef}
-        className={`w-full h-full border-none bg-transparent`}
+        className={`fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-[99997]
+                   w-[320px] sm:w-[400px] h-[500px] sm:h-[600px]
+                   rounded-xl shadow-xl border border-white/10
+                   bg-slate-900 transform transition-all duration-300
+                   ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between px-3 py-2 bg-[#1db954] text-black">
