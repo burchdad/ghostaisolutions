@@ -42,7 +42,10 @@ export default function FloatingBot({
         id="ghostbot-trigger"
         onClick={() => setOpen((v) => !v)}
         aria-label="Open chat"
-        className="w-full h-full border-none bg-transparent"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[99998]
+                   inline-flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14
+                   rounded-full shadow-lg border border-white/10
+                   bg-brand-600 text-white hover:bg-brand-700"
       >
         <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
           <path d="M20 2H4a2 2 0 00-2 2v17l4-3h14a2 2 0 002-2V4a2 2 0 00-2-2z" />
@@ -52,11 +55,7 @@ export default function FloatingBot({
       <div
         id="ghostbot-widget"
         ref={panelRef}
-        className={`fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-[99997]
-                   w-[320px] sm:w-[400px] h-[500px] sm:h-[600px]
-                   rounded-xl shadow-xl border border-white/10
-                   bg-slate-900 transform transition-all duration-300
-                   ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
+        className={`w-full h-full border-none bg-transparent`}
       >
         <div className="flex flex-col h-full">
           <div className="flex items-center justify-between px-3 py-2 bg-[#1db954] text-black">
