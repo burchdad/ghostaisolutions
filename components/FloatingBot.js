@@ -42,10 +42,7 @@ export default function FloatingBot({
         id="ghostbot-trigger"
         onClick={() => setOpen((v) => !v)}
         aria-label="Open chat"
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[99998]
-                   inline-flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14
-                   rounded-full shadow-lg border border-white/10
-                   bg-brand-600 text-white hover:bg-brand-700"
+        className="w-full h-full border-none bg-transparent"
       >
         <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor">
           <path d="M20 2H4a2 2 0 00-2 2v17l4-3h14a2 2 0 002-2V4a2 2 0 00-2-2z" />
