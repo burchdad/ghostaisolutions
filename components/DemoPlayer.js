@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useRef, useState } from "react";
 
 export default function DemoPlayer() {
@@ -22,11 +23,13 @@ export default function DemoPlayer() {
   if (failed) {
     return (
       <div className="mt-8 relative aspect-video rounded-2xl overflow-hidden border bg-black">
-        <img
+        <Image
           src="/demo-placeholder.png"
           alt="Demo placeholder"
-          className="w-full h-full object-cover opacity-90"
-          loading="eager"
+          fill
+          sizes="(max-width: 768px) 100vw, 900px"
+          className="object-cover opacity-90"
+          priority
         />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="inline-flex items-center justify-center h-20 w-20 rounded-full bg-white/20 backdrop-blur">

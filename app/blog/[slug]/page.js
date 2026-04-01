@@ -1,3 +1,7 @@
+import { notFound } from "next/navigation";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { posts } from "@/content/posts";
+
 export default function PostPage({ params }) {
   const post = posts.find((p) => p.slug === params.slug);
   if (!post) return notFound();

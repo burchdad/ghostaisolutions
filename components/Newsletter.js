@@ -1,7 +1,8 @@
 "use client"; // 👈 make this a Client Component
+import { siteConfig } from "@/lib/siteConfig";
 
 export default function Newsletter({
-  action = "https://buttondown.email/api/emails/embed-subscribe/burch",
+  action = siteConfig.newsletterEmbedAction,
 }) {
   return (
     <form

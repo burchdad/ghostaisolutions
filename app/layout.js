@@ -7,6 +7,24 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
 import StickyCTA from "@/components/StickyCTA";
 import FloatingBot from "@/components/FloatingBot";
+import UTMTracker from "@/components/UTMTracker";
+import { siteConfig } from "@/lib/siteConfig";
+import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
+
+const googleSiteVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
+const bingSiteVerification = process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION;
+
+const displayFont = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["500", "700"],
+});
+
+const bodyFont = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700", "800"],
+});
 
 export const metadata = {
   metadataBase: new URL('https://ghostai.solutions'),
@@ -22,13 +40,12 @@ export const metadata = {
   },
   twitter: { card: 'summary_large_image', images: ['/og-image.png'] },
   icons: { icon: '/favicon.ico' },
-  authors: [{ name: 'Ghost AI Solutions', url: 'mailto:support@ghostdefenses.com' }],
+  authors: [{ name: siteConfig.companyName, url: `mailto:${siteConfig.supportEmail}` }],
   creator: 'Ghost AI Solutions',
 
-  // 👇 add these two new sections
   other: {
-    'google-site-verification': 'YOUR_GOOGLE_CODE',
-    'msvalidate.01': 'YOUR_BING_CODE',
+    ...(googleSiteVerification ? { 'google-site-verification': googleSiteVerification } : {}),
+    ...(bingSiteVerification ? { 'msvalidate.01': bingSiteVerification } : {}),
   },
   alternates: {
     types: {
@@ -49,7 +66,7 @@ export default function RootLayout({ children }) {
       {
         "@type": "ContactPoint",
         contactType: "customer support",
-        email: "support@ghostdefenses.com",
+        email: siteConfig.supportEmail,
         availableLanguage: ["en"],
         areaServed: "US"
       }
@@ -57,7 +74,7 @@ export default function RootLayout({ children }) {
   };
 
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className={`scroll-smooth ${displayFont.variable} ${bodyFont.variable}`}>
       <head>
         <script
           type="application/ld+json"
@@ -65,7 +82,8 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
         />
       </head>
-      <body className="font-body">
+      <body className="font-body antialiased">
+        <UTMTracker />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-white focus:text-ink focus:rounded-lg focus:shadow"

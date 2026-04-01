@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { siteConfig } from "@/lib/siteConfig";
 
 export default function Footer(){
   return (
@@ -38,8 +39,8 @@ export default function Footer(){
               <span className="hidden sm:inline">•</span>
               <span>Remote‑first, US‑based company</span>
               <span className="hidden sm:inline">•</span>
-              <a className="underline" href="mailto:support@ghostdefenses.com">support@ghostdefenses.com</a>
-              <a className="underline" href="https://buttondown.com/burch" target="_blank" rel="noopener noreferrer">
+              <a className="underline" href={`mailto:${siteConfig.supportEmail}`}>{siteConfig.supportEmail}</a>
+              <a className="underline" href={siteConfig.newsletterPageUrl} target="_blank" rel="noopener noreferrer">
   Newsletter
 </a>
             </div>
@@ -69,7 +70,7 @@ export default function Footer(){
           <div className="flex items-center gap-3">
             <a className="underline" href="https://www.facebook.com/profile.php?id=61578770879824">Facebook</a>
             <a className="underline" href="https://www.linkedin.com/company/ghostaisolutions">LinkedIn</a>
-            <a className="underline" href="mailto:support@ghostdefenses.com">Email</a>
+            <a className="underline" href={`mailto:${siteConfig.supportEmail}`}>Email</a>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import TrackCTA from "@/components/TrackCTA";
+import { siteConfig } from "@/lib/siteConfig";
 
 export default function Header() {
   const [isDark, setIsDark] = useState(true);
@@ -38,12 +39,14 @@ export default function Header() {
           {/* Desktop nav */}
           <nav aria-label="Main" className="hidden md:flex items-center gap-8 text-sm">
             <Link className="hover:text-brand-300" href="/services">Services</Link>
+            <Link className="hover:text-brand-300" href="/ai-native">AI-Native</Link>
             <Link className="hover:text-brand-300" href="/demo">Demo</Link>
             <Link className="hover:text-brand-300" href="/chatbot">Chatbot</Link>
             <Link className="hover:text-brand-300" href="/process">Process</Link>
             <Link className="hover:text-brand-300" href="/work">Case Studies</Link>
             <Link className="hover:text-brand-300" href="/pricing">Pricing</Link>
             <Link className="hover:text-brand-300" href="/blog">Blog</Link>
+            <Link className="hover:text-brand-300" href="/growth-lab">Growth Lab</Link>
             <Link className="hover:text-brand-300" href="/faq">FAQ</Link>
             <Link className="hover:text-brand-300" href="/contact">Contact</Link>
           </nav>
@@ -58,11 +61,14 @@ export default function Header() {
               <span suppressHydrationWarning>{themeLabel}</span>
             </button>
             <TrackCTA
-  href="https://calendly.com/stephen-burch-ghostdefenses/strategy-call"
+  href={siteConfig.calendlyUrl}
   className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-glow hover:bg-brand-700"
   event="book_call_click_header"
+  section="header"
+  placement="desktop_primary"
+  label="Book Strategy Call"
 >
-  Book a Call
+  Book Strategy Call
 </TrackCTA>
           </div>
 
@@ -89,7 +95,7 @@ export default function Header() {
         }`}
       >
         <div className="mx-auto max-w-7xl px-4 py-4 grid gap-3 text-sm">
-          {["/services", "/demo", "/chatbot","/process", "/work", "/pricing", "/blog","/faq", "/contact"].map(href => (
+          {["/services", "/ai-native", "/demo", "/chatbot","/process", "/work", "/pricing", "/blog", "/growth-lab", "/faq", "/contact"].map(href => (
             <Link key={href} className="py-2" href={href} onClick={() => setOpen(false)}>
               {href.slice(1).replace("-", " ").replace(/\b\w/g, s => s.toUpperCase())}
             </Link>
@@ -99,12 +105,15 @@ export default function Header() {
               {mounted ? (isDark ? "Light" : "Dark") : "Theme"}
             </button>
             <TrackCTA
-  href="https://calendly.com/stephen-burch-ghostdefenses/strategy-call"
+  href={siteConfig.calendlyUrl}
   className="rounded-xl bg-brand-600 px-4 py-2 font-semibold text-white"
   onClick={() => setOpen(false)}
   event="book_call_click_mobile"
+  section="header"
+  placement="mobile_primary"
+  label="Book Strategy Call"
 >
-  Book a Call
+  Book Strategy Call
 </TrackCTA>
           </div>
         </div>

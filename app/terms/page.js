@@ -1,3 +1,5 @@
+import { siteConfig } from "@/lib/siteConfig";
+
 export const metadata = { title: 'Terms of Service — Ghost AI Solutions' };
 
 export default function Terms(){
@@ -62,7 +64,7 @@ export default function Terms(){
         <h2 className="mt-8 text-xl font-semibold">9. Contact</h2>
         <p className="mt-2 text-slate-600 dark:text-slate-300">
           Questions about these Terms can be sent to 
-          <a className="underline" href="mailto:support@ghostdefenses.com"> support@ghostdefenses.com</a>.
+          <a className="underline" href={`mailto:${siteConfig.supportEmail}`}> {siteConfig.supportEmail}</a>.
         </p>
       </div>
     </section>

@@ -1,5 +1,6 @@
 // FILE: app/services/page.js
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { siteConfig } from "@/lib/siteConfig";
 
 export const metadata = { title: "Services — Ghost AI Solutions" };
 
@@ -16,7 +17,7 @@ export default function ServicesPage() {
         {
           "@type": "ContactPoint",
           contactType: "customer support",
-          email: "support@ghostdefenses.com",
+          email: siteConfig.supportEmail,
         },
       ],
     },
@@ -83,7 +84,7 @@ export default function ServicesPage() {
         {/* Optional: CTA row */}
         <div className="mt-12">
           <a
-            href="https://calendly.com/stephen-burch-ghostdefenses/strategy-call"
+            href={siteConfig.calendlyUrl}
             className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white shadow-glow hover:bg-brand-700"
           >
             Book a Strategy Call

@@ -4,21 +4,64 @@
 
 html { scroll-behavior: smooth; }
 
-body { @apply bg-white text-slate-900; }
+body {
+  @apply text-slate-900;
+  background:
+    radial-gradient(900px 400px at 15% -10%, rgba(34,211,238,.15), rgba(34,211,238,0) 65%),
+    radial-gradient(700px 300px at 85% 0%, rgba(249,115,22,.16), rgba(249,115,22,0) 55%),
+    linear-gradient(180deg, #050916 0%, #071024 45%, #040914 100%);
+}
+
+h1, h2, h3, h4 { font-family: var(--font-display), sans-serif; }
 
 /* Gradients used in hero */
 .gradient-hero {
   background:
-    radial-gradient(1000px 500px at 50% -20%, rgba(39,154,255,.25), rgba(39,154,255,0) 60%),
-    radial-gradient(800px 400px at 10% 10%, rgba(124,58,237,.18), rgba(124,58,237,0) 60%),
-    radial-gradient(900px 500px at 90% 10%, rgba(16,185,129,.18), rgba(16,185,129,0) 60%),
-    #0b1020;
+    radial-gradient(1000px 500px at 50% -20%, rgba(34,211,238,.24), rgba(34,211,238,0) 60%),
+    radial-gradient(700px 360px at 12% 8%, rgba(14,165,233,.18), rgba(14,165,233,0) 60%),
+    radial-gradient(760px 420px at 88% 8%, rgba(249,115,22,.18), rgba(249,115,22,0) 60%),
+    #060d1b;
+}
+
+.noise-grid {
+  position: relative;
+}
+
+.noise-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(148,163,184,.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148,163,184,.06) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
+}
+
+.glass-panel {
+  background: linear-gradient(160deg, rgba(15,23,42,.78), rgba(2,6,23,.92));
+  border: 1px solid rgba(148,163,184,.2);
+  box-shadow: 0 30px 80px rgba(2,6,23,.45);
+}
+
+.animate-rise {
+  animation: rise .7s ease both;
+}
+
+.animate-rise-delay {
+  animation: rise .9s ease .15s both;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* --- Dark theme overrides to make the WHOLE site dark --- */
-.dark body { background-color: #0b1020; color: rgb(241 245 249); }
-.dark .bg-white { background-color: #0b1020 !important; }
-.dark .bg-slate-50 { background-color: #0f152b !important; }
+.dark body { background-color: #060d1b; color: rgb(241 245 249); }
+.dark .bg-white { background-color: #081326 !important; }
+.dark .bg-slate-50 { background-color: #081326 !important; }
 .dark .text-slate-600 { color: rgb(203 213 225) !important; }
 .dark .text-slate-500 { color: rgb(203 213 225 / 0.8) !important; }
 .dark .border { border-color: rgb(255 255 255 / 0.08) !important; }

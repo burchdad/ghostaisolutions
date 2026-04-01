@@ -39,8 +39,8 @@ module.exports = {
         floaty: 'floaty 6s ease-in-out infinite',
       },
       fontFamily: {
-        display: ['ui-sans-serif','system-ui','Inter','Helvetica','Arial'],
-        body: ['ui-sans-serif','system-ui','Inter','Helvetica','Arial'],
+        display: ['var(--font-display)', 'Space Grotesk', 'system-ui', 'sans-serif'],
+        body: ['var(--font-body)', 'Plus Jakarta Sans', 'system-ui', 'sans-serif'],
       }
     },
   },

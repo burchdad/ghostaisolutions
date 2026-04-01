@@ -1,3 +1,5 @@
+import { siteConfig } from "@/lib/siteConfig";
+
 export const metadata = { title: 'Privacy Policy — Ghost AI Solutions' };
 
 export default function Privacy(){
@@ -47,12 +49,12 @@ export default function Privacy(){
 
         <h2 className="mt-8 text-xl font-semibold">Your Rights</h2>
         <p className="mt-2 text-slate-600 dark:text-slate-300">
-          You can request access, correction, or deletion of personal data by emailing <a className="underline" href="mailto:support@ghostdefenses.com">support@ghostdefenses.com</a>.
+          You can request access, correction, or deletion of personal data by emailing <a className="underline" href={`mailto:${siteConfig.supportEmail}`}>{siteConfig.supportEmail}</a>.
         </p>
 
         <h2 className="mt-8 text-xl font-semibold">Contact</h2>
         <p className="mt-2 text-slate-600 dark:text-slate-300">
-          For privacy questions, contact <a className="underline" href="mailto:support@ghostdefenses.com">support@ghostdefenses.com</a>.
+          For privacy questions, contact <a className="underline" href={`mailto:${siteConfig.supportEmail}`}>{siteConfig.supportEmail}</a>.
         </p>
       </div>
     </section>
