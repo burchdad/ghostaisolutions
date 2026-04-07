@@ -6,7 +6,7 @@ export const runtime = "nodejs"; // ensure Node runtime so fs works
 
 import fs from "fs";
 import path from "path";
-import { posts } from "@/content/posts";
+import { getAllPosts } from "@/lib/allPosts";
 
 const APP_DIR = path.join(process.cwd(), "app");
 const PAGE_FILENAMES = ["page.js", "page.jsx", "page.tsx", "page.mdx"];
@@ -74,8 +74,8 @@ export default async function sitemap() {
   const discovered = discoverRoutes(); // from your existing file walker
   const now = new Date().toISOString();
 
-  // concrete blog URLs from content
-  const blogUrls = posts.map((p) => `${base}/blog/${p.slug}`);
+  // concrete blog URLs from content (static + auto-generated)
+  const blogUrls = getAllPosts().map((p) => `${base}/blog/${p.slug}`);
 
   const staticEntries = discovered.map((route) => ({
     url: `${base}${route === "/" ? "" : route}`,

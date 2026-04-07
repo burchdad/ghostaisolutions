@@ -1,0 +1,51 @@
+name: Daily Blog Post
+
+on:
+  schedule:
+    # Run at 08:00 UTC every day
+    - cron: "0 8 * * *"
+  # Allow manual trigger from GitHub Actions UI
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    name: Generate & Publish Blog Post
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # The generator script uses only Node 20 built-in fetch — no npm install needed.
+      # We still install deps so Next.js path aliases (@/) resolve if ever needed.
+      - name: Install project dependencies
+        run: npm ci
+
+      - name: Run blog post generator
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: gpt-4o-mini
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/generate-blog-post.mjs
+
+      - name: Check for new post
+        id: diff
+        run: |
+          git add content/auto-posts/
+          git diff --cached --exit-code && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push new post
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "Ghost AI Blog Bot"
+          git config user.email "bot@ghostai.solutions"
+          git commit -m "blog: auto-generate post for $(date -u +%Y-%m-%d)"
+          git push

@@ -1,8 +1,8 @@
-import { posts } from "@/content/posts";
+import { getAllPosts } from "@/lib/allPosts";
 
 export async function GET() {
   const site = "https://ghostai.solutions";
-  const items = posts.map(p => `
+  const items = getAllPosts().map(p => `
     <item>
       <title><![CDATA[${p.title}]]></title>
       <link>${site}/blog/${p.slug}</link>
