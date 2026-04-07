@@ -130,6 +130,34 @@ function formatMessagesForApi(messages) {
   }));
 }
 
+function normalizeLoadedMessages(messages) {
+  if (!Array.isArray(messages)) {
+    return [];
+  }
+
+  const seenNudges = new Set();
+  const cleaned = messages.filter((message) => {
+    if (!message || typeof message !== "object") {
+      return false;
+    }
+
+    if (!message.meta?.nudge) {
+      return true;
+    }
+
+    const dedupeKey = message.meta?.key || `${message.text || ""}|${message.meta?.context || ""}`;
+    if (seenNudges.has(dedupeKey)) {
+      return false;
+    }
+
+    seenNudges.add(dedupeKey);
+    return true;
+  });
+
+  // Keep the thread compact and relevant.
+  return cleaned.slice(-60);
+}
+
 export default function FloatingBot() {
   const [open, setOpen] = useState(false);
   const [listening, setListening] = useState(false);
@@ -184,7 +212,7 @@ export default function FloatingBot() {
       if (rawChat) {
         const parsed = JSON.parse(rawChat);
         if (Array.isArray(parsed.messages) && parsed.messages.length) {
-          setMessages(parsed.messages);
+          setMessages(normalizeLoadedMessages(parsed.messages));
         }
       }
 
@@ -253,7 +281,9 @@ export default function FloatingBot() {
     }
 
     try {
-      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify({ messages }));
+      // Proactive nudges are ephemeral prompts and should not accumulate in persistent history.
+      const persistableMessages = messages.filter((message) => !message.meta?.nudge);
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify({ messages: persistableMessages }));
     } catch {}
   }, [messages, isHydrated]);
 
