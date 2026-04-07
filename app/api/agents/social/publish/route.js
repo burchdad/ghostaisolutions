@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { TwitterApi } from "twitter-api-v2";
 
 function getLinkedInAuthorUrn() {
-  const raw = (process.env.LINKEDIN_ORGANIZATION_ID || process.env.LINKEDIN_ORGANIZATION_URN || "").trim();
+  const raw = (
+    process.env.LINKEDIN_ORGANIZATION_ID ||
+    process.env.LINKEDIN_ORG_ID ||
+    process.env.LINKEDIN_ORGANIZATION_URN ||
+    ""
+  ).trim();
   if (!raw) return "";
   if (raw.startsWith("urn:li:organization:")) return raw;
   return `urn:li:organization:${raw}`;
@@ -18,7 +23,7 @@ async function publishToLinkedIn(content, accessToken) {
   if (!author) {
     return {
       success: false,
-      error: "Missing LinkedIn organization identifier (set LINKEDIN_ORGANIZATION_ID or LINKEDIN_ORGANIZATION_URN)",
+      error: "Missing LinkedIn organization identifier (set LINKEDIN_ORGANIZATION_ID, LINKEDIN_ORG_ID, or LINKEDIN_ORGANIZATION_URN)",
     };
   }
 
