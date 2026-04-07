@@ -122,9 +122,10 @@ export async function POST(request) {
     const body = await request.json();
     const { platform, content, linkedinContent, xContent, facebookContent } = body;
 
-    if (!platform || !content) {
+    const hasAnyContent = Boolean(content || linkedinContent || xContent || facebookContent);
+    if (!platform || !hasAnyContent) {
       return NextResponse.json(
-        { error: "Missing required fields: platform and content" },
+        { error: "Missing required fields: platform and at least one content field" },
         { status: 400 }
       );
     }
