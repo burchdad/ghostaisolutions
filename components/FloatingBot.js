@@ -5,7 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BOOKING_URL } from "@/lib/constants";
-import { emitGhostPulseBurst, emitGhostVoiceState, onGhostPanelToggle } from "@/lib/ghostAvatarSignals";
+import { emitGhostPulseBurst, emitGhostState, emitGhostVoiceState, onGhostPanelToggle } from "@/lib/ghostAvatarSignals";
 
 const CHAT_STORAGE_KEY = "ghost-chat-thread-v2";
 const MEMORY_STORAGE_KEY = "ghost-memory-graph-v1";
@@ -222,7 +222,15 @@ export default function FloatingBot() {
       },
     ]);
     setFloatingPrompt(pageContext.welcome);
-  }, [isHydrated, messages.length, pageContext]);
+    emitGhostState({
+      mode: "default",
+      thinking: false,
+      pageContext: pageContext.label,
+      intents: memoryGraph.intents || [],
+      memory: memoryGraph,
+      source: "floating-welcome",
+    });
+  }, [isHydrated, messages.length, pageContext, memoryGraph]);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -502,7 +510,7 @@ export default function FloatingBot() {
     }
   };
 
-  const appendGhostReply = async (message, nextMessages, mode) => {
+  const appendGhostReply = async (message, nextMessages, mode, memorySnapshot) => {
     setIsReplying(true);
     const ghostMessageId = `ghost-${Date.now()}`;
 
@@ -523,7 +531,7 @@ export default function FloatingBot() {
           stream: true,
           mode,
           pageContext: pageContext.label,
-          memory: memoryGraph,
+          memory: memorySnapshot,
         }),
       });
 
@@ -558,12 +566,26 @@ export default function FloatingBot() {
 
           const payload = JSON.parse(line.slice(6));
           source = payload.source || source;
+      
+          if (payload.delta) {
+            meta = payload.meta || meta;
+          }
 
           if (payload.meta) {
             meta = payload.meta;
           }
 
           if (payload.delta) {
+            const tick = Date.now();
+            emitGhostState({
+              mode: meta?.mode || mode,
+              thinking: true,
+              chunkTick: tick,
+              pageContext: pageContext.label,
+              intents: memorySnapshot.intents || [],
+              memory: memorySnapshot,
+              source: "floating-stream",
+            });
             setMessages((current) =>
               current.map((entry) =>
                 entry.id === ghostMessageId
@@ -588,6 +610,14 @@ export default function FloatingBot() {
 
       setStatus(source === "ghostbot-api" ? "Ghost responded from live backend." : source === "openai-api" ? "Ghost responded from OpenAI." : "Ghost responded.");
       emitGhostPulseBurst({ source: "ghost_reply", mode: meta?.mode || mode });
+      emitGhostState({
+        mode: meta?.mode || mode,
+        thinking: false,
+        pageContext: pageContext.label,
+        intents: memorySnapshot.intents || [],
+        memory: memorySnapshot,
+        source,
+      });
     } catch {
       setMessages((current) =>
         current.map((entry) =>
@@ -601,6 +631,14 @@ export default function FloatingBot() {
         )
       );
       setStatus("Ghost backend is temporarily unavailable.");
+      emitGhostState({
+        mode,
+        thinking: false,
+        pageContext: pageContext.label,
+        intents: memorySnapshot.intents || [],
+        memory: memorySnapshot,
+        source: "floating-error",
+      });
     } finally {
       setIsReplying(false);
     }
@@ -625,7 +663,16 @@ export default function FloatingBot() {
     setMessages(nextMessages);
     setDraft("");
     setStatus(mode === "swarm" ? "Ghost swarm is thinking." : mode === "blueprint" ? "Ghost is drafting blueprint." : "Ghost is thinking.");
-    appendGhostReply(trimmed, nextMessages, mode);
+    emitGhostState({
+      mode,
+      thinking: true,
+      pageContext: pageContext.label,
+      intents: nextMemory.intents || [],
+      memory: nextMemory,
+      source: "floating-send",
+      gesture: mode === "swarm" ? "swarm" : mode === "blueprint" ? "blueprint" : "chat",
+    });
+    appendGhostReply(trimmed, nextMessages, mode, nextMemory);
   };
 
   const handleSubmit = (e) => {

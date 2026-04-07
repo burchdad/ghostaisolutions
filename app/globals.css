@@ -78,6 +78,35 @@ h1, h2, h3, h4 { font-family: var(--font-display), sans-serif; }
   mask-image: radial-gradient(circle at center, black 35%, transparent 95%);
 }
 
+@keyframes temporalScan {
+  0% { transform: translateY(-12%); opacity: 0; }
+  40% { opacity: 0.32; }
+  100% { transform: translateY(12%); opacity: 0; }
+}
+
+.ghost-temporal-slice::before,
+.ghost-temporal-slice::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  height: 22%;
+  border-radius: 14px;
+  border: 1px solid rgba(34, 211, 238, 0.45);
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.08), rgba(167, 139, 250, 0.2), rgba(34, 211, 238, 0.08));
+  filter: blur(0.3px);
+  animation: temporalScan 180ms ease-out;
+}
+
+.ghost-temporal-slice::before {
+  top: 30%;
+}
+
+.ghost-temporal-slice::after {
+  top: 52%;
+  animation-delay: 50ms;
+}
+
 /* Gradients used in hero */
 .gradient-hero {
   background:
