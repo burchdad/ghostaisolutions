@@ -41,6 +41,12 @@ export default function Header() {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-cyan-300/40 hover:text-white"
+            >
+              Login
+            </Link>
             <TrackCTA
               href={BOOKING_URL}
               target="_blank"
@@ -84,6 +90,13 @@ export default function Header() {
             </Link>
           ))}
           <div className="flex gap-3 pt-2">
+            <Link
+              href="/admin"
+              className="rounded-xl border border-white/15 px-4 py-2 font-semibold text-slate-200"
+              onClick={() => setOpen(false)}
+            >
+              Login
+            </Link>
             <TrackCTA
               href={BOOKING_URL}
               target="_blank"
