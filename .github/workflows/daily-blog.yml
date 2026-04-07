@@ -1,9 +1,6 @@
 name: Daily Blog Post
 
 on:
-  schedule:
-    # Run at 08:00 UTC every day
-    - cron: "0 8 * * *"
   # Allow manual trigger from GitHub Actions UI
   workflow_dispatch:
 

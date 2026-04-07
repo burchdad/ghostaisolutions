@@ -1,4 +1,15 @@
 import { NextResponse } from "next/server";
+import { saveTokens } from "@/lib/tokenStore";
+
+function firstDefined(...keys) {
+  for (const key of keys) {
+    const value = process.env[key];
+    if (typeof value === "string" && value.trim()) {
+      return { key, value: value.trim() };
+    }
+  }
+  return { key: null, value: "" };
+}
 
 export async function GET(request) {
   const code = request.nextUrl.searchParams.get("code");
@@ -6,16 +17,35 @@ export async function GET(request) {
     return NextResponse.json({ ok: false, error: "No code returned" }, { status: 400 });
   }
 
-  const redirectUri = process.env.LINKEDIN_REDIRECT_URI;
-  const clientId = process.env.LINKEDIN_CLIENT_ID;
-  const clientSecret = process.env.LINKEDIN_CLIENT_SECRET;
+  const redirectEnv = firstDefined("LINKEDIN_REDIRECT_URI");
+  const clientIdEnv = firstDefined("LINKEDIN_CLIENT_ID");
+  const clientSecretEnv = firstDefined(
+    "LINKEDIN_CLIENT_SECRET",
+    "LINKEDIN_PRIMARY_CLIENT_SECRET",
+    "LINKEDIN_SECRET"
+  );
+
+  const redirectUri = redirectEnv.value;
+  const clientId = clientIdEnv.value;
+  const clientSecret = clientSecretEnv.value;
 
   if (!redirectUri || !clientId || !clientSecret) {
+    const missing = [];
+    if (!redirectUri) missing.push("LINKEDIN_REDIRECT_URI");
+    if (!clientId) missing.push("LINKEDIN_CLIENT_ID");
+    if (!clientSecret) missing.push("LINKEDIN_CLIENT_SECRET");
+
     return NextResponse.json(
       {
         ok: false,
-        error:
-          "Missing LinkedIn OAuth env vars. Required: LINKEDIN_REDIRECT_URI, LINKEDIN_CLIENT_ID, LINKEDIN_CLIENT_SECRET",
+        error: "Missing LinkedIn OAuth env vars",
+        missing,
+        resolvedFrom: {
+          redirect_uri: redirectEnv.key,
+          client_id: clientIdEnv.key,
+          client_secret: clientSecretEnv.key,
+        },
+        vercelEnv: process.env.VERCEL_ENV || "unknown",
       },
       { status: 500 }
     );
@@ -65,5 +95,12 @@ export async function GET(request) {
     );
   }
 
-  return NextResponse.json({ ok: true, ...data });
+  // Save token for later use
+  const tokenSaved = saveTokens("linkedin", {
+    accessToken: data.access_token,
+    expiresIn: data.expires_in,
+    tokenType: data.token_type,
+  });
+
+  return NextResponse.json({ ok: true, tokenSaved, ...data });
 }
