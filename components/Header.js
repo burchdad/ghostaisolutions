@@ -1,75 +1,50 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import TrackCTA from "@/components/TrackCTA";
 import { siteConfig } from "@/lib/siteConfig";
 
 export default function Header() {
-  const [isDark, setIsDark] = useState(true);
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem("ghost-theme") : null;
-    const dark = saved ? saved === "dark" : true; // default to dark
-    setIsDark(dark);
-    document.documentElement.classList.toggle("dark", dark);
-    setMounted(true);
-  }, []);
-
-  const toggleTheme = () => {
-    const next = !isDark;
-    setIsDark(next);
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("ghost-theme", next ? "dark" : "light");
-  };
-
-  const themeLabel = mounted ? (isDark ? "Light" : "Dark") : "Theme";
+  const navItems = [
+    { href: "/", label: "Home" },
+    { href: "/#solutions", label: "Solutions" },
+    { href: "/#industries", label: "Industries" },
+    { href: "/projects", label: "Projects" },
+    { href: "/technology", label: "Technology" },
+    { href: "/contact", label: "Contact" },
+  ];
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-ink/60 border-b border-white/10">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/70 backdrop-blur supports-[backdrop-filter]:bg-slate-950/55">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <Image src="/logo.png" alt="Ghost AI Solutions logo" width={36} height={36} className="rounded" />
-            <span className="hidden sm:block text-lg tracking-tight">Ghost AI Solutions</span>
+            <span className="hidden sm:block text-lg tracking-tight text-white">Ghost AI Solutions</span>
           </Link>
 
           {/* Desktop nav */}
           <nav aria-label="Main" className="hidden md:flex items-center gap-8 text-sm">
-            <Link className="hover:text-brand-300" href="/services">Services</Link>
-            <Link className="hover:text-brand-300" href="/ai-native">AI-Native</Link>
-            <Link className="hover:text-brand-300" href="/demo">Demo</Link>
-            <Link className="hover:text-brand-300" href="/chatbot">Chatbot</Link>
-            <Link className="hover:text-brand-300" href="/process">Process</Link>
-            <Link className="hover:text-brand-300" href="/work">Case Studies</Link>
-            <Link className="hover:text-brand-300" href="/pricing">Pricing</Link>
-            <Link className="hover:text-brand-300" href="/blog">Blog</Link>
-            <Link className="hover:text-brand-300" href="/growth-lab">Growth Lab</Link>
-            <Link className="hover:text-brand-300" href="/faq">FAQ</Link>
-            <Link className="hover:text-brand-300" href="/contact">Contact</Link>
+            {navItems.map((item) => (
+              <Link key={item.href} className="text-slate-200 transition hover:text-cyan-300" href={item.href}>
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <button
-              onClick={toggleTheme}
-              className="rounded-xl border px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
-              aria-pressed={isDark}
-              aria-label="Toggle dark mode"
-            >
-              <span suppressHydrationWarning>{themeLabel}</span>
-            </button>
             <TrackCTA
-  href={siteConfig.calendlyUrl}
-  className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-glow hover:bg-brand-700"
-  event="book_call_click_header"
-  section="header"
-  placement="desktop_primary"
-  label="Book Strategy Call"
->
-  Book Strategy Call
-</TrackCTA>
+              href={siteConfig.calendlyUrl}
+              className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.32)] transition hover:bg-cyan-300"
+              event="start_project_click_header"
+              section="header"
+              placement="desktop_primary"
+              label="Start a Project"
+            >
+              Start a Project
+            </TrackCTA>
           </div>
 
           {/* Mobile hamburger */}
@@ -90,31 +65,28 @@ export default function Header() {
       {/* Slide-down mobile nav */}
       <div
         id="mnav"
-        className={`md:hidden overflow-hidden border-t bg-white dark:bg-ink transition-[max-height,opacity] duration-300 ${
+        className={`md:hidden overflow-hidden border-t border-white/10 bg-slate-950/95 transition-[max-height,opacity] duration-300 ${
           open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <div className="mx-auto max-w-7xl px-4 py-4 grid gap-3 text-sm">
-          {["/services", "/ai-native", "/demo", "/chatbot","/process", "/work", "/pricing", "/blog", "/growth-lab", "/faq", "/contact"].map(href => (
-            <Link key={href} className="py-2" href={href} onClick={() => setOpen(false)}>
-              {href.slice(1).replace("-", " ").replace(/\b\w/g, s => s.toUpperCase())}
+          {navItems.map((item) => (
+            <Link key={item.href} className="py-2 text-slate-200" href={item.href} onClick={() => setOpen(false)}>
+              {item.label}
             </Link>
           ))}
           <div className="flex gap-3 pt-2">
-            <button onClick={toggleTheme} className="rounded-xl border px-3 py-2">
-              {mounted ? (isDark ? "Light" : "Dark") : "Theme"}
-            </button>
             <TrackCTA
-  href={siteConfig.calendlyUrl}
-  className="rounded-xl bg-brand-600 px-4 py-2 font-semibold text-white"
-  onClick={() => setOpen(false)}
-  event="book_call_click_mobile"
-  section="header"
-  placement="mobile_primary"
-  label="Book Strategy Call"
->
-  Book Strategy Call
-</TrackCTA>
+              href={siteConfig.calendlyUrl}
+              className="rounded-xl bg-cyan-400 px-4 py-2 font-semibold text-slate-950"
+              onClick={() => setOpen(false)}
+              event="start_project_click_mobile"
+              section="header"
+              placement="mobile_primary"
+              label="Start a Project"
+            >
+              Start a Project
+            </TrackCTA>
           </div>
         </div>
       </div>

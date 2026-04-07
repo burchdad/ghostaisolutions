@@ -5,14 +5,29 @@
 html { scroll-behavior: smooth; }
 
 body {
-  @apply text-slate-900;
+  @apply text-slate-100;
   background:
-    radial-gradient(900px 400px at 15% -10%, rgba(34,211,238,.15), rgba(34,211,238,0) 65%),
-    radial-gradient(700px 300px at 85% 0%, rgba(249,115,22,.16), rgba(249,115,22,0) 55%),
-    linear-gradient(180deg, #050916 0%, #071024 45%, #040914 100%);
+    radial-gradient(900px 420px at 10% -12%, rgba(34,211,238,.22), rgba(34,211,238,0) 68%),
+    radial-gradient(760px 360px at 90% 0%, rgba(168,85,247,.2), rgba(168,85,247,0) 60%),
+    radial-gradient(680px 320px at 50% 100%, rgba(251,191,36,.12), rgba(251,191,36,0) 58%),
+    linear-gradient(180deg, #040712 0%, #050b18 45%, #040711 100%);
 }
 
 h1, h2, h3, h4 { font-family: var(--font-display), sans-serif; }
+
+.hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: radial-gradient(circle at center, black 45%, transparent 95%);
+  animation: drift 18s linear infinite;
+}
+
+@keyframes drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 36px 18px, 18px 36px; }
+}
 
 /* Gradients used in hero */
 .gradient-hero {

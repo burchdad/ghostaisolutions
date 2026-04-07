@@ -28,11 +28,11 @@ const bodyFont = Plus_Jakarta_Sans({
 
 export const metadata = {
   metadataBase: new URL('https://ghostai.solutions'),
-  title: 'Ghost AI Solutions — Automate Smarter. Scale Faster.',
-  description: 'AI agents for measurable business impact — strategy, custom agents, and ethical governance.',
+  title: 'Ghost AI Solutions - Custom Systems Engineering',
+  description: 'Custom software, AI systems, and operational platforms designed from scratch to solve real-world problems.',
   openGraph: {
-    title: 'Ghost AI Solutions — Automate Smarter. Scale Faster.',
-    description: 'AI agents for measurable business impact — strategy, custom agents, and ethical governance.',
+    title: 'Ghost AI Solutions - Custom Systems Engineering',
+    description: 'If it does not exist, we build it. Custom software, AI systems, and operational platforms for real-world deployment.',
     url: 'https://ghostai.solutions',
     siteName: 'Ghost AI Solutions',
     images: ['/og-image.png'],
@@ -74,7 +74,7 @@ export default function RootLayout({ children }) {
   };
 
   return (
-    <html lang="en" className={`scroll-smooth ${displayFont.variable} ${bodyFont.variable}`}>
+    <html lang="en" className={`dark scroll-smooth ${displayFont.variable} ${bodyFont.variable}`}>
       <head>
         <script
           type="application/ld+json"
