@@ -31,12 +31,12 @@ export default function AdminSocialAgentPage() {
       name: "X (Twitter) Subagent",
       href: "/admin/agents/social/x",
       description: "Corporate account tweet generator",
-      env: "X_API_KEY, X_API_SECRET, X_ACCESS_TOKEN, X_ACCESS_TOKEN_SECRET",
+      env: "X_CONSUMER_KEY, X_CONSUMER_SECRET, X_ACCESS_TOKEN, X_ACCESS_SECRET",
       connected: Boolean(
-        process.env.X_API_KEY &&
-          process.env.X_API_SECRET &&
+        (process.env.X_CONSUMER_KEY || process.env.X_API_KEY) &&
+          (process.env.X_CONSUMER_SECRET || process.env.X_API_SECRET) &&
           process.env.X_ACCESS_TOKEN &&
-          process.env.X_ACCESS_TOKEN_SECRET
+          (process.env.X_ACCESS_SECRET || process.env.X_ACCESS_TOKEN_SECRET)
       ),
       icon: "𝕏",
     },
@@ -59,12 +59,12 @@ export default function AdminSocialAgentPage() {
     },
     {
       name: "X (Twitter) Account",
-      env: "X_API_KEY / X_API_SECRET / X_ACCESS_TOKEN / X_ACCESS_TOKEN_SECRET",
+      env: "X_CONSUMER_KEY / X_CONSUMER_SECRET / X_ACCESS_TOKEN / X_ACCESS_SECRET",
       connected: Boolean(
-        process.env.X_API_KEY &&
-          process.env.X_API_SECRET &&
+        (process.env.X_CONSUMER_KEY || process.env.X_API_KEY) &&
+          (process.env.X_CONSUMER_SECRET || process.env.X_API_SECRET) &&
           process.env.X_ACCESS_TOKEN &&
-          process.env.X_ACCESS_TOKEN_SECRET
+          (process.env.X_ACCESS_SECRET || process.env.X_ACCESS_TOKEN_SECRET)
       ),
       scope: "Tweet create/read",
     },

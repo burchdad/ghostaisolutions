@@ -8,17 +8,17 @@ export default function XSubagentPage() {
 
   const xStatus = {
     connected: Boolean(
-      process.env.X_API_KEY &&
-      process.env.X_API_SECRET &&
+      (process.env.X_CONSUMER_KEY || process.env.X_API_KEY) &&
+      (process.env.X_CONSUMER_SECRET || process.env.X_API_SECRET) &&
       process.env.X_ACCESS_TOKEN &&
-      process.env.X_ACCESS_TOKEN_SECRET
+      (process.env.X_ACCESS_SECRET || process.env.X_ACCESS_TOKEN_SECRET)
     ),
     accountType: "Corporate Account",
     requiredEnvVars: [
-      "X_API_KEY",
-      "X_API_SECRET",
+      "X_CONSUMER_KEY",
+      "X_CONSUMER_SECRET",
       "X_ACCESS_TOKEN",
-      "X_ACCESS_TOKEN_SECRET",
+      "X_ACCESS_SECRET",
     ],
   };
 
