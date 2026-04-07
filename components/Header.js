@@ -21,8 +21,14 @@ export default function Header() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <Image src="/logo.png" alt="Ghost AI Solutions logo" width={36} height={36} className="rounded" />
-            <span className="hidden sm:block text-lg tracking-tight text-white">Ghost AI Solutions</span>
+            <Image
+              src="/FullLogo_Transparent.png"
+              alt="Ghost AI Solutions logo"
+              width={180}
+              height={44}
+              className="h-8 w-auto object-contain"
+              priority
+            />
           </Link>
 
           {/* Desktop nav */}

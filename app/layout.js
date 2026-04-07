@@ -69,7 +69,7 @@ export default function RootLayout({ children }) {
     "@type": "Organization",
     name: "Ghost AI Solutions",
     url: "https://ghostai.solutions",
-    logo: "https://ghostai.solutions/logo.png",
+    logo: "https://ghostai.solutions/FullLogo_Transparent.png",
     sameAs: ["https://www.linkedin.com/company/ghostaisolutions"],
     contactPoint: [
       {

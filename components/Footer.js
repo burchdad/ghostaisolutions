@@ -12,14 +12,13 @@ export default function Footer(){
           <div>
             <div className="flex items-center gap-3">
               <Image
-                src="/logo.png"
+                src="/FullLogo_Transparent.png"
                 alt="Ghost AI Solutions logo"
-                width={40}
-                height={40}
-                className="rounded-md object-contain"
+                width={190}
+                height={48}
+                className="h-9 w-auto object-contain"
                 priority
               />
-              <span className="font-semibold text-white">Ghost AI Solutions</span>
             </div>
             <p className="mt-4 max-w-md text-sm text-slate-300">
               We build custom software, AI systems, and operational platforms designed to solve real-world problems.

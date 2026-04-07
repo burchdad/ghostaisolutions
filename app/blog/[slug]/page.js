@@ -95,7 +95,7 @@ export default function PostPage({ params }) {
     publisher: {
       "@type": "Organization",
       name: "Ghost AI Solutions",
-      logo: { "@type": "ImageObject", url: "https://ghostai.solutions/logo.png" },
+      logo: { "@type": "ImageObject", url: "https://ghostai.solutions/FullLogo_Transparent.png" },
     },
     url,
   };
