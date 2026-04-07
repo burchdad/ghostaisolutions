@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import GhostAvatar from "@/components/GhostAvatar";
 import TrackCTA from "@/components/TrackCTA";
 
@@ -10,6 +10,8 @@ const fadeUp = {
 };
 
 export default function HeroSection() {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
     <section className="relative overflow-hidden border-b border-white/10 py-24 sm:py-28 lg:py-32">
       <div className="pointer-events-none absolute inset-0 hero-grid" />
@@ -72,7 +74,35 @@ export default function HeroSection() {
             </TrackCTA>
           </motion.div>
 
-          <motion.div variants={fadeUp} className="mx-auto mt-10 max-w-xl sm:max-w-2xl">
+          <motion.div
+            className="mx-auto mt-10 max-w-xl sm:max-w-2xl"
+            initial={
+              prefersReducedMotion
+                ? { opacity: 0, y: 12 }
+                : { opacity: 0, x: 420, y: -340, scale: 0.2, rotate: 18 }
+            }
+            animate={
+              prefersReducedMotion
+                ? { opacity: 1, y: 0 }
+                : {
+                    opacity: [0, 1, 1],
+                    x: [420, 180, 0],
+                    y: [-340, -120, 0],
+                    scale: [0.2, 0.62, 1],
+                    rotate: [18, 7, 0],
+                  }
+            }
+            transition={
+              prefersReducedMotion
+                ? { duration: 0.4, ease: "easeOut", delay: 0.2 }
+                : {
+                    duration: 1.35,
+                    ease: [0.2, 0.9, 0.2, 1],
+                    delay: 0.2,
+                    times: [0, 0.68, 1],
+                  }
+            }
+          >
             <GhostAvatar />
           </motion.div>
         </motion.div>
