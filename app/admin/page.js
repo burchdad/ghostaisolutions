@@ -1,10 +1,8 @@
 import fs from "fs";
 import path from "path";
 import Link from "next/link";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { getAllPosts } from "@/lib/allPosts";
-import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/adminSession";
+import { requireAdmin } from "@/lib/adminGuard";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -18,10 +16,7 @@ function countPostsLastDays(posts, days) {
 }
 
 export default function AdminDashboardPage() {
-  const token = cookies().get(ADMIN_SESSION_COOKIE)?.value || "";
-  if (!verifyAdminSessionToken(token)) {
-    redirect("/admin/login?next=/admin");
-  }
+  requireAdmin("/admin");
 
   const allPosts = getAllPosts();
   const autoPosts = allPosts.filter((post) => post.auto);
@@ -108,6 +103,17 @@ export default function AdminDashboardPage() {
               )}
             </ul>
           </article>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/60 p-5">
+          <h2 className="text-lg font-semibold text-white">Agent Dashboard Pages</h2>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5 text-sm">
+            <Link href="/admin/agents/content" className="rounded-xl border border-white/15 px-4 py-3 text-slate-200 hover:border-cyan-300/40 hover:text-white">Content Agent</Link>
+            <Link href="/admin/agents/seo" className="rounded-xl border border-white/15 px-4 py-3 text-slate-200 hover:border-cyan-300/40 hover:text-white">SEO Agent</Link>
+            <Link href="/admin/agents/social" className="rounded-xl border border-white/15 px-4 py-3 text-slate-200 hover:border-cyan-300/40 hover:text-white">Social Agent</Link>
+            <Link href="/admin/agents/cro" className="rounded-xl border border-white/15 px-4 py-3 text-slate-200 hover:border-cyan-300/40 hover:text-white">CRO Agent</Link>
+            <Link href="/admin/agents/leads" className="rounded-xl border border-cyan-300/40 bg-cyan-300/10 px-4 py-3 text-cyan-200 hover:bg-cyan-300/20">Lead Funnel Agent</Link>
+          </div>
         </div>
 
         <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/60 p-5">
