@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "framer-motion";
 import GhostAvatar from "@/components/GhostAvatar";
-import { emitGhostPulseBurst } from "@/lib/ghostAvatarSignals";
+import TrackCTA from "@/components/TrackCTA";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -32,28 +31,45 @@ export default function HeroSection() {
             Custom Engineering Lab
           </motion.p>
           <motion.h1 variants={fadeUp} className="mt-6 text-4xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
-            We Build What Your Business Actually Needs
+            Custom Systems For Teams Outgrowing SaaS
           </motion.h1>
           <motion.p variants={fadeUp} className="mx-auto mt-6 max-w-3xl text-lg text-slate-200 sm:text-xl">
-            Custom software, AI systems, and operational platforms - designed from scratch to solve real problems, not sell templates.
+            We engineer platforms, automation, AI voice, and data systems from scratch for operators who need control, speed, and measurable lift.
           </motion.p>
           <motion.p variants={fadeUp} className="mx-auto mt-3 max-w-3xl text-sm font-medium uppercase tracking-[0.18em] text-cyan-300/90 sm:text-base">
-            No templates. No shortcuts. Built from scratch.
+            Built for growth teams, field ops, and revenue leaders under delivery pressure.
           </motion.p>
           <motion.div variants={fadeUp} className="mt-10 flex flex-wrap justify-center gap-4">
-            <Link
+            <TrackCTA
               href="/contact"
-              onClick={() => emitGhostPulseBurst({ source: "hero_primary" })}
+              event="hero_start_project"
+              section="hero"
+              placement="primary"
+              label="Start a Project"
               className="rounded-xl bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_35px_rgba(34,211,238,0.35)] transition hover:-translate-y-0.5 hover:bg-cyan-300"
             >
               Start a Project
-            </Link>
-            <Link
+            </TrackCTA>
+            <TrackCTA
+              href="/contact#blueprint"
+              event="hero_get_blueprint"
+              section="hero"
+              placement="secondary"
+              label="Get a Free Blueprint"
+              className="rounded-xl border border-cyan-300/40 bg-cyan-300/10 px-6 py-3 text-sm font-semibold text-cyan-100 transition hover:-translate-y-0.5 hover:bg-cyan-300/20"
+            >
+              Get a Free Blueprint
+            </TrackCTA>
+            <TrackCTA
               href="/projects"
+              event="hero_see_work"
+              section="hero"
+              placement="tertiary"
+              label="See Our Work"
               className="rounded-xl border border-white/25 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/10"
             >
               See Our Work
-            </Link>
+            </TrackCTA>
           </motion.div>
 
           <motion.div variants={fadeUp} className="mx-auto mt-10 max-w-xl sm:max-w-2xl">

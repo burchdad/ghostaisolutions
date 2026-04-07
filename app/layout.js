@@ -27,29 +27,38 @@ const bodyFont = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  metadataBase: new URL('https://ghostai.solutions'),
-  title: 'Ghost AI Solutions - Custom Systems Engineering',
-  description: 'Custom software, AI systems, and operational platforms designed from scratch to solve real-world problems.',
+  metadataBase: new URL("https://ghostai.solutions"),
+  title: "Ghost AI Solutions - Custom Systems Engineering",
+  description: "Custom software, AI systems, and operational platforms designed from scratch to solve real-world problems.",
+  keywords: [
+    "custom software development",
+    "ai automation agency",
+    "ai voice systems",
+    "workflow automation",
+    "custom crm development",
+    "data pipeline engineering",
+    "ghost ai solutions",
+  ],
   openGraph: {
-    title: 'Ghost AI Solutions - Custom Systems Engineering',
-    description: 'If it does not exist, we build it. Custom software, AI systems, and operational platforms for real-world deployment.',
-    url: 'https://ghostai.solutions',
-    siteName: 'Ghost AI Solutions',
-    images: ['/og-image.png'],
-    type: 'website',
+    title: "Ghost AI Solutions - Custom Systems Engineering",
+    description: "If it does not exist, we build it. Custom software, AI systems, and operational platforms for real-world deployment.",
+    url: "https://ghostai.solutions",
+    siteName: "Ghost AI Solutions",
+    images: ["/og-image.png"],
+    type: "website",
   },
-  twitter: { card: 'summary_large_image', images: ['/og-image.png'] },
-  icons: { icon: '/favicon.ico' },
+  twitter: { card: "summary_large_image", images: ["/og-image.png"] },
+  icons: { icon: "/favicon.ico" },
   authors: [{ name: siteConfig.companyName, url: `mailto:${siteConfig.supportEmail}` }],
-  creator: 'Ghost AI Solutions',
+  creator: "Ghost AI Solutions",
 
   other: {
-    ...(googleSiteVerification ? { 'google-site-verification': googleSiteVerification } : {}),
-    ...(bingSiteVerification ? { 'msvalidate.01': bingSiteVerification } : {}),
+    ...(googleSiteVerification ? { "google-site-verification": googleSiteVerification } : {}),
+    ...(bingSiteVerification ? { "msvalidate.01": bingSiteVerification } : {}),
   },
   alternates: {
     types: {
-      'application/rss+xml': '/feed',
+      "application/rss+xml": "/feed",
     },
   },
 };
@@ -73,6 +82,32 @@ export default function RootLayout({ children }) {
     ]
   };
 
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Custom Systems Engineering",
+    provider: {
+      "@type": "Organization",
+      name: "Ghost AI Solutions",
+      url: "https://ghostai.solutions",
+    },
+    serviceType: [
+      "Custom Platform Development",
+      "Workflow Automation Engineering",
+      "AI Voice Systems",
+      "Data Pipeline and Intelligence Systems",
+    ],
+    areaServed: "US",
+    url: "https://ghostai.solutions/services",
+  };
+
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Ghost AI Solutions",
+    url: "https://ghostai.solutions",
+  };
+
   return (
     <html lang="en" className={`dark scroll-smooth ${displayFont.variable} ${bodyFont.variable}`}>
       <head>
@@ -80,6 +115,16 @@ export default function RootLayout({ children }) {
           type="application/ld+json"
           // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
       <body className="font-body antialiased">

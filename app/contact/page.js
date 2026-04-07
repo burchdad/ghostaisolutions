@@ -1,30 +1,29 @@
 import TrackCTA from "@/components/TrackCTA";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Newsletter from "@/components/Newsletter";
+import QualificationIntake from "@/components/QualificationIntake";
 import { siteConfig } from "@/lib/siteConfig";
 import { BOOKING_URL } from "@/lib/constants";
 
+export const metadata = { title: "Contact — Ghost AI Solutions" };
 
-export const metadata = { title: 'Contact — Ghost AI Solutions' };
-
-export default function Contact(){
+export default function Contact() {
   const hasGoogleForm = siteConfig.googleFormEmbedUrl.startsWith("https://docs.google.com/forms/");
 
   return (
     <section className="py-20 bg-slate-50 dark:bg-ink">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-      <Breadcrumbs />
-        <div className="grid lg:grid-cols-2 gap-10 items-start">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <Breadcrumbs />
+        <div className="grid lg:grid-cols-[1fr_1.25fr] gap-10 items-start">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">Let’s talk</h1>
+            <h1 className="text-4xl font-extrabold tracking-tight">Start your build intake</h1>
             <p className="mt-4 text-slate-600 dark:text-slate-300">
-              Tell us about your workflows and we’ll map an agent that fits.
-              Prefer email? <a className="text-brand-300 underline" href={`mailto:${siteConfig.supportEmail}`}>{siteConfig.supportEmail}</a>
+              Submit the workflow, bottleneck, stack, budget, and timeline. We route you to the right build lane and next action.
             </p>
             <ul className="mt-6 space-y-2 text-slate-600 dark:text-slate-300">
-              <li>• Response within 1 business day</li>
+              <li>• Qualification response within 1 business day</li>
               <li>• NDA available on request</li>
-              <li>• Remote-first, global clients</li>
+              <li>• Build blueprint available before kickoff</li>
             </ul>
             <TrackCTA
               href={BOOKING_URL}
@@ -32,6 +31,9 @@ export default function Contact(){
               rel="noopener noreferrer"
               className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 font-semibold text-white hover:bg-brand-700"
               event="start_project_contact_primary"
+              section="contact"
+              placement="primary"
+              label="Start a Project"
             >
               Start a Project
             </TrackCTA>
@@ -43,36 +45,22 @@ export default function Contact(){
                 title="Contact form"
                 src={siteConfig.googleFormEmbedUrl}
                 width="100%"
-                height="640"
+                height="720"
                 frameBorder="0"
                 marginHeight="0"
                 marginWidth="0"
-                className="min-h-[640px] w-full"
+                className="min-h-[720px] w-full"
               >
-                Loading…
+                Loading...
               </iframe>
             ) : (
-              <div className="p-6">
-                <h2 className="text-2xl font-bold tracking-tight">Tell us what you want to automate</h2>
+              <div className="p-6" id="blueprint">
+                <h2 className="text-2xl font-bold tracking-tight">Multi-step build qualification</h2>
                 <p className="mt-3 text-slate-600 dark:text-slate-300">
-                  Send a short note with your workflow, tools, and current bottlenecks. We will reply with a practical first-agent plan.
+                  High-intent requests are routed to strategy booking. Early-stage requests are routed to blueprint + email planning.
                 </p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <a
-                    href={`mailto:${siteConfig.supportEmail}?subject=Automation%20Strategy%20Request`}
-                    className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 font-semibold hover:bg-slate-50 dark:hover:bg-slate-900"
-                  >
-                    Email Your Workflow
-                  </a>
-                  <TrackCTA
-                    href={BOOKING_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 font-semibold text-white hover:bg-brand-700"
-                    event="start_project_contact_fallback"
-                  >
-                    Start a Project
-                  </TrackCTA>
+                <div className="mt-6">
+                  <QualificationIntake supportEmail={siteConfig.supportEmail} />
                 </div>
               </div>
             )}
