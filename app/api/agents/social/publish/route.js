@@ -1,10 +1,25 @@
 import { NextResponse } from "next/server";
 import { TwitterApi } from "twitter-api-v2";
 
+function getLinkedInAuthorUrn() {
+  const raw = (process.env.LINKEDIN_ORGANIZATION_ID || process.env.LINKEDIN_ORGANIZATION_URN || "").trim();
+  if (!raw) return "";
+  if (raw.startsWith("urn:li:organization:")) return raw;
+  return `urn:li:organization:${raw}`;
+}
+
 // LinkedIn API - Post to company page
 async function publishToLinkedIn(content, accessToken) {
   if (!accessToken) {
     return { success: false, error: "No LinkedIn access token" };
+  }
+
+  const author = getLinkedInAuthorUrn();
+  if (!author) {
+    return {
+      success: false,
+      error: "Missing LinkedIn organization identifier (set LINKEDIN_ORGANIZATION_ID or LINKEDIN_ORGANIZATION_URN)",
+    };
   }
 
   try {
@@ -17,7 +32,7 @@ async function publishToLinkedIn(content, accessToken) {
         "LinkedIn-Version": "202404",
       },
       body: JSON.stringify({
-        author: `urn:li:organization:${process.env.LINKEDIN_ORGANIZATION_ID || ""}`,
+        author,
         lifecycleState: "PUBLISHED",
         specificContent: {
           "com.linkedin.ugc.ShareContent": {
