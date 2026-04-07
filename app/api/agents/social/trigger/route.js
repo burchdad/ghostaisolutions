@@ -1,64 +1,13 @@
 import { NextResponse } from "next/server";
 import { getAllPosts } from "@/lib/allPosts";
+import { repurposeBlogPost } from "@/lib/socialRepurpose";
+import { createSocialDraft } from "@/lib/socialDraftStore";
+import { publishVariants } from "@/lib/socialPublish";
 
 export const maxDuration = 60; // Allow up to 60 seconds for this endpoint
 
-function resolveBaseUrl(request) {
-  const preferred = process.env.NEXT_PUBLIC_BASE_URL?.trim();
-  if (preferred) return preferred.replace(/\/$/, "");
-  if (request?.nextUrl?.origin) return request.nextUrl.origin;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return "http://localhost:3000";
-}
-
 function getCronSecret() {
   return process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET || "";
-}
-
-// Helper to call repurpose API
-async function repurposeContent(baseUrl, slug, title, excerpt, content) {
-  try {
-    const response = await fetch(`${baseUrl}/api/agents/social/repurpose`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, title, excerpt, content }),
-    });
-
-    if (!response.ok) {
-      return { error: "Repurpose failed" };
-    }
-
-    const data = await response.json();
-    return data.variants || { error: "No variants returned" };
-  } catch (err) {
-    return { error: err.message };
-  }
-}
-
-// Helper to call publish API
-async function publishContent(baseUrl, platform, variants) {
-  try {
-    const response = await fetch(`${baseUrl}/api/agents/social/publish`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        platform,
-        content: variants.linkedin?.text || variants.x?.text || variants.facebook?.text || "",
-        linkedinContent: variants.linkedin?.text,
-        xContent: variants.x?.text,
-        facebookContent: variants.facebook?.text,
-      }),
-    });
-
-    if (!response.ok) {
-      return { error: "Publish failed" };
-    }
-
-    const data = await response.json();
-    return data.results || { error: "No results" };
-  } catch (err) {
-    return { error: err.message };
-  }
 }
 
 async function runTrigger(request) {
@@ -66,8 +15,6 @@ async function runTrigger(request) {
     // Validate cron secret
     const authHeader = request.headers.get("Authorization");
     const cronSecret = getCronSecret();
-    const baseUrl = resolveBaseUrl(request);
-
     if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
       return NextResponse.json(
         { error: "Unauthorized: Invalid or missing cron secret (CRON_SECRET or SOCIAL_AGENT_CRON_SECRET)" },
@@ -97,13 +44,19 @@ async function runTrigger(request) {
         slug: post.slug,
         title: post.title,
         repurpose: null,
-        publish: {},
+        draftId: null,
         status: "pending",
       };
 
       try {
-        // Step 1: Repurpose for all platforms
-        const variants = await repurposeContent(baseUrl, post.slug, post.title, post.excerpt || "", post.sections?.map((s) => (typeof s === "string" ? s : s.text || s.items?.join(" ") || "")).join(" ") || "");
+        const content = post.sections?.map((s) => (typeof s === "string" ? s : s.text || s.items?.join(" ") || "")).join(" ") || "";
+        const repurposed = await repurposeBlogPost({
+          title: post.title,
+          excerpt: post.excerpt || "",
+          content,
+        });
+        const variants = repurposed.variants;
+        const moderation = repurposed.moderation;
 
         if (variants.error) {
           postResult.status = "repurpose_failed";
@@ -118,16 +71,46 @@ async function runTrigger(request) {
           facebook: variants.facebook?.text?.substring(0, 50) + "..." || "N/A",
         };
 
-        // Step 2: Publish to all platforms
-        const publishAll = await publishContent(baseUrl, "all", variants);
+        postResult.moderation = moderation;
 
-        if (publishAll.error) {
-          postResult.status = "publish_failed";
-          postResult.error = publishAll.error;
-        } else {
-          postResult.publish = publishAll;
-          postResult.status = "published";
+        if (moderation.status !== "approved") {
+          const draft = await createSocialDraft({
+            slug: post.slug,
+            title: post.title,
+            excerpt: post.excerpt || "",
+            sourceType: "ai-moderator-review",
+            status: moderation.status === "blocked" ? "rejected" : "review",
+            platformVariants: variants,
+          });
+
+          postResult.draftId = draft.id;
+          postResult.status = moderation.status === "blocked" ? "blocked_by_moderator" : "queued_for_review";
+          results.push(postResult);
+          continue;
         }
+
+        const publishAll = await publishVariants({
+          platform: "all",
+          linkedinContent: variants.linkedin?.text,
+          xContent: variants.x?.text,
+          facebookContent: variants.facebook?.text,
+        });
+
+        postResult.publish = publishAll.results;
+        postResult.status = publishAll.success ? "published" : "publish_partial";
+
+        const draft = await createSocialDraft({
+          slug: post.slug,
+          title: post.title,
+          excerpt: post.excerpt || "",
+          sourceType: "automation-audit",
+          status: publishAll.success ? "published" : "review",
+          platformVariants: variants,
+          publishResults: publishAll.results,
+          lastPublishedAt: publishAll.success ? new Date().toISOString() : null,
+        });
+
+        postResult.draftId = draft.id;
       } catch (err) {
         postResult.status = "error";
         postResult.error = err.message;
@@ -139,7 +122,7 @@ async function runTrigger(request) {
     return NextResponse.json(
       {
         success: true,
-        message: `Processed ${results.length} post(s)`,
+        message: `Processed ${results.length} AI-moderated post(s)`,
         processed: results,
         timestamp: new Date().toISOString(),
       },

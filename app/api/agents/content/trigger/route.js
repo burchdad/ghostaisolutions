@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { getGitHubRepositoryAccess } from "@/lib/githubAppAuth";
+import { repurposeBlogPost } from "@/lib/socialRepurpose";
+import { createSocialDraft } from "@/lib/socialDraftStore";
+import { publishVariants } from "@/lib/socialPublish";
 
 export const maxDuration = 60;
 
@@ -19,14 +22,6 @@ const DEVTOOLS_KEYWORDS = [
   "framework", "library", "sdk", "api", "open source", "cli", "developer",
   "tool", "integration", "data pipeline", "deploy",
 ];
-
-function resolveBaseUrl(request) {
-  const preferred = process.env.NEXT_PUBLIC_BASE_URL?.trim();
-  if (preferred) return preferred.replace(/\/$/, "");
-  if (request?.nextUrl?.origin) return request.nextUrl.origin;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return "http://localhost:3000";
-}
 
 function getCronSecret() {
   return process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET || "";
@@ -261,51 +256,63 @@ async function createAutoPostFile(cfg, authToken, slug, contentJson) {
   return res.json();
 }
 
-async function repurposeAndPublish(baseUrl, post) {
+async function moderateAndPublish(post) {
   const content = (post.sections || [])
     .map((s) => (typeof s === "string" ? s : s.text || (Array.isArray(s.items) ? s.items.join(" ") : "")))
     .join(" ");
 
-  const repurposeRes = await fetch(`${baseUrl}/api/agents/social/repurpose`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      slug: post.slug,
-      title: post.title,
-      excerpt: post.excerpt || "",
-      content,
-    }),
+  const repurposed = await repurposeBlogPost({
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt || "",
+    content,
   });
 
-  if (!repurposeRes.ok) {
-    const err = await repurposeRes.text();
-    return { success: false, stage: "repurpose", error: err };
-  }
+  const variants = repurposed.variants;
+  const moderation = repurposed.moderation;
 
-  const repurposeData = await repurposeRes.json();
-  const variants = repurposeData?.variants;
   if (!variants) {
     return { success: false, stage: "repurpose", error: "No variants returned" };
   }
 
-  const publishRes = await fetch(`${baseUrl}/api/agents/social/publish`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      platform: "all",
-      linkedinContent: variants.linkedin?.text,
-      xContent: variants.x?.text,
-      facebookContent: variants.facebook?.text,
-    }),
-  });
+  if (moderation.status !== "approved") {
+    const draft = await createSocialDraft({
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.excerpt || "",
+      sourceType: "content-agent-moderation",
+      status: moderation.status === "blocked" ? "rejected" : "review",
+      platformVariants: variants,
+    });
 
-  if (!publishRes.ok) {
-    const err = await publishRes.text();
-    return { success: false, stage: "publish", error: err };
+    return { success: false, stage: "moderation", moderation, draftId: draft.id };
   }
 
-  const publishData = await publishRes.json();
-  return { success: true, results: publishData?.results || {} };
+  const publishData = await publishVariants({
+    platform: "all",
+    linkedinContent: variants.linkedin?.text,
+    xContent: variants.x?.text,
+    facebookContent: variants.facebook?.text,
+  });
+
+  const draft = await createSocialDraft({
+    slug: post.slug,
+    title: post.title,
+    excerpt: post.excerpt || "",
+    sourceType: "content-agent-audit",
+    status: publishData.success ? "published" : "review",
+    platformVariants: variants,
+    publishResults: publishData.results,
+    lastPublishedAt: publishData.success ? new Date().toISOString() : null,
+  });
+
+  return {
+    success: publishData.success,
+    moderation,
+    draftId: draft.id,
+    status: draft.status,
+    results: publishData.results,
+  };
 }
 
 async function run(request) {
@@ -380,8 +387,7 @@ async function run(request) {
 
     await createAutoPostFile(cfg, githubAccess.token, slug, JSON.stringify(output, null, 2));
 
-    const baseUrl = resolveBaseUrl(request);
-    const social = await repurposeAndPublish(baseUrl, output);
+    const social = await moderateAndPublish(output);
 
     return NextResponse.json({
       success: true,

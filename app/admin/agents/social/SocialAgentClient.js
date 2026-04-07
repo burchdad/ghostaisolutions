@@ -6,6 +6,7 @@ import { useState } from "react";
 export default function SocialAgentClient({ queue, subagents, accountChecks, schedulerReady }) {
   const [selectedPost, setSelectedPost] = useState(null);
   const [variants, setVariants] = useState(null);
+  const [moderation, setModeration] = useState(null);
   const [loading, setLoading] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [publishResults, setPublishResults] = useState(null);
@@ -17,6 +18,7 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
     setLoading(true);
     setError(null);
     setSelectedPost(post);
+    setModeration(null);
 
     try {
       const content = post.fullPost.sections
@@ -40,6 +42,7 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
 
       const data = await response.json();
       setVariants(data.variants);
+      setModeration(data.moderation || null);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -128,11 +131,12 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
               disabled={publishing || !allConnected || !schedulerReady}
               className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {publishing ? "Processing..." : "Run Full Automation"}
+              {publishing ? "Processing..." : "Run AI-Moderated Automation"}
             </button>
             <button
               onClick={() => {
                 setVariants(null);
+                setModeration(null);
                 setPublishResults(null);
                 setSelectedPost(null);
               }}
@@ -200,7 +204,7 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
           <div className="mt-4 rounded-xl border border-white/10 bg-slate-900/60 p-4 text-sm">
             <p className="text-slate-200">Scheduler secret: {schedulerReady ? "Ready" : "Missing"}</p>
             <p className="mt-1 text-slate-300">
-              Automation status: {allConnected && schedulerReady ? "Ready to auto-publish" : "Waiting on account access"}
+              Automation status: {allConnected && schedulerReady ? "Ready for AI-moderated live publishing" : "Waiting on account access"}
             </p>
           </div>
         </div>
@@ -210,17 +214,28 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
             {selectedPost && variants ? `Preview: ${selectedPost.title}` : "Repurposing Queue"}
           </h2>
           <p className="mt-1 text-slate-400">
-            {selectedPost && variants ? "Review platform variants before publishing" : "Blog posts scheduled for social media distribution"}
+            {selectedPost && variants ? "Preview AI-moderated platform variants before publishing" : "Blog posts scheduled for AI-moderated social distribution"}
           </p>
 
           {selectedPost && variants && (
             <div className="mt-6 space-y-4">
+              {moderation && (
+                <div className="rounded-xl border border-cyan-300/30 bg-cyan-300/10 p-4">
+                  <p className="font-semibold text-cyan-100">Moderator Agent</p>
+                  <p className="mt-1 text-sm text-cyan-50">Overall status: {moderation.status}</p>
+                  <p className="mt-1 text-xs text-cyan-100/80">
+                    Approved: {(moderation.approved || []).join(", ") || "none"} | Review: {(moderation.review || []).join(", ") || "none"} | Blocked: {(moderation.blocked || []).join(", ") || "none"}
+                  </p>
+                </div>
+              )}
+
               <div className="rounded-xl border border-white/10 bg-slate-900/40 p-4">
                 <div className="mb-2 flex items-center justify-between">
                   <p className="flex items-center gap-2 font-semibold text-white">💼 LinkedIn Variant</p>
                   <span className="text-xs text-slate-400">~{variants.linkedin?.text?.length} chars</span>
                 </div>
                 <p className="mb-3 line-clamp-6 text-sm text-slate-300">{variants.linkedin?.text}</p>
+                <p className="text-xs text-slate-400">Confidence {variants.linkedin?.analysis?.confidenceScore}% • {variants.linkedin?.analysis?.engagementScore} engagement</p>
               </div>
 
               <div className="rounded-xl border border-white/10 bg-slate-900/40 p-4">
@@ -229,6 +244,7 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
                   <span className="text-xs text-slate-400">~{variants.x?.text?.length} chars</span>
                 </div>
                 <p className="mb-3 line-clamp-6 text-sm text-slate-300">{variants.x?.text}</p>
+                <p className="text-xs text-slate-400">Confidence {variants.x?.analysis?.confidenceScore}% • {variants.x?.analysis?.engagementScore} engagement</p>
               </div>
 
               <div className="rounded-xl border border-white/10 bg-slate-900/40 p-4">
@@ -237,6 +253,7 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
                   <span className="text-xs text-slate-400">~{variants.facebook?.text?.length} chars</span>
                 </div>
                 <p className="mb-3 line-clamp-6 text-sm text-slate-300">{variants.facebook?.text}</p>
+                <p className="text-xs text-slate-400">Confidence {variants.facebook?.analysis?.confidenceScore}% • {variants.facebook?.analysis?.engagementScore} engagement</p>
               </div>
 
               {publishResults && (
@@ -256,6 +273,7 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
                 <button
                   onClick={() => {
                     setVariants(null);
+                    setModeration(null);
                     setPublishResults(null);
                     setSelectedPost(null);
                   }}
@@ -287,7 +305,7 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
                         disabled={loading}
                         className="whitespace-nowrap rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-700 disabled:opacity-50"
                       >
-                        {loading ? "Generating..." : "Preview"}
+                        {loading ? "Generating..." : "Moderated Preview"}
                       </button>
                     </div>
                   </div>

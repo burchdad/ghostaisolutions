@@ -1,11 +1,14 @@
 import { getAllPosts } from "@/lib/allPosts";
 import { requireAdmin } from "@/lib/adminGuard";
 import SocialAgentClient from "./SocialAgentClient";
+import { listSocialDrafts } from "@/lib/socialDraftStore";
 
 export const metadata = { title: "Social Agent - Admin", robots: { index: false, follow: false } };
 
-export default function AdminSocialAgentPage() {
+export default async function AdminSocialAgentPage() {
   requireAdmin("/admin/agents/social");
+
+  const drafts = await listSocialDrafts().catch(() => []);
 
   const queue = getAllPosts()
     .filter((post) => post.auto)
@@ -81,6 +84,7 @@ export default function AdminSocialAgentPage() {
   return (
     <SocialAgentClient
       queue={queue}
+      initialDrafts={drafts}
       subagents={subagents}
       accountChecks={accountChecks}
       schedulerReady={schedulerReady}
