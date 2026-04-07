@@ -430,6 +430,7 @@ export default function FloatingBot() {
   }, [micSupported, recognitionSupported]);
 
   const introCanShow = pathname !== "/" || homeHeroPassed;
+  const showLauncher = pathname !== "/" || homeHeroPassed || open;
 
   const stopListening = () => {
     shouldRestartRecognitionRef.current = false;
@@ -753,51 +754,53 @@ export default function FloatingBot() {
         ) : null}
       </AnimatePresence>
 
-      <motion.button
-        id="ghostbot-trigger"
-        initial={{ opacity: 0, x: 120, y: 180, scale: 0.35, rotate: -18 }}
-        animate={{
-          opacity: 1,
-          x: 0,
-          y: [0, isMobile ? -6 : -10, 0],
-          scale: 1,
-          rotate: 0,
-        }}
-        transition={{
-          opacity: { duration: 0.45, ease: "easeOut" },
-          x: { duration: 0.75, ease: "easeOut" },
-          y: { duration: 5.8, repeat: Infinity, ease: "easeInOut", delay: 1.1 },
-          scale: { duration: 0.75, ease: "easeOut" },
-          rotate: { duration: 0.75, ease: "easeOut" },
-        }}
-        onClick={() => setOpen((value) => !value)}
-        aria-label="Open Ghost chat"
-        className={`fixed z-[99998] rounded-full bg-transparent ${isMobile ? "bottom-4 left-1/2 -translate-x-1/2" : pathname === "/" && !homeHeroPassed ? "bottom-4 right-4 opacity-80" : "bottom-6 right-6"}`}
-      >
-        <span className="ghost-holo-ring pointer-events-none absolute inset-2 rounded-full bg-cyan-400/20 blur-2xl animate-slowPulse" />
-        <span className="ghost-holo-scan pointer-events-none absolute inset-0 rounded-full border border-cyan-300/20" />
-        <span className={`relative flex items-center justify-center overflow-hidden rounded-full border border-white/10 bg-slate-950/90 shadow-[0_0_35px_rgba(34,211,238,0.35)] ${isMobile ? "h-16 w-16" : "h-20 w-20"}`}>
-          <Image
-            src="/ghost-avatar.png"
-            alt="Ghost floating avatar"
-            width={88}
-            height={88}
-            className={`h-auto scale-[1.35] drop-shadow-[0_0_18px_rgba(34,211,238,0.55)] ${isMobile ? "w-14" : "w-16"}`}
-          />
-          <span
-            className="pointer-events-none absolute left-[28%] top-[31%] h-2.5 w-3 rounded-full bg-cyan-300 blur-[4px]"
-            style={{ opacity: 0.4 + voiceLevel * 0.6, transform: `scale(${1 + voiceLevel * 0.2})` }}
-          />
-          <span
-            className="pointer-events-none absolute left-[56%] top-[31%] h-2.5 w-3 rounded-full bg-cyan-300 blur-[4px]"
-            style={{ opacity: 0.4 + voiceLevel * 0.6, transform: `scale(${1 + voiceLevel * 0.2})` }}
-          />
-          <span
-            className="pointer-events-none absolute left-1/2 top-[47%] h-[2px] w-4 -translate-x-1/2 rounded-full bg-cyan-300 blur-[2px]"
-            style={{ opacity: 0.18 + voiceLevel * 0.72, transform: `translateX(-50%) scale(${1 + voiceLevel * 0.35})` }}
-          />
-        </span>
-      </motion.button>
+      {showLauncher ? (
+        <motion.button
+          id="ghostbot-trigger"
+          initial={{ opacity: 0, x: 120, y: 180, scale: 0.35, rotate: -18 }}
+          animate={{
+            opacity: 1,
+            x: 0,
+            y: [0, isMobile ? -6 : -10, 0],
+            scale: 1,
+            rotate: 0,
+          }}
+          transition={{
+            opacity: { duration: 0.45, ease: "easeOut" },
+            x: { duration: 0.75, ease: "easeOut" },
+            y: { duration: 5.8, repeat: Infinity, ease: "easeInOut", delay: 1.1 },
+            scale: { duration: 0.75, ease: "easeOut" },
+            rotate: { duration: 0.75, ease: "easeOut" },
+          }}
+          onClick={() => setOpen((value) => !value)}
+          aria-label="Open Ghost chat"
+          className={`fixed z-[99998] rounded-full bg-transparent ${isMobile ? "bottom-4 left-1/2 -translate-x-1/2" : "bottom-6 right-6"}`}
+        >
+          <span className="ghost-holo-ring pointer-events-none absolute inset-2 rounded-full bg-cyan-400/20 blur-2xl animate-slowPulse" />
+          <span className="ghost-holo-scan pointer-events-none absolute inset-0 rounded-full border border-cyan-300/20" />
+          <span className={`relative flex items-center justify-center overflow-hidden rounded-full border border-white/10 bg-slate-950/90 shadow-[0_0_35px_rgba(34,211,238,0.35)] ${isMobile ? "h-16 w-16" : "h-20 w-20"}`}>
+            <Image
+              src="/ghost-avatar.png"
+              alt="Ghost floating avatar"
+              width={88}
+              height={88}
+              className={`h-auto scale-[1.35] drop-shadow-[0_0_18px_rgba(34,211,238,0.55)] ${isMobile ? "w-14" : "w-16"}`}
+            />
+            <span
+              className="pointer-events-none absolute left-[28%] top-[31%] h-2.5 w-3 rounded-full bg-cyan-300 blur-[4px]"
+              style={{ opacity: 0.4 + voiceLevel * 0.6, transform: `scale(${1 + voiceLevel * 0.2})` }}
+            />
+            <span
+              className="pointer-events-none absolute left-[56%] top-[31%] h-2.5 w-3 rounded-full bg-cyan-300 blur-[4px]"
+              style={{ opacity: 0.4 + voiceLevel * 0.6, transform: `scale(${1 + voiceLevel * 0.2})` }}
+            />
+            <span
+              className="pointer-events-none absolute left-1/2 top-[47%] h-[2px] w-4 -translate-x-1/2 rounded-full bg-cyan-300 blur-[2px]"
+              style={{ opacity: 0.18 + voiceLevel * 0.72, transform: `translateX(-50%) scale(${1 + voiceLevel * 0.35})` }}
+            />
+          </span>
+        </motion.button>
+      ) : null}
 
       <AnimatePresence initial={false}>
         {open ? (
