@@ -279,7 +279,7 @@ export default function FloatingBot() {
       proactiveFlags = {};
     }
 
-    const pageFlags = proactiveFlags[pathname] || {};
+    let pageFlags = proactiveFlags[pathname] || {};
 
     const saveFlag = (key) => {
       const next = {
@@ -287,6 +287,7 @@ export default function FloatingBot() {
         [pathname]: { ...(proactiveFlags[pathname] || {}), [key]: true },
       };
       proactiveFlags = next;
+      pageFlags = next[pathname] || {};
       try {
         sessionStorage.setItem(PROACTIVE_STORAGE_KEY, JSON.stringify(next));
       } catch {}
@@ -300,15 +301,23 @@ export default function FloatingBot() {
       saveFlag(key);
       setFloatingPrompt(text);
       setIntroBubbleVisible(true);
-      setMessages((current) => [
-        ...current,
-        {
-          id: `ghost-nudge-${key}-${Date.now()}`,
-          role: "ghost",
-          text,
-          meta: { nudge: true, key, context: pageContext.label },
-        },
-      ]);
+      setMessages((current) => {
+        // Guard against duplicate proactive bubbles if multiple triggers fire close together.
+        const alreadyAdded = current.some((entry) => entry.meta?.nudge && entry.meta?.key === key);
+        if (alreadyAdded) {
+          return current;
+        }
+
+        return [
+          ...current,
+          {
+            id: `ghost-nudge-${key}-${Date.now()}`,
+            role: "ghost",
+            text,
+            meta: { nudge: true, key, context: pageContext.label },
+          },
+        ];
+      });
     };
 
     const onScroll = () => {
@@ -320,6 +329,7 @@ export default function FloatingBot() {
       const ratio = window.scrollY / maxScroll;
       if (ratio > 0.45) {
         pushProactiveMessage("scroll", pageContext.proactive.scroll);
+        window.removeEventListener("scroll", onScroll);
       }
     };
 
