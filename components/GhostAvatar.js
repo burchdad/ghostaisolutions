@@ -98,6 +98,8 @@ export default function GhostAvatar() {
 
   const voiceScale = 1 + voiceState.level * 0.06;
   const coreSize = 80 + voiceState.level * 36;
+  const eyeGlow = 0.35 + voiceState.level * 0.65;
+  const mouthGlow = 0.15 + voiceState.level * 0.8;
 
   return (
     <div className="relative flex items-center justify-center py-4" aria-label="Ghost AI avatar">
@@ -177,6 +179,27 @@ export default function GhostAvatar() {
           priority
           className="h-auto w-[240px] drop-shadow-[0_0_35px_rgba(0,240,255,0.6)] sm:w-[320px] lg:w-[380px]"
         />
+        <div className="pointer-events-none absolute inset-0">
+          <motion.span
+            className="absolute left-[36%] top-[23%] h-4 w-7 rounded-full bg-cyan-300 blur-[6px] sm:h-5 sm:w-9"
+            animate={{ opacity: eyeGlow, scale: [1, 1 + voiceState.level * 0.12, 1] }}
+            transition={{ duration: 0.35, repeat: voiceState.active ? Infinity : 0, ease: "easeInOut" }}
+          />
+          <motion.span
+            className="absolute left-[57%] top-[23%] h-4 w-7 rounded-full bg-cyan-300 blur-[6px] sm:h-5 sm:w-9"
+            animate={{ opacity: eyeGlow, scale: [1, 1 + voiceState.level * 0.12, 1] }}
+            transition={{ duration: 0.35, repeat: voiceState.active ? Infinity : 0, ease: "easeInOut", delay: 0.04 }}
+          />
+          <motion.span
+            className="absolute left-1/2 top-[35%] h-[3px] w-10 -translate-x-1/2 rounded-full bg-cyan-300 blur-[3px] sm:w-12"
+            animate={{
+              opacity: mouthGlow,
+              scaleX: [1, 1 + voiceState.level * 0.45, 1],
+              scaleY: [1, 1 + voiceState.level * 0.65, 1],
+            }}
+            transition={{ duration: 0.24, repeat: voiceState.active ? Infinity : 0, ease: "easeInOut" }}
+          />
+        </div>
       </motion.button>
 
       {wakeState ? (

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import GhostAvatar from "@/components/GhostAvatar";
-import TalkToGhostPanel from "@/components/TalkToGhostPanel";
 import { emitGhostPulseBurst } from "@/lib/ghostAvatarSignals";
 
 const fadeUp = {
@@ -59,7 +58,6 @@ export default function HeroSection() {
 
           <motion.div variants={fadeUp} className="mx-auto mt-10 max-w-xl sm:max-w-2xl">
             <GhostAvatar />
-            <TalkToGhostPanel />
           </motion.div>
         </motion.div>
       </div>
