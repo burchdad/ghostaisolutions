@@ -29,6 +29,15 @@ h1, h2, h3, h4 { font-family: var(--font-display), sans-serif; }
   to { background-position: 36px 18px, 18px 36px; }
 }
 
+@keyframes slowPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.animate-slowPulse {
+  animation: slowPulse 4s ease-in-out infinite;
+}
+
 /* Gradients used in hero */
 .gradient-hero {
   background:

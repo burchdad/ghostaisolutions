@@ -1,5 +1,6 @@
 // FILE: app/services/page.js
 import Breadcrumbs from "@/components/Breadcrumbs";
+import TrackCTA from "@/components/TrackCTA";
 import { siteConfig } from "@/lib/siteConfig";
 import { BOOKING_URL } from "@/lib/constants";
 
@@ -84,14 +85,18 @@ export default function ServicesPage() {
 
         {/* Optional: CTA row */}
         <div className="mt-12">
-          <a
+          <TrackCTA
             href={BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white shadow-glow hover:bg-brand-700"
+            event="start_project_services"
+            section="services"
+            placement="primary"
+            label="Start a Project"
           >
             Start a Project
-          </a>
+          </TrackCTA>
         </div>
       </div>
     </section>

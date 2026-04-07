@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import GhostAvatar from "@/components/GhostAvatar";
+import TalkToGhostPanel from "@/components/TalkToGhostPanel";
+import { emitGhostPulseBurst } from "@/lib/ghostAvatarSignals";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -41,6 +44,7 @@ export default function HeroSection() {
           <motion.div variants={fadeUp} className="mt-10 flex flex-wrap justify-center gap-4">
             <Link
               href="/contact"
+              onClick={() => emitGhostPulseBurst({ source: "hero_primary" })}
               className="rounded-xl bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 shadow-[0_0_35px_rgba(34,211,238,0.35)] transition hover:-translate-y-0.5 hover:bg-cyan-300"
             >
               Start a Project
@@ -51,6 +55,11 @@ export default function HeroSection() {
             >
               See Our Work
             </Link>
+          </motion.div>
+
+          <motion.div variants={fadeUp} className="mx-auto mt-10 max-w-xl sm:max-w-2xl">
+            <GhostAvatar />
+            <TalkToGhostPanel />
           </motion.div>
         </motion.div>
       </div>

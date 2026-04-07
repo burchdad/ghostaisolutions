@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import TrackCTA from "@/components/TrackCTA";
 import { siteConfig } from "@/lib/siteConfig";
 import { BOOKING_URL } from "@/lib/constants";
 
@@ -50,14 +51,18 @@ export default function Footer(){
 
           <div className="grid content-start gap-3 text-sm">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Contact</p>
-            <a
+            <TrackCTA
               className="inline-flex w-fit items-center rounded-xl bg-cyan-400 px-4 py-2 font-semibold text-slate-950 transition hover:bg-cyan-300"
               href={BOOKING_URL}
               target="_blank"
               rel="noopener noreferrer"
+              event="start_project_footer"
+              section="footer"
+              placement="primary"
+              label="Start a Project"
             >
               Start a Project
-            </a>
+            </TrackCTA>
             <a className="text-slate-200 underline underline-offset-4" href={`mailto:${siteConfig.supportEmail}`}>
               {siteConfig.supportEmail}
             </a>
