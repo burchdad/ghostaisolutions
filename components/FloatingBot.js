@@ -145,6 +145,7 @@ export default function FloatingBot() {
   const [isReplying, setIsReplying] = useState(false);
   const [isHydrated, setIsHydrated] = useState(false);
   const [pathname, setPathname] = useState("/");
+  const [homeHeroPassed, setHomeHeroPassed] = useState(false);
   const [memoryGraph, setMemoryGraph] = useState({ intents: [], industries: [], pagesVisited: [], asks: 0, lastMode: "default" });
   const panelRef = useRef(null);
   const messagesRef = useRef(null);
@@ -161,6 +162,11 @@ export default function FloatingBot() {
   useEffect(() => {
     const currentPath = typeof window !== "undefined" ? window.location.pathname : "/";
     setPathname(currentPath);
+    if (currentPath === "/") {
+      setHomeHeroPassed(window.scrollY > 420);
+    } else {
+      setHomeHeroPassed(true);
+    }
     setMicSupported(typeof navigator !== "undefined" && Boolean(navigator.mediaDevices?.getUserMedia));
     setRecognitionSupported(Boolean(getSpeechRecognition()));
     setIsMobile(typeof window !== "undefined" ? window.innerWidth < 640 : false);
@@ -198,12 +204,21 @@ export default function FloatingBot() {
     }, 5500);
 
     const onResize = () => setIsMobile(window.innerWidth < 640);
+    const onScrollHero = () => {
+      if (currentPath !== "/") {
+        return;
+      }
+
+      setHomeHeroPassed(window.scrollY > 420);
+    };
     window.addEventListener("resize", onResize);
+    window.addEventListener("scroll", onScrollHero);
 
     return () => {
       offPanel();
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("scroll", onScrollHero);
       window.clearTimeout(introTimer);
     };
   }, []);
@@ -373,6 +388,8 @@ export default function FloatingBot() {
     }
     return "Context-aware Ghost mode";
   }, [micSupported, recognitionSupported]);
+
+  const introCanShow = pathname !== "/" || homeHeroPassed;
 
   const stopListening = () => {
     shouldRestartRecognitionRef.current = false;
@@ -683,13 +700,13 @@ export default function FloatingBot() {
   return (
     <>
       <AnimatePresence>
-        {introBubbleVisible && !open ? (
+        {introBubbleVisible && !open && introCanShow ? (
           <motion.div
             initial={{ opacity: 0, x: 20, y: 12 }}
             animate={{ opacity: 1, x: 0, y: 0 }}
             exit={{ opacity: 0, x: 16, y: 8 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className={`fixed z-[99997] max-w-[240px] rounded-2xl border border-cyan-300/20 bg-slate-950/90 px-4 py-3 text-sm text-slate-200 shadow-[0_12px_40px_rgba(8,145,178,0.18)] ${isMobile ? "bottom-24 left-1/2 -translate-x-1/2" : "bottom-28 right-6"}`}
+            className={`fixed z-[99997] max-w-[240px] rounded-2xl border border-cyan-300/20 bg-slate-950/85 px-4 py-3 text-sm text-slate-200 shadow-[0_12px_40px_rgba(8,145,178,0.14)] ${isMobile ? "bottom-24 left-1/2 -translate-x-1/2" : "bottom-32 right-6"}`}
           >
             {floatingPrompt}
           </motion.div>
@@ -715,7 +732,7 @@ export default function FloatingBot() {
         }}
         onClick={() => setOpen((value) => !value)}
         aria-label="Open Ghost chat"
-        className={`fixed z-[99998] rounded-full bg-transparent ${isMobile ? "bottom-4 left-1/2 -translate-x-1/2" : "bottom-6 right-6"}`}
+        className={`fixed z-[99998] rounded-full bg-transparent ${isMobile ? "bottom-4 left-1/2 -translate-x-1/2" : pathname === "/" && !homeHeroPassed ? "bottom-4 right-4 opacity-80" : "bottom-6 right-6"}`}
       >
         <span className="ghost-holo-ring pointer-events-none absolute inset-2 rounded-full bg-cyan-400/20 blur-2xl animate-slowPulse" />
         <span className="ghost-holo-scan pointer-events-none absolute inset-0 rounded-full border border-cyan-300/20" />

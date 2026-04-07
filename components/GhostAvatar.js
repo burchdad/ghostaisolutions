@@ -67,6 +67,7 @@ function resolveMaterialClass(mode, thinking) {
 }
 
 export default function GhostAvatar() {
+  const isDevUI = process.env.NEXT_PUBLIC_GHOST_AVATAR_DEV_UI === "1";
   const rootRef = useRef(null);
   const wakeTimerRef = useRef(null);
   const wakeVoiceStopRef = useRef(null);
@@ -297,7 +298,7 @@ export default function GhostAvatar() {
         className="pointer-events-none absolute rounded-full bg-cyan-500/20 blur-3xl animate-slowPulse"
         animate={{
           scale: pulseBurst ? [1, 1.3, 1.08] : 1 + voiceState.level * 0.14,
-          opacity: pulseBurst ? [0.3, 0.95, 0.5] : avatarState.thinking ? 0.88 : 0.56,
+          opacity: pulseBurst ? [0.28, 0.75, 0.42] : avatarState.thinking ? 0.72 : 0.44,
         }}
         transition={{ duration: pulseBurst ? 0.65 : 0.25, ease: "easeOut" }}
         style={{ width: 460, height: 460 }}
@@ -348,13 +349,14 @@ export default function GhostAvatar() {
           />
 
           <motion.div
-            className={`pointer-events-none absolute left-1/2 top-[50%] h-[46%] w-[54%] -translate-x-1/2 rounded-[42%] bg-gradient-to-b ${resolveMaterialClass(cinematicMode, avatarState.thinking)} opacity-85 blur-[1px]`}
+            className={`pointer-events-none absolute left-1/2 top-[50%] h-[46%] w-[54%] -translate-x-1/2 rounded-[42%] bg-gradient-to-b ${resolveMaterialClass(cinematicMode, avatarState.thinking)} blur-[1px]`}
             style={{
               x: clothX,
               y: clothY,
               rotate: useTransform(clothX, [-12, 12], [-4, 4]),
               scaleX: useTransform(flutter, [-2, 2], [0.98, 1.04]),
               scaleY: useTransform(flutter, [-2, 2], [1.01, 1.08]),
+              opacity: avatarState.thinking ? 0.66 : 0.5 + voiceState.level * 0.16,
             }}
           />
 
@@ -365,7 +367,7 @@ export default function GhostAvatar() {
               y: useTransform(clothY, (value) => value * 0.35),
               scaleX: useTransform(flutter, [-2.4, 2.4], [0.94, 1.11]),
               scaleY: useTransform(flutter, [-2.4, 2.4], [1, 1.16]),
-              opacity: 0.35 + voiceState.level * 0.45,
+              opacity: 0.2 + voiceState.level * 0.26,
             }}
           />
 
@@ -487,57 +489,61 @@ export default function GhostAvatar() {
           </div>
         </motion.button>
 
-        <motion.button
-          type="button"
-          aria-label="Left cloth tug"
-          className="absolute left-[22%] top-[60%] z-20 h-7 w-7 rounded-full border border-cyan-300/40 bg-cyan-300/10 text-[10px] text-cyan-100"
-          whileTap={{ scale: 0.9 }}
-          onMouseDown={() => setTugLeft({ x: -22, y: 16, active: true })}
-          onMouseUp={() => setTugLeft((current) => ({ ...current, active: false }))}
-          onMouseLeave={() => setTugLeft((current) => ({ ...current, active: false }))}
-          onTouchStart={() => setTugLeft({ x: -20, y: 12, active: true })}
-          onTouchEnd={() => setTugLeft((current) => ({ ...current, active: false }))}
-        >
-          L
-        </motion.button>
+        {isDevUI ? (
+          <>
+            <motion.button
+              type="button"
+              aria-label="Left cloth tug"
+              className="absolute left-[22%] top-[60%] z-20 h-7 w-7 rounded-full border border-cyan-300/40 bg-cyan-300/10 text-[10px] text-cyan-100"
+              whileTap={{ scale: 0.9 }}
+              onMouseDown={() => setTugLeft({ x: -22, y: 16, active: true })}
+              onMouseUp={() => setTugLeft((current) => ({ ...current, active: false }))}
+              onMouseLeave={() => setTugLeft((current) => ({ ...current, active: false }))}
+              onTouchStart={() => setTugLeft({ x: -20, y: 12, active: true })}
+              onTouchEnd={() => setTugLeft((current) => ({ ...current, active: false }))}
+            >
+              L
+            </motion.button>
 
-        <motion.button
-          type="button"
-          aria-label="Right cloth tug"
-          className="absolute right-[22%] top-[60%] z-20 h-7 w-7 rounded-full border border-cyan-300/40 bg-cyan-300/10 text-[10px] text-cyan-100"
-          whileTap={{ scale: 0.9 }}
-          onMouseDown={() => setTugRight({ x: 22, y: 16, active: true })}
-          onMouseUp={() => setTugRight((current) => ({ ...current, active: false }))}
-          onMouseLeave={() => setTugRight((current) => ({ ...current, active: false }))}
-          onTouchStart={() => setTugRight({ x: 20, y: 12, active: true })}
-          onTouchEnd={() => setTugRight((current) => ({ ...current, active: false }))}
-        >
-          R
-        </motion.button>
+            <motion.button
+              type="button"
+              aria-label="Right cloth tug"
+              className="absolute right-[22%] top-[60%] z-20 h-7 w-7 rounded-full border border-cyan-300/40 bg-cyan-300/10 text-[10px] text-cyan-100"
+              whileTap={{ scale: 0.9 }}
+              onMouseDown={() => setTugRight({ x: 22, y: 16, active: true })}
+              onMouseUp={() => setTugRight((current) => ({ ...current, active: false }))}
+              onMouseLeave={() => setTugRight((current) => ({ ...current, active: false }))}
+              onTouchStart={() => setTugRight({ x: 20, y: 12, active: true })}
+              onTouchEnd={() => setTugRight((current) => ({ ...current, active: false }))}
+            >
+              R
+            </motion.button>
 
-        <div className="absolute -bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-2">
-          <button
-            type="button"
-            onClick={() => emitGhostState({ mode: "blueprint", gesture: "gesture-blueprint", source: "avatar-gesture" })}
-            className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-cyan-200"
-          >
-            Blueprint
-          </button>
-          <button
-            type="button"
-            onClick={() => emitGhostState({ mode: "swarm", gesture: "gesture-swarm", source: "avatar-gesture" })}
-            className="rounded-full border border-violet-300/35 bg-violet-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-violet-200"
-          >
-            Swarm
-          </button>
-          <button
-            type="button"
-            onClick={() => emitGhostPanelToggle({ open: true, source: "avatar-gesture-open" })}
-            className="rounded-full border border-amber-300/35 bg-amber-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-amber-200"
-          >
-            Talk
-          </button>
-        </div>
+            <div className="absolute -bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+              <button
+                type="button"
+                onClick={() => emitGhostState({ mode: "blueprint", gesture: "gesture-blueprint", source: "avatar-gesture" })}
+                className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-cyan-200"
+              >
+                Blueprint
+              </button>
+              <button
+                type="button"
+                onClick={() => emitGhostState({ mode: "swarm", gesture: "gesture-swarm", source: "avatar-gesture" })}
+                className="rounded-full border border-violet-300/35 bg-violet-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-violet-200"
+              >
+                Swarm
+              </button>
+              <button
+                type="button"
+                onClick={() => emitGhostPanelToggle({ open: true, source: "avatar-gesture-open" })}
+                className="rounded-full border border-amber-300/35 bg-amber-300/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-amber-200"
+              >
+                Talk
+              </button>
+            </div>
+          </>
+        ) : null}
       </motion.div>
 
       {wakeState ? (
@@ -560,9 +566,11 @@ export default function GhostAvatar() {
         style={{ width: coreSize, height: coreSize }}
       />
 
-      <div className="pointer-events-none absolute right-0 top-2 rounded-full border border-white/10 bg-slate-900/65 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-300">
-        {cinematicMode} • wind {windField.x.toFixed(2)}
-      </div>
+      {isDevUI ? (
+        <div className="pointer-events-none absolute right-0 top-2 rounded-full border border-white/10 bg-slate-900/65 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-300">
+          {cinematicMode} • wind {windField.x.toFixed(2)}
+        </div>
+      ) : null}
     </div>
   );
 }
