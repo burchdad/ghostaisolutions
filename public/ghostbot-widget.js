@@ -1,37 +1,33 @@
-// Floating Ghostbot Widget Loader with tracking and auto-trigger
-window.onload = () => {
-  const launcher = document.createElement('div');
-  launcher.id = 'ghostbot-launcher';
-  launcher.innerText = '💬';
-  launcher.onclick = toggleGhostbot;
-  document.body.appendChild(launcher);
+// Legacy compatibility loader.
+// Existing installs that reference /ghostbot-widget.js are redirected to /ghostbot-embed.js.
+(function () {
+  if (window.__ghostbotWidgetShimLoaded) return;
+  window.__ghostbotWidgetShimLoaded = true;
 
-  const widget = document.createElement('iframe');
-  widget.id = 'ghostbot-widget';
-  widget.src = '/demo?configId=ghostai';
-  document.body.appendChild(widget);
+  var script = document.currentScript;
+  var origin = window.location.origin;
 
-  // Track which page loaded Ghostbot
-  const currentPage = window.location.pathname;
-  fetch('/api/track-bot', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ page: currentPage, triggeredAt: new Date().toISOString() })
-  });
+  try {
+    if (script && script.src) {
+      origin = new URL(script.src).origin;
+    }
+  } catch (_e) {
+    origin = window.location.origin;
+  }
 
-  // Auto-open on scroll or idle
-  let idleTimer;
-  window.addEventListener("scroll", () => {
-    if (window.scrollY > 300) toggleGhostbot();
-  }, { once: true });
+  var next = document.createElement("script");
+  next.src = origin + "/ghostbot-embed.js";
+  next.defer = true;
 
-  window.addEventListener("mousemove", () => {
-    clearTimeout(idleTimer);
-    idleTimer = setTimeout(() => toggleGhostbot(), 15000); // 15s idle
-  });
-};
+  // Pass supported data-* settings through to the canonical loader.
+  if (script && script.dataset) {
+    var data = script.dataset;
+    if (data.agentUrl) next.dataset.agentUrl = data.agentUrl;
+    if (data.brand) next.dataset.brand = data.brand;
+    if (data.primary) next.dataset.primary = data.primary;
+    if (data.position) next.dataset.position = data.position;
+    if (data.configId) next.dataset.configId = data.configId;
+  }
 
-function toggleGhostbot() {
-  const iframe = document.getElementById('ghostbot-widget');
-  iframe.style.display = iframe.style.display === 'block' ? 'none' : 'block';
-}
+  document.head.appendChild(next);
+})();
