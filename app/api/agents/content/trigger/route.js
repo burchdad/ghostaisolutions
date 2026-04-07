@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getGitHubRepositoryAccess } from "@/lib/githubAppAuth";
 
 export const maxDuration = 60;
 
@@ -36,7 +37,6 @@ function getGitHubConfig() {
     owner: process.env.GITHUB_REPO_OWNER || "burchdad",
     repo: process.env.GITHUB_REPO_NAME || "ghostaisolutions",
     branch: process.env.GITHUB_TARGET_BRANCH || "main",
-    token: process.env.GITHUB_TOKEN || process.env.GITHUB_CONTENT_TOKEN || "",
   };
 }
 
@@ -89,18 +89,18 @@ async function fetchHackerNews() {
   }
 }
 
-async function fetchGitHubTrending(githubToken) {
+async function fetchGitHubTrending() {
   try {
     const since = new Date();
     since.setDate(since.getDate() - 2);
     const sinceStr = since.toISOString().slice(0, 10);
 
-    const headers = { Accept: "application/vnd.github+json" };
-    if (githubToken) headers.Authorization = `Bearer ${githubToken}`;
-
     const res = await fetch(
       `https://api.github.com/search/repositories?q=topic:ai+created:>${sinceStr}&sort=stars&order=desc&per_page=10`,
-      { headers, cache: "no-store" }
+      {
+        headers: { Accept: "application/vnd.github+json" },
+        cache: "no-store",
+      }
     );
 
     if (!res.ok) throw new Error(`GitHub API ${res.status}`);
@@ -212,13 +212,14 @@ Aim for 10-14 sections total.`;
   return JSON.parse(raw);
 }
 
-async function listAutoPostFiles(cfg) {
+async function listAutoPostFiles(cfg, authToken) {
   const res = await fetch(
     `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/content/auto-posts?ref=${cfg.branch}`,
     {
       headers: {
         Accept: "application/vnd.github+json",
-        Authorization: `Bearer ${cfg.token}`,
+        Authorization: `Bearer ${authToken}`,
+        "X-GitHub-Api-Version": "2022-11-28",
       },
       cache: "no-store",
     }
@@ -233,7 +234,7 @@ async function listAutoPostFiles(cfg) {
   return Array.isArray(data) ? data.map((item) => item.name) : [];
 }
 
-async function createAutoPostFile(cfg, slug, contentJson) {
+async function createAutoPostFile(cfg, authToken, slug, contentJson) {
   const filePath = `content/auto-posts/${slug}.json`;
   const encoded = Buffer.from(contentJson, "utf8").toString("base64");
 
@@ -241,8 +242,9 @@ async function createAutoPostFile(cfg, slug, contentJson) {
     method: "PUT",
     headers: {
       Accept: "application/vnd.github+json",
-      Authorization: `Bearer ${cfg.token}`,
+      Authorization: `Bearer ${authToken}`,
       "Content-Type": "application/json",
+      "X-GitHub-Api-Version": "2022-11-28",
     },
     body: JSON.stringify({
       message: `blog: auto-generate post for ${new Date().toISOString().slice(0, 10)}`,
@@ -318,16 +320,11 @@ async function run(request) {
   }
 
   const cfg = getGitHubConfig();
-  if (!cfg.token) {
-    return NextResponse.json(
-      { error: "Missing GitHub token. Set GITHUB_TOKEN or GITHUB_CONTENT_TOKEN in Vercel." },
-      { status: 500 }
-    );
-  }
 
   try {
+    const githubAccess = await getGitHubRepositoryAccess({ owner: cfg.owner, repo: cfg.repo });
     const today = new Date().toISOString().slice(0, 10);
-    const existingFiles = await listAutoPostFiles(cfg);
+    const existingFiles = await listAutoPostFiles(cfg, githubAccess.token);
     const existingToday = existingFiles.find((name) => name.startsWith(today));
 
     if (existingToday) {
@@ -341,7 +338,7 @@ async function run(request) {
 
     const [hn, gh, devto] = await Promise.all([
       fetchHackerNews(),
-      fetchGitHubTrending(cfg.token),
+      fetchGitHubTrending(),
       fetchDevTo(),
     ]);
 
@@ -381,7 +378,7 @@ async function run(request) {
       auto: true,
     };
 
-    await createAutoPostFile(cfg, slug, JSON.stringify(output, null, 2));
+    await createAutoPostFile(cfg, githubAccess.token, slug, JSON.stringify(output, null, 2));
 
     const baseUrl = resolveBaseUrl(request);
     const social = await repurposeAndPublish(baseUrl, output);
@@ -390,6 +387,7 @@ async function run(request) {
       success: true,
       generated: { slug, title: output.title, category: output.category },
       repo: { owner: cfg.owner, name: cfg.repo, branch: cfg.branch },
+      githubAuth: { mode: githubAccess.mode, installationId: githubAccess.installationId, expiresAt: githubAccess.expiresAt },
       social,
       storiesAnalyzed: topStories.length,
       timestamp: new Date().toISOString(),
