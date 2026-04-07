@@ -2,6 +2,7 @@ import TrackCTA from "@/components/TrackCTA";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Newsletter from "@/components/Newsletter";
 import { siteConfig } from "@/lib/siteConfig";
+import { BOOKING_URL } from "@/lib/constants";
 
 
 export const metadata = { title: 'Contact — Ghost AI Solutions' };
@@ -26,11 +27,13 @@ export default function Contact(){
               <li>• Remote-first, global clients</li>
             </ul>
             <TrackCTA
-              href={siteConfig.calendlyUrl}
+              href={BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-6 inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 font-semibold text-white hover:bg-brand-700"
-              event="book_call_click_header"
+              event="start_project_contact_primary"
             >
-              Book Strategy Call
+              Start a Project
             </TrackCTA>
           </div>
 
@@ -62,11 +65,13 @@ export default function Contact(){
                     Email Your Workflow
                   </a>
                   <TrackCTA
-                    href={siteConfig.calendlyUrl}
+                    href={BOOKING_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2 font-semibold text-white hover:bg-brand-700"
-                    event="contact_book_call_fallback"
+                    event="start_project_contact_fallback"
                   >
-                    Book Strategy Call
+                    Start a Project
                   </TrackCTA>
                 </div>
               </div>

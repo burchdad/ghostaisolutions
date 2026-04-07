@@ -1,7 +1,7 @@
 "use client";
 import TrackCTA from "@/components/TrackCTA";
 import { useEffect, useState } from "react";
-import { siteConfig } from "@/lib/siteConfig";
+import { BOOKING_URL } from "@/lib/constants";
 
 export default function StickyCTA(){
   const [show, setShow] = useState(false);
@@ -14,14 +14,16 @@ export default function StickyCTA(){
     <div className={`fixed inset-x-0 bottom-4 z-40 px-4 sm:hidden transition-opacity ${show ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
       <div className="mx-auto max-w-md rounded-xl border bg-white dark:bg-slate-900 shadow-lg p-2">
         <TrackCTA
-          href={siteConfig.calendlyUrl}
+          href={BOOKING_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           className="block w-full text-center rounded-lg bg-brand-600 px-4 py-3 font-semibold text-white"
-          event="sticky_book_call_mobile"
+          event="start_project_sticky_mobile"
           section="sticky_cta"
           placement="mobile_floating"
-          label="Book a Strategy Call"
+          label="Start a Project"
         >
-          Book a Strategy Call
+          Start a Project
         </TrackCTA>
       </div>
     </div>

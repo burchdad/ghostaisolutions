@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { siteConfig } from "@/lib/siteConfig";
+import { BOOKING_URL } from "@/lib/constants";
 import TrackCTA from "@/components/TrackCTA";
 import useCampaignContext from "@/components/useCampaignContext";
 
@@ -74,8 +74,10 @@ export default function ROICalculator() {
                 Model is directional, not a guarantee. We validate this with your actual workflow map in a strategy session.
               </p>
               <TrackCTA
-                href={siteConfig.calendlyUrl}
-                event="roi_build_plan_click"
+                href={BOOKING_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                event="start_project_roi"
                 section="roi_calculator"
                 placement={`primary_${campaignType}`}
                 label={campaignCopy.roiCta}

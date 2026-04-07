@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
 import TrackCTA from "@/components/TrackCTA";
-import { siteConfig } from "@/lib/siteConfig";
+import { BOOKING_URL } from "@/lib/constants";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -36,7 +36,9 @@ export default function Header() {
 
           <div className="hidden md:flex items-center gap-3">
             <TrackCTA
-              href={siteConfig.calendlyUrl}
+              href={BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.32)] transition hover:bg-cyan-300"
               event="start_project_click_header"
               section="header"
@@ -77,7 +79,9 @@ export default function Header() {
           ))}
           <div className="flex gap-3 pt-2">
             <TrackCTA
-              href={siteConfig.calendlyUrl}
+              href={BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
               className="rounded-xl bg-cyan-400 px-4 py-2 font-semibold text-slate-950"
               onClick={() => setOpen(false)}
               event="start_project_click_mobile"

@@ -1,7 +1,7 @@
 // app/chatbot/page.js
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TrackCTA from "@/components/TrackCTA";
-import { siteConfig } from "@/lib/siteConfig";
+import { BOOKING_URL } from "@/lib/constants";
 
 export const metadata = { title: "Ghostbot — Ghost AI Solutions" };
 
@@ -27,11 +27,13 @@ export default function ChatbotPage() {
 
         <div className="mt-8 flex flex-wrap gap-3">
           <TrackCTA
-            href={siteConfig.calendlyUrl}
+            href={BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white shadow-glow hover:bg-brand-700"
-            event="chatbot_book_call_click"
+            event="start_project_chatbot"
           >
-            Book Strategy Call
+            Start a Project
           </TrackCTA>
           <a
             href="/demo"

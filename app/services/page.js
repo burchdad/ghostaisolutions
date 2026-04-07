@@ -1,6 +1,7 @@
 // FILE: app/services/page.js
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { siteConfig } from "@/lib/siteConfig";
+import { BOOKING_URL } from "@/lib/constants";
 
 export const metadata = { title: "Services — Ghost AI Solutions" };
 
@@ -84,10 +85,12 @@ export default function ServicesPage() {
         {/* Optional: CTA row */}
         <div className="mt-12">
           <a
-            href={siteConfig.calendlyUrl}
+            href={BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white shadow-glow hover:bg-brand-700"
           >
-            Book a Strategy Call
+            Start a Project
           </a>
         </div>
       </div>

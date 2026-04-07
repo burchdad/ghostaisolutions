@@ -161,10 +161,10 @@ function CTA(){
               event="homepage_final_book_call"
               section="final_cta"
               placement="primary"
-              label="Book Strategy Call"
+              label="Start a Project"
               className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-6 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
             >
-              Book Strategy Call
+              Start a Project
             </TrackCTA>
             <TrackCTA
               href="/work"

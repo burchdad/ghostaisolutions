@@ -1,14 +1,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { siteConfig } from "@/lib/siteConfig";
+import { BOOKING_URL } from "@/lib/constants";
 
 export default function Footer(){
   return (
-    <footer className="border-t bg-white dark:bg-ink">
+    <footer className="border-t border-white/10 bg-slate-950/70">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid gap-8 md:grid-cols-4">
-          {/* Brand + blurb */}
-          <div className="md:col-span-2">
+        <div className="grid gap-10 md:grid-cols-3">
+          <div>
             <div className="flex items-center gap-3">
               <Image
                 src="/logo.png"
@@ -18,60 +18,57 @@ export default function Footer(){
                 className="rounded-md object-contain"
                 priority
               />
-              <span className="font-semibold">Ghost AI Solutions</span>
+              <span className="font-semibold text-white">Ghost AI Solutions</span>
             </div>
-            <p className="mt-4 text-sm text-slate-600 dark:text-slate-300 max-w-md">
-              AI agents that drive real outcomes with governance by design. © {new Date().getFullYear()} Ghost AI Solutions. All rights reserved.
+            <p className="mt-4 max-w-md text-sm text-slate-300">
+              We build custom software, AI systems, and operational platforms designed to solve real-world problems.
             </p>
-
-            {/* Trust row: SSL secure + company info */}
-            <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
-              <span className="inline-flex items-center gap-1">
-                {/* lock icon */}
-                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4">
-                  <path
-                    fill="currentColor"
-                    d="M12 2a5 5 0 00-5 5v3H6a2 2 0 00-2 2v7a2 2 0 002 2h12a2 2 0 002-2v-7a2 2 0 00-2-2h-1V7a5 5 0 00-5-5zm-3 8V7a3 3 0 016 0v3H9z"
-                  />
-                </svg>
-                <span className="uppercase tracking-wide">SSL Secure</span>
-              </span>
-              <span className="hidden sm:inline">•</span>
-              <span>Remote‑first, US‑based company</span>
-              <span className="hidden sm:inline">•</span>
-              <a className="underline" href={`mailto:${siteConfig.supportEmail}`}>{siteConfig.supportEmail}</a>
-              <a className="underline" href={siteConfig.newsletterPageUrl} target="_blank" rel="noopener noreferrer">
-  Newsletter
-</a>
+            <div className="mt-4 text-sm text-slate-400">
+              <p>Tyler, TX • Remote-first</p>
+              <p className="mt-1">Built by engineers. Deployed in the real world.</p>
+              <p className="mt-3 text-cyan-300">No templates. No shortcuts. Built from scratch.</p>
             </div>
           </div>
 
-          {/* Column 1 */}
-          <nav className="grid gap-2 text-sm">
-            <Link className="hover:text-brand-700" href="/services">Services</Link>
-            <Link className="hover:text-brand-700" href="/demo">Demo</Link>
-            <Link className="hover:text-brand-700" href="/process">Process</Link>
-            <Link className="hover:text-brand-700" href="/work">Case Studies</Link>
-            <Link className="hover:text-brand-700" href="/chatbot">Chatbot</Link>
-          </nav>
+          <div className="grid gap-8 sm:grid-cols-2">
+            <nav className="grid gap-2 text-sm">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Company</p>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/">Home</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/#solutions">Solutions</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/#industries">Industries</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/projects">Projects</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/technology">Technology</Link>
+            </nav>
 
-          {/* Column 2 */}
-          <nav className="grid gap-2 text-sm">
-            <Link className="hover:text-brand-700" href="/pricing">Pricing</Link>
-            <Link className="hover:text-brand-700" href="/faq">FAQ</Link>
-            <Link className="hover:text-brand-700" href="/blog">Blog</Link>
-            <Link className="hover:text-brand-700" href="/privacy">Privacy</Link>
-            <Link className="hover:text-brand-700" href="/terms">Terms</Link>
-          </nav>
+            <nav className="grid gap-2 text-sm">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Resources</p>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/projects">Case Studies</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/process">Process</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/blog">Blog</Link>
+            </nav>
+          </div>
+
+          <div className="grid content-start gap-3 text-sm">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Contact</p>
+            <a
+              className="inline-flex w-fit items-center rounded-xl bg-cyan-400 px-4 py-2 font-semibold text-slate-950 transition hover:bg-cyan-300"
+              href={BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Start a Project
+            </a>
+            <a className="text-slate-200 underline underline-offset-4" href={`mailto:${siteConfig.supportEmail}`}>
+              {siteConfig.supportEmail}
+            </a>
+            <a className="text-slate-200 underline underline-offset-4" href="https://www.facebook.com/profile.php?id=61578770879824" target="_blank" rel="noopener noreferrer">Facebook</a>
+            <a className="text-slate-200 underline underline-offset-4" href="https://www.linkedin.com/company/ghostaisolutions" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          </div>
         </div>
 
-        <div className="mt-8 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-          <p>Built with accessibility and performance in mind.</p>
-          <div className="flex items-center gap-3">
-            <a className="underline" href="https://www.facebook.com/profile.php?id=61578770879824">Facebook</a>
-            <a className="underline" href="https://www.linkedin.com/company/ghostaisolutions">LinkedIn</a>
-            <a className="underline" href={`mailto:${siteConfig.supportEmail}`}>Email</a>
-          </div>
+        <div className="mt-10 border-t border-white/10 pt-5 text-xs text-slate-400">
+          <p>© 2026 Ghost AI Solutions. All rights reserved.</p>
+          <p className="mt-1">Built for performance, scalability, and real-world deployment.</p>
         </div>
       </div>
     </footer>

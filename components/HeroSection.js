@@ -35,6 +35,9 @@ export default function HeroSection() {
           <motion.p variants={fadeUp} className="mx-auto mt-6 max-w-3xl text-lg text-slate-200 sm:text-xl">
             Custom software, AI systems, and operational platforms - designed from scratch to solve real problems, not sell templates.
           </motion.p>
+          <motion.p variants={fadeUp} className="mx-auto mt-3 max-w-3xl text-sm font-medium uppercase tracking-[0.18em] text-cyan-300/90 sm:text-base">
+            No templates. No shortcuts. Built from scratch.
+          </motion.p>
           <motion.div variants={fadeUp} className="mt-10 flex flex-wrap justify-center gap-4">
             <Link
               href="/contact"

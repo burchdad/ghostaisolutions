@@ -1,6 +1,6 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TrackCTA from "@/components/TrackCTA";
-import { siteConfig } from "@/lib/siteConfig";
+import { BOOKING_URL } from "@/lib/constants";
 
 export const metadata = {
   title: "AI-Native Growth Engine — Ghost AI Solutions",
@@ -46,14 +46,16 @@ export default function AINativePage() {
 
           <div className="mt-10 flex flex-wrap gap-4">
             <TrackCTA
-              href={siteConfig.calendlyUrl}
-              event="landing_ai_native_book_call"
+              href={BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              event="start_project_ai_native"
               section="ai_native"
               placement="primary"
-              label="Book Strategy Call"
+              label="Start a Project"
               className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-6 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
             >
-              Book Strategy Call
+              Start a Project
             </TrackCTA>
             <TrackCTA
               href="/demo"

@@ -13,29 +13,29 @@ function classifyCampaign(campaign = "") {
 
 const copyByType = {
   default: {
-    primaryCta: "Book Strategy Call",
+    primaryCta: "Start a Project",
     secondaryCta: "See Live Demo",
-    roiCta: "Build My ROI Plan",
+    roiCta: "Start a Project",
   },
   real_estate: {
-    primaryCta: "Book Real Estate AI Plan",
+    primaryCta: "Start a Project",
     secondaryCta: "See Real Estate Demo",
-    roiCta: "Estimate Deal Team ROI",
+    roiCta: "Start a Project",
   },
   ecommerce: {
-    primaryCta: "Book Ecommerce AI Plan",
+    primaryCta: "Start a Project",
     secondaryCta: "See Ecommerce Demo",
-    roiCta: "Estimate Support ROI",
+    roiCta: "Start a Project",
   },
   services: {
-    primaryCta: "Book Service Ops AI Plan",
+    primaryCta: "Start a Project",
     secondaryCta: "See Service Ops Demo",
-    roiCta: "Estimate Ops ROI",
+    roiCta: "Start a Project",
   },
   ainative: {
-    primaryCta: "Launch AI-Native Sprint",
+    primaryCta: "Start a Project",
     secondaryCta: "See AI-Native Demo",
-    roiCta: "Build AI-Native ROI Plan",
+    roiCta: "Start a Project",
   },
 };
 

@@ -71,10 +71,10 @@ export default function Hero(){
                 event="hero_book_strategy_call"
                 section="hero"
                 placement={`primary_${campaignType}`}
-                label={campaignCopy.primaryCta}
+                label="Start a Project"
                 className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-6 py-3 font-semibold text-slate-950 shadow-[0_0_40px_rgba(34,211,238,0.35)] transition hover:bg-cyan-300"
               >
-                {campaignCopy.primaryCta}
+                Start a Project
               </TrackCTA>
               <TrackCTA
                 href="/demo"
