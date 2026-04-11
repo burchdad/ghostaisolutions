@@ -1,0 +1,97 @@
+{
+  "id": "1775894474967-2026-04-11-harnessing-the-latest-github-trends-for-b2b-growth",
+  "slug": "2026-04-11-harnessing-the-latest-github-trends-for-b2b-growth",
+  "title": "Harnessing the Latest GitHub Trends for B2B Growth",
+  "excerpt": "Explore how emerging AI tools from GitHub can streamline operations and enhance productivity for growing B2B companies. This week, we focus on actionable insights to leverage these innovations effectively.",
+  "sourceType": "content-agent-moderation",
+  "status": "rejected",
+  "createdAt": "2026-04-11T08:01:14.967Z",
+  "updatedAt": "2026-04-11T08:01:14.967Z",
+  "approvedAt": null,
+  "approvedBy": null,
+  "rejectedAt": "2026-04-11T08:01:14.967Z",
+  "rejectedBy": "admin",
+  "platformVariants": {
+    "linkedin": {
+      "text": "**Harnessing the Latest GitHub Trends for B2B Growth**\n\nAs B2B companies pursue growth, leveraging the latest trends from GitHub can significantly enhance operational efficiency. Here are two innovations to consider:\n\n1. **AI-Orchestrated Visual Production**: The 'AgriciDaniel/claude-canvas' project simplifies creating visually compelling presentations. By utilizing AI-generated layouts, teams can save time on design tasks, enabling clearer process mapping and alignment on project visions.\n\n2. **Open-Source MCP Servers**: The 'isteamhq/mcp-servers' project facilitates seamless interaction between AI agents and platforms like Twitter and LinkedIn. This capability enhances your social media strategy by automating brand monitoring and responding to common inquiries, thereby improving customer engagement.\n\nIntegrating these tools into your existing workflows can drive productivity and streamline operations. Embracing the right technology is crucial for achieving your B2B growth objectives.\n\n#B2B #GitHub #AI #Productivity #Innovation",
+      "tips": [
+        "Lead with one sharp operational insight.",
+        "Keep the CTA focused on discussion or a practical takeaway.",
+        "Do not overload with hashtags."
+      ],
+      "analysis": {
+        "characterCount": 1044,
+        "hashtags": 5,
+        "recommendedMax": 1200,
+        "targetLength": "150-300 words",
+        "tone": "professional",
+        "warnings": [
+          "Too many hashtags",
+          "Ending may feel abrupt"
+        ],
+        "confidenceScore": 70,
+        "engagementScore": "Medium"
+      },
+      "moderation": {
+        "status": "approved",
+        "rationale": "Moderator approved linkedin copy for live publishing.",
+        "moderatedAt": "2026-04-11T08:01:14.966Z",
+        "moderator": "ghost-social-moderator"
+      }
+    },
+    "x": {
+      "text": "B2B growth demands tailored solutions! GitHub's cutting-edge AI tools can supercharge your operations and productivity. From AI-driven presentations to open-source servers, innovation is your secret weapon. How are you tapping into these trends? #B2B #GitHub",
+      "tips": [
+        "Keep it under 240 characters for flexibility.",
+        "One strong point beats three weak ones.",
+        "Avoid sounding like a blog summary."
+      ],
+      "analysis": {
+        "characterCount": 258,
+        "hashtags": 2,
+        "recommendedMax": 280,
+        "targetLength": "180-240 chars",
+        "tone": "punchy",
+        "warnings": [],
+        "confidenceScore": 92,
+        "engagementScore": "High"
+      },
+      "moderation": {
+        "status": "approved",
+        "rationale": "Moderator approved x copy for live publishing.",
+        "moderatedAt": "2026-04-11T08:01:12.612Z",
+        "moderator": "ghost-social-moderator"
+      }
+    },
+    "facebook": {
+      "text": "🚀 Ready to elevate your B2B company? Discover the latest GitHub trends that can streamline operations and boost productivity! \n\nThis week, we're spotlighting some game-changing tools. Check out the 'AgriciDaniel/claude-canvas' project for creating stunning presentations effortlessly—perfect for impressing clients without the design hassle. \n\nPlus, explore open-source MCP servers that integrate AI with real-world platforms to give you a competitive edge. \n\nWant to learn more? Dive into our blog for actionable insights! 💡👇 Share your thoughts in the comments!",
+      "tips": [
+        "Use a clear CTA.",
+        "Write like a human operator, not a brochure.",
+        "Keep the first sentence readable without context."
+      ],
+      "analysis": {
+        "characterCount": 566,
+        "hashtags": 0,
+        "recommendedMax": 500,
+        "targetLength": "60-180 words",
+        "tone": "conversational",
+        "warnings": [
+          "Over recommended length for facebook",
+          "Contains salesy or spam-like phrasing",
+          "Ending may feel abrupt"
+        ],
+        "confidenceScore": 56,
+        "engagementScore": "Low"
+      },
+      "moderation": {
+        "status": "blocked",
+        "rationale": "Moderator could not normalize facebook content within constraints.",
+        "moderatedAt": "2026-04-11T08:01:13.155Z",
+        "moderator": "ghost-social-moderator"
+      }
+    }
+  },
+  "publishResults": null,
+  "lastPublishedAt": null
+}
