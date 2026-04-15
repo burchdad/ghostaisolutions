@@ -27,7 +27,11 @@ async function jsonFetch(url, options = {}) {
   });
   const payload = await response.json().catch(() => null);
   if (!response.ok) {
-    throw new Error(payload?.error || payload?.details || `Request failed (${response.status})`);
+    const details = payload?.details ? String(payload.details) : "";
+    const hint = payload?.hint ? String(payload.hint) : "";
+    const base = payload?.error || `Request failed (${response.status})`;
+    const full = [base, details, hint].filter(Boolean).join(" - ");
+    throw new Error(full);
   }
   return payload;
 }

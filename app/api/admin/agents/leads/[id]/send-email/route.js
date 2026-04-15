@@ -40,26 +40,52 @@ export async function POST(request, { params }) {
     });
 
     const sentAt = new Date().toISOString();
-    const updated = await updateLead(params.id, {
-      status: "contacted",
-      lastContactedAt: sentAt,
-      emailEvents: [
-        ...(Array.isArray(lead.emailEvents) ? lead.emailEvents : []),
-        {
-          type: "sent",
-          provider: "resend",
-          to,
-          subject,
-          at: sentAt,
-          providerResponse: result,
-        },
-      ],
-    });
+    try {
+      const updated = await updateLead(params.id, {
+        status: "contacted",
+        lastContactedAt: sentAt,
+        emailEvents: [
+          ...(Array.isArray(lead.emailEvents) ? lead.emailEvents : []),
+          {
+            type: "sent",
+            provider: "resend",
+            to,
+            subject,
+            at: sentAt,
+            providerResponse: result,
+          },
+        ],
+      });
 
-    return NextResponse.json({ success: true, lead: updated, send: result });
+      return NextResponse.json({ success: true, lead: updated, send: result });
+    } catch (persistError) {
+      // Email has already been sent; do not report this as a hard failure.
+      return NextResponse.json(
+        {
+          success: true,
+          lead,
+          send: result,
+          warning: "Email sent but lead record update failed",
+          warningDetails: persistError?.message || String(persistError),
+        },
+        { status: 200 }
+      );
+    }
   } catch (error) {
+    const details = error?.message || String(error);
+    const lower = details.toLowerCase();
+    let hint = null;
+
+    if (lower.includes("missing resend_api_key")) {
+      hint = "Set RESEND_API_KEY in Vercel Project Environment Variables and redeploy.";
+    } else if (lower.includes("verify") || lower.includes("domain") || lower.includes("sender")) {
+      hint = "Verify the sending domain/address in Resend and ensure RESEND_FROM_EMAIL uses that verified sender.";
+    } else if (lower.includes("forbidden") || lower.includes("unauthorized") || lower.includes("invalid api key")) {
+      hint = "Check RESEND_API_KEY value and environment scope (Production/Preview/Development).";
+    }
+
     return NextResponse.json(
-      { error: "Failed to send outreach email", details: error?.message || String(error) },
+      { error: "Failed to send outreach email", details, ...(hint ? { hint } : {}) },
       { status: 500 }
     );
   }
