@@ -1,7 +1,7 @@
 {
   "id": "lead-mnzekxfn-f22aad74",
   "createdAt": "2026-04-15T02:00:11.073Z",
-  "updatedAt": "2026-04-15T02:00:11.075Z",
+  "updatedAt": "2026-04-15T02:00:36.507Z",
   "companyName": "Personal",
   "domain": "",
   "website": "none",
@@ -26,7 +26,7 @@
     "services": [],
     "techHints": []
   },
-  "status": "new",
+  "status": "ready_outreach",
   "score": {
     "fit": 0,
     "urgency": 0,
@@ -34,7 +34,12 @@
     "reasons": []
   },
   "notes": "Need a possible financial planner",
-  "emailDraft": null,
+  "emailDraft": {
+    "subject": "Exploring AI Solutions for Personal",
+    "body": "Hi there,\n\nI noticed that Personal doesn't currently have a blog or newsletter to share insights and updates. As a boutique AI systems studio, we specialize in helping businesses like yours harness the power of AI to enhance customer engagement and streamline operations.\n\nWhile it seems AI isn't a focus for Personal yet, there are significant opportunities to leverage it for improving your services and reaching a wider audience. Our team can work with you to develop tailored solutions that fit your unique needs.\n\nWould you be open to a brief chat to explore how we can support your growth with AI?\n\nBest regards,\n\n[Your Name]  \n[Your Position]  \n[Your Studio]  \n[Your Contact Information]",
+    "generatedAt": "2026-04-15T02:00:36.228Z",
+    "model": "gpt-4o-mini"
+  },
   "emailEvents": [],
   "lastContactedAt": null
 }
