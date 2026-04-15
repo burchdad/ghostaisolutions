@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/adminSession";
 import { sendLeadEmail, toSimpleHtml } from "@/lib/leadIntelligence";
-import { getLead, updateLead } from "@/lib/leadsStore";
+import { getLead, listLeads, updateLead } from "@/lib/leadsStore";
 
 function ensureAdmin() {
   const token = cookies().get(ADMIN_SESSION_COOKIE)?.value || "";
@@ -30,6 +30,46 @@ export async function POST(request, { params }) {
     const message = body.body || lead.emailDraft?.body;
     if (!subject || !message) {
       return NextResponse.json({ error: "Missing subject/body; generate or provide an email draft first" }, { status: 400 });
+    }
+
+    const now = new Date();
+    const cooldownHours = Math.max(1, Number(process.env.LEADS_OUTREACH_COOLDOWN_HOURS || 72));
+    const dailyCap = Math.max(1, Number(process.env.LEADS_OUTREACH_DAILY_CAP || 20));
+
+    if (lead.lastContactedAt) {
+      const hoursSinceLast = (now.getTime() - new Date(lead.lastContactedAt).getTime()) / 3600000;
+      if (hoursSinceLast < cooldownHours) {
+        const waitHours = Math.max(1, Math.ceil(cooldownHours - hoursSinceLast));
+        return NextResponse.json(
+          {
+            error: "Lead outreach cooldown active",
+            details: `Last outreach is too recent. Wait ~${waitHours} more hour(s) before sending again to this lead.`,
+          },
+          { status: 429 }
+        );
+      }
+    }
+
+    const allLeads = await listLeads().catch(() => []);
+    const dayStart = new Date(now);
+    dayStart.setUTCHours(0, 0, 0, 0);
+    const sendsToday = allLeads.reduce((count, item) => {
+      const events = Array.isArray(item.emailEvents) ? item.emailEvents : [];
+      const sentTodayForLead = events.some((event) => {
+        if (event?.type !== "sent" || !event?.at) return false;
+        return new Date(event.at).getTime() >= dayStart.getTime();
+      });
+      return count + (sentTodayForLead ? 1 : 0);
+    }, 0);
+
+    if (sendsToday >= dailyCap) {
+      return NextResponse.json(
+        {
+          error: "Daily outreach cap reached",
+          details: `Daily cap is ${dailyCap} send(s). Increase LEADS_OUTREACH_DAILY_CAP to raise this limit.`,
+        },
+        { status: 429 }
+      );
     }
 
     const result = await sendLeadEmail({
@@ -82,6 +122,8 @@ export async function POST(request, { params }) {
       hint = "Verify the sending domain/address in Resend and ensure RESEND_FROM_EMAIL uses that verified sender.";
     } else if (lower.includes("forbidden") || lower.includes("unauthorized") || lower.includes("invalid api key")) {
       hint = "Check RESEND_API_KEY value and environment scope (Production/Preview/Development).";
+    } else if (lower.includes("daily outreach cap") || lower.includes("cooldown")) {
+      hint = "Warmup guardrail triggered. Tune LEADS_OUTREACH_DAILY_CAP / LEADS_OUTREACH_COOLDOWN_HOURS if needed.";
     }
 
     return NextResponse.json(
