@@ -1,0 +1,40 @@
+{
+  "id": "lead-mnzekxfn-f22aad74",
+  "createdAt": "2026-04-15T02:00:11.073Z",
+  "updatedAt": "2026-04-15T02:00:11.075Z",
+  "companyName": "Personal",
+  "domain": "",
+  "website": "none",
+  "sourceType": "manual",
+  "sourceUrl": "",
+  "ownerName": "",
+  "ownerRole": "",
+  "ownerEmail": "",
+  "contactEmail": "burchsl4@gmail.com",
+  "linkedinUrl": "",
+  "summary": "",
+  "aiOpportunity": {
+    "score": 0,
+    "reasons": []
+  },
+  "signals": {
+    "hasBlog": false,
+    "hasNewsletter": false,
+    "hasScheduling": false,
+    "hasChatWidget": false,
+    "mentionsAI": false,
+    "services": [],
+    "techHints": []
+  },
+  "status": "new",
+  "score": {
+    "fit": 0,
+    "urgency": 0,
+    "total": 0,
+    "reasons": []
+  },
+  "notes": "Need a possible financial planner",
+  "emailDraft": null,
+  "emailEvents": [],
+  "lastContactedAt": null
+}
