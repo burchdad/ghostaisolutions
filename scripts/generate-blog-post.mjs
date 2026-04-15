@@ -6,6 +6,7 @@
  *
  * Pipeline:
  *   HackerNews (Algolia API) + GitHub Search API + Dev.to API
+ *   + Lobste.rs JSON + TechCrunch AI RSS + VentureBeat AI RSS + MIT Tech Review RSS
  *     → score by AI/automation relevance
  *     → take top 6 stories
  *     → call OpenAI to write a structured blog post in Ghost AI voice
@@ -106,6 +107,109 @@ async function fetchDevTo() {
     }));
   } catch (e) {
     console.warn(`⚠️  Dev.to fetch failed: ${e.message}`);
+    return [];
+  }
+}
+
+/**
+ * Minimal RSS/Atom XML parser — handles CDATA and plain text, strips HTML.
+ * No external dependencies, works in Node 20.
+ */
+function extractXmlText(block, tag) {
+  const cdata = new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\/${tag}>`, "i").exec(block);
+  if (cdata) return cdata[1];
+  const plain = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\/${tag}>`, "i").exec(block);
+  return plain
+    ? plain[1].replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/<[^>]+>/g, "")
+    : "";
+}
+
+function parseRssXml(xml, sourceName) {
+  const items = [];
+  for (const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
+    const block = m[1];
+    const title = extractXmlText(block, "title").trim();
+    const linkMatch =
+      /<link>(https?:\/\/[^<]+)<\/link>/.exec(block) ||
+      /<guid[^>]*isPermaLink="true"[^>]*>(https?:\/\/[^<]+)<\/guid>/.exec(block);
+    const url = linkMatch ? linkMatch[1].trim() : "";
+    const description = extractXmlText(block, "description").replace(/\s+/g, " ").slice(0, 300).trim();
+    const pubDate = extractXmlText(block, "pubDate");
+    if (title && url) {
+      items.push({
+        title,
+        url,
+        source: sourceName,
+        description: description || title,
+        date: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+      });
+    }
+  }
+  return items;
+}
+
+/** Lobste.rs — tech link aggregator with a public JSON API, no auth required */
+async function fetchLobsters() {
+  try {
+    const res = await fetch("https://lobste.rs/hottest.json", {
+      headers: { "User-Agent": "GhostAISolutions-BlogBot/1.0" },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    return (Array.isArray(data) ? data : []).map((item) => ({
+      title: item.title ?? "",
+      url: item.url || `https://lobste.rs${item.short_id_url}`,
+      source: "Lobste.rs",
+      description: (item.description || item.title || "").slice(0, 300),
+      date: item.created_at ?? new Date().toISOString(),
+    }));
+  } catch (e) {
+    console.warn(`⚠️  Lobste.rs fetch failed: ${e.message}`);
+    return [];
+  }
+}
+
+/** TechCrunch AI — enterprise and startup AI coverage via RSS */
+async function fetchTechCrunchAI() {
+  try {
+    const res = await fetch("https://techcrunch.com/category/artificial-intelligence/feed/", {
+      headers: { "User-Agent": "GhostAISolutions-BlogBot/1.0" },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const xml = await res.text();
+    return parseRssXml(xml, "TechCrunch AI");
+  } catch (e) {
+    console.warn(`⚠️  TechCrunch AI fetch failed: ${e.message}`);
+    return [];
+  }
+}
+
+/** VentureBeat AI — enterprise AI coverage via RSS */
+async function fetchVentureBeatAI() {
+  try {
+    const res = await fetch("https://venturebeat.com/category/ai/feed/", {
+      headers: { "User-Agent": "GhostAISolutions-BlogBot/1.0" },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const xml = await res.text();
+    return parseRssXml(xml, "VentureBeat AI");
+  } catch (e) {
+    console.warn(`⚠️  VentureBeat AI fetch failed: ${e.message}`);
+    return [];
+  }
+}
+
+/** MIT Technology Review — deep-tech and AI research coverage via RSS */
+async function fetchMITTechReview() {
+  try {
+    const res = await fetch("https://www.technologyreview.com/feed/", {
+      headers: { "User-Agent": "GhostAISolutions-BlogBot/1.0" },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const xml = await res.text();
+    return parseRssXml(xml, "MIT Tech Review");
+  } catch (e) {
+    console.warn(`⚠️  MIT Tech Review fetch failed: ${e.message}`);
     return [];
   }
 }
@@ -240,14 +344,22 @@ async function main() {
   }
 
   console.log(`📡 Fetching stories for ${today}...`);
-  const [hn, github, devto] = await Promise.all([
+  const [hn, github, devto, lobsters, techcrunch, venturebeat, mittr] = await Promise.all([
     fetchHackerNews(),
     fetchGitHubTrending(),
     fetchDevTo(),
+    fetchLobsters(),
+    fetchTechCrunchAI(),
+    fetchVentureBeatAI(),
+    fetchMITTechReview(),
   ]);
 
-  const allStories = [...hn, ...github, ...devto];
-  console.log(`   Total fetched: ${allStories.length} stories`);
+  const sourceCounts = [
+    `HN:${hn.length}`, `GitHub:${github.length}`, `Dev.to:${devto.length}`,
+    `Lobsters:${lobsters.length}`, `TC:${techcrunch.length}`, `VB:${venturebeat.length}`, `MITTR:${mittr.length}`,
+  ].join("  ");
+  const allStories = [...hn, ...github, ...devto, ...lobsters, ...techcrunch, ...venturebeat, ...mittr];
+  console.log(`   ${sourceCounts}  →  Total: ${allStories.length} stories`);
 
   const topStories = filterAndRank(allStories);
   if (topStories.length === 0) {

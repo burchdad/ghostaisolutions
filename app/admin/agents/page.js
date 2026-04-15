@@ -1,43 +1,26 @@
+import fs from "fs";
+import path from "path";
 import Link from "next/link";
+import { getAllPosts } from "@/lib/allPosts";
 import { requireAdmin } from "@/lib/adminGuard";
+import { listLeads } from "@/lib/leadsStore";
 
-const AGENTS = [
-  {
-    name: "Content Agent",
-    href: "/admin/agents/content",
-    status: "Healthy",
-    mission: "Topic pipeline, draft quality, publishing cadence.",
-    kpi: "Posts in last 7 days",
-  },
-  {
-    name: "SEO Agent",
-    href: "/admin/agents/seo",
-    status: "Healthy",
-    mission: "Technical SEO checks, schema coverage, sitemap/feed health.",
-    kpi: "Indexability checks",
-  },
-  {
-    name: "Social Agent",
-    href: "/admin/agents/social",
-    status: "Needs Review",
-    mission: "Repurpose blog output for LinkedIn/X/Facebook variants.",
-    kpi: "Repurposing queue",
-  },
-  {
-    name: "CRO Agent",
-    href: "/admin/agents/cro",
-    status: "Healthy",
-    mission: "CTA performance, experiment ideas, conversion friction audits.",
-    kpi: "Primary CTA click quality",
-  },
-  {
-    name: "Lead Funnel Agent",
-    href: "/admin/agents/leads",
-    status: "Building",
-    mission: "Stage tracking, lead scoring, routing to booking and blueprint follow-ups.",
-    kpi: "MQL to booking",
-  },
+function countWithinDays(posts, days) {
+  const cutoff = Date.now() - days * 86400000;
+  return posts.filter((p) => new Date(p.date).getTime() >= cutoff).length;
+}
+
+const CRO_EXPERIMENTS = [
+  { status: "Ready" },
+  { status: "Running" },
+  { status: "Backlog" },
 ];
+
+function statusBadgeClass(status) {
+  if (status === "Healthy") return "border-emerald-300/40 bg-emerald-300/15 text-emerald-200";
+  if (status === "Needs Review") return "border-amber-300/40 bg-amber-300/15 text-amber-200";
+  return "border-slate-400/30 bg-slate-400/10 text-slate-300";
+}
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -45,8 +28,92 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function AdminAgentsHubPage() {
+export default async function AdminAgentsHubPage() {
   requireAdmin("/admin/agents");
+
+  // Content Agent
+  const posts = getAllPosts();
+  const autoPosts = posts.filter((p) => p.auto);
+  const published7Days = countWithinDays(autoPosts, 7);
+  const contentStatus = autoPosts.length === 0 ? "Building" : published7Days >= 1 ? "Healthy" : "Needs Review";
+
+  // SEO Agent
+  const workflowExists = fs.existsSync(path.join(process.cwd(), ".github", "workflows", "daily-blog.yml"));
+  const missingExcerpt = posts.filter((p) => !p.excerpt).length;
+  const missingDate = posts.filter((p) => !p.date).length;
+  const seoStatus = !workflowExists ? "Building" : missingExcerpt === 0 && missingDate === 0 ? "Healthy" : "Needs Review";
+
+  // Social Agent
+  const linkedinOk = Boolean(process.env.LINKEDIN_ACCESS_TOKEN);
+  const xOk = Boolean(
+    (process.env.X_CONSUMER_KEY || process.env.X_API_KEY) &&
+      (process.env.X_CONSUMER_SECRET || process.env.X_API_SECRET) &&
+      process.env.X_ACCESS_TOKEN &&
+      (process.env.X_ACCESS_SECRET || process.env.X_ACCESS_TOKEN_SECRET)
+  );
+  const facebookOk = Boolean(process.env.FACEBOOK_PAGE_ACCESS_TOKEN && process.env.FACEBOOK_PAGE_ID);
+  const schedulerReady = Boolean(process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET);
+  const connectedCount = [linkedinOk, xOk, facebookOk].filter(Boolean).length;
+  const socialStatus = connectedCount === 0 ? "Building" : connectedCount === 3 && schedulerReady ? "Healthy" : "Needs Review";
+
+  // CRO Agent
+  const hasRunningExperiment = CRO_EXPERIMENTS.some((e) => e.status === "Running");
+  const hasReadyExperiment = CRO_EXPERIMENTS.some((e) => e.status === "Ready");
+  const croStatus = hasRunningExperiment ? "Healthy" : hasReadyExperiment ? "Needs Review" : "Building";
+
+  // Lead Intelligence Agent
+  const leads = await listLeads().catch(() => []);
+  const leadsReadyOutreach = leads.filter((lead) => ["ready_outreach", "contacted", "replied", "won"].includes(lead.status)).length;
+  const leadsStatus = leads.length === 0 ? "Building" : leadsReadyOutreach > 0 ? "Healthy" : "Needs Review";
+
+  // Analytics Agent — healthy when posts exist and social workflow is running
+  const hasSocialWorkflow = fs.existsSync(path.join(process.cwd(), ".github", "workflows", "social-publish.yml"));
+  const analyticsStatus = autoPosts.length === 0 ? "Building" : hasSocialWorkflow && published7Days >= 1 ? "Healthy" : "Needs Review";
+
+  const AGENTS = [
+    {
+      name: "Content Agent",
+      href: "/admin/agents/content",
+      status: contentStatus,
+      mission: "Topic pipeline, draft quality, publishing cadence.",
+      kpi: "Posts in last 7 days",
+    },
+    {
+      name: "SEO Agent",
+      href: "/admin/agents/seo",
+      status: seoStatus,
+      mission: "Technical SEO checks, schema coverage, sitemap/feed health.",
+      kpi: "Indexability checks",
+    },
+    {
+      name: "Social Agent",
+      href: "/admin/agents/social",
+      status: socialStatus,
+      mission: "Repurpose blog output for LinkedIn/X/Facebook variants.",
+      kpi: "Repurposing queue",
+    },
+    {
+      name: "CRO Agent",
+      href: "/admin/agents/cro",
+      status: croStatus,
+      mission: "CTA performance, experiment ideas, conversion friction audits.",
+      kpi: "Primary CTA click quality",
+    },
+    {
+      name: "Lead Intelligence Agent",
+      href: "/admin/agents/leads",
+      status: leadsStatus,
+      mission: "Website discovery, enrichment, qualification, and personalized outreach automation.",
+      kpi: "Qualified-to-outreach conversion",
+    },
+    {
+      name: "Analytics Agent",
+      href: "/admin/agents/analytics",
+      status: analyticsStatus,
+      mission: "Content pipeline metrics, social publish rates, source performance, and review queue.",
+      kpi: "Publish rate & funnel conversion",
+    },
+  ];
 
   return (
     <section className="py-16">
@@ -67,7 +134,7 @@ export default function AdminAgentsHubPage() {
             <article key={agent.name} className="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-lg font-semibold text-white">{agent.name}</h2>
-                <span className="rounded-full border border-cyan-300/30 bg-cyan-300/10 px-2.5 py-1 text-[11px] uppercase tracking-[0.12em] text-cyan-200">
+                <span className={`rounded-full border px-2.5 py-1 text-[11px] uppercase tracking-[0.12em] ${statusBadgeClass(agent.status)}`}>
                   {agent.status}
                 </span>
               </div>

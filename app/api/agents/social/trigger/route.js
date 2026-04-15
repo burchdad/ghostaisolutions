@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAllPosts } from "@/lib/allPosts";
 import { repurposeBlogPost } from "@/lib/socialRepurpose";
-import { createSocialDraft } from "@/lib/socialDraftStore";
+import { createSocialDraft, listSocialDrafts } from "@/lib/socialDraftStore";
 import { publishVariants } from "@/lib/socialPublish";
 
 export const maxDuration = 60; // Allow up to 60 seconds for this endpoint
@@ -22,15 +22,22 @@ async function runTrigger(request) {
       );
     }
 
-    // Get queue of auto posts
+    // Get already-processed slugs so cron never re-posts or re-queues the same content
+    const existingDrafts = await listSocialDrafts().catch(() => []);
+    const processedSlugs = new Set(existingDrafts.map((d) => d.slug).filter(Boolean));
+
+    // Get queue of recent auto posts, skip any already in the draft store
     const allPosts = getAllPosts();
-    const autoPosts = allPosts.filter((p) => p.auto).slice(0, 3); // Get up to 3 recent auto posts
+    const autoPosts = allPosts
+      .filter((p) => p.auto && !processedSlugs.has(p.slug))
+      .slice(0, 3);
 
     if (autoPosts.length === 0) {
       return NextResponse.json(
         {
           success: true,
-          message: "No auto posts in queue to process",
+          message: "No new auto posts to process",
+          skipped: processedSlugs.size,
           processed: [],
         },
         { status: 200 }
@@ -123,6 +130,7 @@ async function runTrigger(request) {
       {
         success: true,
         message: `Processed ${results.length} AI-moderated post(s)`,
+        skipped: processedSlugs.size,
         processed: results,
         timestamp: new Date().toISOString(),
       },
