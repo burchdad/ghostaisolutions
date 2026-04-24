@@ -28,8 +28,8 @@ const bodyFont = Plus_Jakarta_Sans({
 
 export const metadata = {
   metadataBase: new URL("https://ghostai.solutions"),
-  title: "Ghost AI Solutions - Custom Systems Engineering",
-  description: "Custom software, AI systems, and operational platforms designed from scratch to solve real-world problems.",
+  title: "Ghost AI Solutions - AI Transformation and Custom Infrastructure",
+  description: "Premium AI transformation consultancy designing custom infrastructure to scale revenue, operations, and executive decision-making.",
   keywords: [
     "custom software development",
     "ai automation agency",
@@ -40,8 +40,8 @@ export const metadata = {
     "ghost ai solutions",
   ],
   openGraph: {
-    title: "Ghost AI Solutions - Custom Systems Engineering",
-    description: "If it does not exist, we build it. Custom software, AI systems, and operational platforms for real-world deployment.",
+    title: "Ghost AI Solutions - AI Transformation and Custom Infrastructure",
+    description: "Custom AI systems and strategic infrastructure for startups, scaling businesses, and enterprise teams.",
     url: "https://ghostai.solutions",
     siteName: "Ghost AI Solutions",
     images: ["/og-image.png"],

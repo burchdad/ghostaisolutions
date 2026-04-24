@@ -3,17 +3,40 @@ import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
 import TrackCTA from "@/components/TrackCTA";
-import { BOOKING_URL } from "@/lib/constants";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
-  const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/#solutions", label: "Solutions" },
-    { href: "/#industries", label: "Industries" },
-    { href: "/projects", label: "Projects" },
-    { href: "/technology", label: "Technology" },
-    { href: "/contact", label: "Contact" },
+  const navGroups = [
+    {
+      label: "Solutions",
+      links: [
+        { href: "/for-startups", label: "For Startups" },
+        { href: "/for-growth", label: "For Growth Businesses" },
+        { href: "/enterprise", label: "For Enterprise" },
+      ],
+    },
+    {
+      label: "Capabilities",
+      links: [
+        { href: "/services#ai-infrastructure", label: "AI Infrastructure" },
+        { href: "/services#automation", label: "Automation" },
+        { href: "/services#voice-systems", label: "Voice Systems" },
+        { href: "/services#data-intelligence", label: "Data Intelligence" },
+        { href: "/services#custom-platforms", label: "Custom Platforms" },
+      ],
+    },
+    {
+      label: "Work",
+      links: [
+        { href: "/work", label: "Case Studies" },
+        { href: "/demo", label: "Demos" },
+      ],
+    },
+  ];
+
+  const directLinks = [
+    { href: "/process", label: "Process" },
+    { href: "/#founder", label: "About" },
   ];
 
   return (
@@ -32,9 +55,36 @@ export default function Header() {
           </Link>
 
           {/* Desktop nav */}
-          <nav aria-label="Main" className="hidden md:flex items-center gap-8 text-sm">
-            {navItems.map((item) => (
-              <Link key={item.href} className="text-slate-200 transition hover:text-cyan-300" href={item.href}>
+          <nav aria-label="Main" className="hidden md:flex items-center gap-7 text-sm">
+            {navGroups.map((group) => (
+              <div key={group.label} className="group relative">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 text-slate-200 transition hover:text-amber-200"
+                  aria-label={group.label}
+                >
+                  {group.label}
+                  <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.6">
+                    <path d="M5 8l5 5 5-5" />
+                  </svg>
+                </button>
+                <div className="pointer-events-none invisible absolute left-0 top-full z-30 mt-3 min-w-60 rounded-2xl border border-white/10 bg-slate-950/95 p-3 opacity-0 shadow-2xl transition-all group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100">
+                  <div className="grid gap-1">
+                    {group.links.map((item) => (
+                      <Link
+                        key={item.href}
+                        className="rounded-xl px-3 py-2 text-slate-200 transition hover:bg-amber-300/10 hover:text-amber-100"
+                        href={item.href}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+            {directLinks.map((item) => (
+              <Link key={item.href} className="text-slate-200 transition hover:text-amber-200" href={item.href}>
                 {item.label}
               </Link>
             ))}
@@ -48,16 +98,14 @@ export default function Header() {
               Login
             </Link>
             <TrackCTA
-              href={BOOKING_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_28px_rgba(34,211,238,0.32)] transition hover:bg-cyan-300"
-              event="start_project_click_header"
+              href="/contact"
+              className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_28px_rgba(251,191,36,0.32)] transition hover:bg-amber-200"
+              event="book_strategy_call_click_header"
               section="header"
               placement="desktop_primary"
-              label="Start a Project"
+              label="Book Strategy Call"
             >
-              Start a Project
+              Book Strategy Call
             </TrackCTA>
           </div>
 
@@ -84,8 +132,20 @@ export default function Header() {
         }`}
       >
         <div className="mx-auto max-w-7xl px-4 py-4 grid gap-3 text-sm">
-          {navItems.map((item) => (
-            <Link key={item.href} className="py-2 text-slate-200" href={item.href} onClick={() => setOpen(false)}>
+          {navGroups.map((group) => (
+            <div key={group.label} className="rounded-xl border border-white/10 bg-slate-900/70 p-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-200">{group.label}</p>
+              <div className="mt-2 grid gap-1">
+                {group.links.map((item) => (
+                  <Link key={item.href} className="py-1.5 text-slate-200" href={item.href} onClick={() => setOpen(false)}>
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
+          {directLinks.map((item) => (
+            <Link key={item.href} className="py-1 text-slate-200" href={item.href} onClick={() => setOpen(false)}>
               {item.label}
             </Link>
           ))}
@@ -98,17 +158,15 @@ export default function Header() {
               Login
             </Link>
             <TrackCTA
-              href={BOOKING_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-xl bg-cyan-400 px-4 py-2 font-semibold text-slate-950"
+              href="/contact"
+              className="rounded-xl bg-amber-300 px-4 py-2 font-semibold text-slate-950"
               onClick={() => setOpen(false)}
-              event="start_project_click_mobile"
+              event="book_strategy_call_click_mobile"
               section="header"
               placement="mobile_primary"
-              label="Start a Project"
+              label="Book Strategy Call"
             >
-              Start a Project
+              Book Strategy Call
             </TrackCTA>
           </div>
         </div>

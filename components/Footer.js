@@ -2,7 +2,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import TrackCTA from "@/components/TrackCTA";
 import { siteConfig } from "@/lib/siteConfig";
-import { BOOKING_URL } from "@/lib/constants";
 
 export default function Footer(){
   return (
@@ -21,12 +20,12 @@ export default function Footer(){
               />
             </div>
             <p className="mt-4 max-w-md text-sm text-slate-300">
-              We build custom software, AI systems, and operational platforms designed to solve real-world problems.
+              We architect and deploy custom AI infrastructure for organizations scaling revenue, operations, and executive decision-making.
             </p>
             <div className="mt-4 text-sm text-slate-400">
               <p>Tyler, TX • Remote-first</p>
-              <p className="mt-1">Built by engineers. Deployed in the real world.</p>
-              <p className="mt-3 text-cyan-300">No templates. No shortcuts. Built from scratch.</p>
+              <p className="mt-1">Built by engineers. Designed for operators.</p>
+              <p className="mt-3 text-amber-200">Boutique consultancy. Custom builds. Enterprise-grade delivery.</p>
             </div>
           </div>
 
@@ -34,15 +33,16 @@ export default function Footer(){
             <nav className="grid gap-2 text-sm">
               <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Company</p>
               <Link className="text-slate-200 hover:text-cyan-300" href="/">Home</Link>
-              <Link className="text-slate-200 hover:text-cyan-300" href="/#solutions">Solutions</Link>
-              <Link className="text-slate-200 hover:text-cyan-300" href="/#industries">Industries</Link>
-              <Link className="text-slate-200 hover:text-cyan-300" href="/projects">Projects</Link>
-              <Link className="text-slate-200 hover:text-cyan-300" href="/technology">Technology</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/for-startups">For Startups</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/for-growth">For Growth Businesses</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/enterprise">For Enterprise</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/services">Capabilities</Link>
             </nav>
 
             <nav className="grid gap-2 text-sm">
               <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Resources</p>
-              <Link className="text-slate-200 hover:text-cyan-300" href="/projects">Case Studies</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/work">Case Studies</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/demo">Demos</Link>
               <Link className="text-slate-200 hover:text-cyan-300" href="/process">Process</Link>
               <Link className="text-slate-200 hover:text-cyan-300" href="/blog">Blog</Link>
             </nav>
@@ -51,16 +51,14 @@ export default function Footer(){
           <div className="grid content-start gap-3 text-sm">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Contact</p>
             <TrackCTA
-              className="inline-flex w-fit items-center rounded-xl bg-cyan-400 px-4 py-2 font-semibold text-slate-950 transition hover:bg-cyan-300"
-              href={BOOKING_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              event="start_project_footer"
+              className="inline-flex w-fit items-center rounded-xl bg-amber-300 px-4 py-2 font-semibold text-slate-950 transition hover:bg-amber-200"
+              href="/contact"
+              event="book_strategy_call_footer"
               section="footer"
               placement="primary"
-              label="Start a Project"
+              label="Book Strategy Call"
             >
-              Start a Project
+              Book Strategy Call
             </TrackCTA>
             <a className="text-slate-200 underline underline-offset-4" href={`mailto:${siteConfig.supportEmail}`}>
               {siteConfig.supportEmail}
