@@ -29,7 +29,7 @@ export default function Footer(){
             </div>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-2">
+          <div className="grid gap-8 sm:grid-cols-3">
             <nav className="grid gap-2 text-sm">
               <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Company</p>
               <Link className="text-slate-200 hover:text-cyan-300" href="/">Home</Link>
@@ -45,6 +45,12 @@ export default function Footer(){
               <Link className="text-slate-200 hover:text-cyan-300" href="/demo">Demos</Link>
               <Link className="text-slate-200 hover:text-cyan-300" href="/process">Process</Link>
               <Link className="text-slate-200 hover:text-cyan-300" href="/blog">Blog</Link>
+            </nav>
+
+            <nav className="grid gap-2 text-sm">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Legal</p>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/privacy-policy">Privacy Policy</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/terms">Terms of Service</Link>
             </nav>
           </div>
 
