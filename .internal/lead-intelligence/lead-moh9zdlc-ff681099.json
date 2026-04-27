@@ -1,0 +1,49 @@
+{
+  "id": "lead-moh9zdlc-ff681099",
+  "createdAt": "2026-04-27T14:11:18.288Z",
+  "updatedAt": "2026-04-27T14:11:18.288Z",
+  "companyName": "LinkedIn Login, Sign in",
+  "domain": "linkedin.com",
+  "website": "https://www.linkedin.com/company/athletes-first/people/",
+  "sourceType": "scraped",
+  "sourceUrl": "https://www.linkedin.com/company/athletes-first/people/",
+  "ownerName": "",
+  "ownerRole": "",
+  "ownerEmail": "",
+  "contactEmail": "",
+  "linkedinUrl": "https://www.linkedin.com/legal/user-agreement/",
+  "summary": "LinkedIn Login, Sign in | LinkedIn",
+  "aiOpportunity": {
+    "score": 58,
+    "reasons": [
+      "No strong AI positioning detected on-site.",
+      "Blog pipeline can be repurposed into social and nurture journeys."
+    ]
+  },
+  "signals": {
+    "hasBlog": true,
+    "hasNewsletter": false,
+    "hasScheduling": false,
+    "hasChatWidget": false,
+    "mentionsAI": false,
+    "services": [],
+    "techHints": [
+      "segment"
+    ]
+  },
+  "status": "new",
+  "score": {
+    "fit": 56,
+    "urgency": 42,
+    "total": 50,
+    "reasons": [
+      "Content engine already exists and can be automated with AI workflows.",
+      "Low explicit AI footprint creates clear transformation angle.",
+      "Detectable modern stack improves implementation feasibility."
+    ]
+  },
+  "notes": "",
+  "emailDraft": null,
+  "emailEvents": [],
+  "lastContactedAt": null
+}
