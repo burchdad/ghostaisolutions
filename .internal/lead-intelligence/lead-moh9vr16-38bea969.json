@@ -1,0 +1,51 @@
+{
+  "id": "lead-moh9vr16-38bea969",
+  "createdAt": "2026-04-27T14:08:29.082Z",
+  "updatedAt": "2026-04-27T14:08:29.082Z",
+  "companyName": "Athletes First",
+  "domain": "athletesfirst.net",
+  "website": "https://www.athletesfirst.net/",
+  "sourceType": "scraped",
+  "sourceUrl": "https://www.athletesfirst.net/",
+  "ownerName": "",
+  "ownerRole": "",
+  "ownerEmail": "",
+  "contactEmail": "info@athletesfirst.net",
+  "linkedinUrl": "",
+  "summary": "Athletes First",
+  "aiOpportunity": {
+    "score": 54,
+    "reasons": [
+      "No strong AI positioning detected on-site."
+    ]
+  },
+  "signals": {
+    "hasBlog": false,
+    "hasNewsletter": false,
+    "hasScheduling": false,
+    "hasChatWidget": false,
+    "mentionsAI": false,
+    "services": [
+      "marketing",
+      "sales",
+      "ai"
+    ],
+    "techHints": [
+      "webflow"
+    ]
+  },
+  "status": "new",
+  "score": {
+    "fit": 48,
+    "urgency": 42,
+    "total": 46,
+    "reasons": [
+      "Low explicit AI footprint creates clear transformation angle.",
+      "Detectable modern stack improves implementation feasibility."
+    ]
+  },
+  "notes": "",
+  "emailDraft": null,
+  "emailEvents": [],
+  "lastContactedAt": null
+}
