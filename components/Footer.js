@@ -50,6 +50,7 @@ export default function Footer(){
             <nav className="grid gap-2 text-sm">
               <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Legal</p>
               <Link className="text-slate-200 hover:text-cyan-300" href="/privacy-policy">Privacy Policy</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/data-deletion">Data Deletion</Link>
               <Link className="text-slate-200 hover:text-cyan-300" href="/terms">Terms of Service</Link>
             </nav>
           </div>

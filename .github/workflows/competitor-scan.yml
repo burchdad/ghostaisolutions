@@ -1,0 +1,22 @@
+name: Competitor Intelligence Scan
+
+on:
+  workflow_dispatch:
+
+jobs:
+  competitor-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run weekly competitor scan
+        env:
+          SITE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          response=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$SITE_URL/api/agents/competitors/cron")
+          echo "Response: $response"
+          if [ "$response" != "200" ]; then
+            echo "Competitor scan failed with status $response"
+            exit 1
+          fi

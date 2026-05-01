@@ -1,9 +1,6 @@
 name: Daily Social Publishing
 
 on:
-  schedule:
-    # 10:15 UTC daily — 15 minutes after the Vercel cron as a reliable fallback
-    - cron: "15 10 * * *"
   workflow_dispatch:
 
 jobs:

@@ -3,6 +3,7 @@ import path from "path";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/allPosts";
 import { requireAdmin } from "@/lib/adminGuard";
+import { getProviderConnection } from "@/lib/tokenStore";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -33,6 +34,15 @@ export default function AdminDashboardPage() {
   const hasWorkflow = fs.existsSync(workflowPath);
   const hasOpenAIKey = Boolean(process.env.OPENAI_API_KEY);
   const hasAdminPassword = Boolean(process.env.ADMIN_DASHBOARD_PASSWORD);
+  const metaConnection = getProviderConnection("meta", { orgId: "default" });
+  const facebookFallback = getProviderConnection("facebook", { orgId: "default" });
+  const isMetaConnected = Boolean(metaConnection?.accessToken || facebookFallback?.accessToken);
+  const assetCounts = {
+    pages: metaConnection?.assets?.pages?.length || (facebookFallback?.pageId ? 1 : 0),
+    instagram: metaConnection?.assets?.instagramAccounts?.length || 0,
+    adAccounts: metaConnection?.assets?.adAccounts?.length || 0,
+    businesses: metaConnection?.assets?.businessManagers?.length || 0,
+  };
 
   return (
     <section className="py-16">
@@ -103,6 +113,37 @@ export default function AdminDashboardPage() {
               )}
             </ul>
           </article>
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/60 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold text-white">Connected Accounts</h2>
+            <Link href="/admin/agents/social/facebook" className="rounded-xl border border-white/15 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.14em] text-slate-200 hover:border-cyan-300/40 hover:text-white">
+              Manage Meta Connection
+            </Link>
+          </div>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <article className="rounded-xl border border-white/10 bg-slate-900/50 p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Meta Status</p>
+              <p className="mt-2 text-sm font-semibold text-white">{isMetaConnected ? "Connected" : "Not Connected"}</p>
+            </article>
+            <article className="rounded-xl border border-white/10 bg-slate-900/50 p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Pages</p>
+              <p className="mt-2 text-2xl font-bold text-cyan-200">{assetCounts.pages}</p>
+            </article>
+            <article className="rounded-xl border border-white/10 bg-slate-900/50 p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Instagram</p>
+              <p className="mt-2 text-2xl font-bold text-cyan-200">{assetCounts.instagram}</p>
+            </article>
+            <article className="rounded-xl border border-white/10 bg-slate-900/50 p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Ad Accounts</p>
+              <p className="mt-2 text-2xl font-bold text-cyan-200">{assetCounts.adAccounts}</p>
+            </article>
+            <article className="rounded-xl border border-white/10 bg-slate-900/50 p-4">
+              <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Business Managers</p>
+              <p className="mt-2 text-2xl font-bold text-cyan-200">{assetCounts.businesses}</p>
+            </article>
+          </div>
         </div>
 
         <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/60 p-5">

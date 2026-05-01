@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "blog:generate": "node scripts/generate-blog-post.mjs"
+    "blog:generate": "node scripts/generate-blog-post.mjs",
+    "env:check": "node scripts/validate-prod-env.mjs --target=all --strict"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.16",

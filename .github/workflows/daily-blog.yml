@@ -31,12 +31,13 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: gpt-4o-mini
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GENERATE_BLOG_IMAGES: ${{ secrets.GENERATE_BLOG_IMAGES || 'false' }}
         run: node scripts/generate-blog-post.mjs
 
       - name: Check for new post
         id: diff
         run: |
-          git add content/auto-posts/
+          git add content/auto-posts/ public/generated/
           git diff --cached --exit-code && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Commit and push new post

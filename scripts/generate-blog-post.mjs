@@ -32,6 +32,9 @@ const OUTPUT_DIR = path.join(ROOT, "content", "auto-posts");
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const GENERATE_IMAGES = process.env.GENERATE_BLOG_IMAGES === "true";
+
+const GENERATED_IMG_DIR = path.join(ROOT, "public", "generated");
 
 if (!OPENAI_API_KEY) {
   console.error("❌ OPENAI_API_KEY is required");
@@ -328,6 +331,37 @@ Aim for 10-14 sections total.`;
   return JSON.parse(raw);
 }
 
+// ─── 3b. OPTIONAL DALL-E 3 COVER IMAGE ──────────────────────────────────────
+
+async function generateCoverImage(slug, title, excerpt = "") {
+  if (!GENERATE_IMAGES) return null;
+  if (!OPENAI_API_KEY) { console.warn("⚠️  GENERATE_BLOG_IMAGES=true but no OPENAI_API_KEY"); return null; }
+
+  const prompt = `Professional blog cover image for an AI technology company post titled "${title}". ${excerpt ? `Topic: ${excerpt.slice(0, 120)}.` : ""} Style: dark gradient background, minimal sleek design, glowing cyan and indigo accents, futuristic professional, no text. Wide banner format, 16:9 aspect ratio.`;
+
+  try {
+    console.log("🎨 Generating DALL-E 3 cover image…");
+    const res = await fetch("https://api.openai.com/v1/images/generations", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${OPENAI_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "dall-e-3", prompt, n: 1, size: "1792x1024", response_format: "b64_json" }),
+    });
+    if (!res.ok) { console.warn(`⚠️  DALL-E API ${res.status} — skipping image`); return null; }
+    const data = await res.json();
+    const b64 = data?.data?.[0]?.b64_json;
+    if (!b64) return null;
+
+    fs.mkdirSync(GENERATED_IMG_DIR, { recursive: true });
+    const filename = `${slug}.png`;
+    fs.writeFileSync(path.join(GENERATED_IMG_DIR, filename), Buffer.from(b64, "base64"));
+    console.log(`   ✅ Cover image saved: public/generated/${filename}`);
+    return `/generated/${filename}`;
+  } catch (e) {
+    console.warn(`⚠️  Cover image failed: ${e.message}`);
+    return null;
+  }
+}
+
 // ─── 4. MAIN ─────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -387,11 +421,15 @@ async function main() {
     .slice(0, 60);
   const slug = `${today}-${slugBase}`;
 
+  // Optional: generate DALL-E 3 cover image
+  const coverImage = await generateCoverImage(slug, post.title, post.excerpt);
+
   const output = {
     slug,
     title: post.title,
     date: today,
     excerpt: post.excerpt ?? "",
+    coverImage: coverImage || undefined,
     category: ["ai-agents", "automation", "tools", "strategy"].includes(post.category)
       ? post.category
       : "ai-agents",

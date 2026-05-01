@@ -1,12 +1,1 @@
-{
-  "crons": [
-    {
-      "path": "/api/agents/content/trigger",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/agents/social/trigger",
-      "schedule": "0 10 * * *"
-    }
-  ]
-}
+{}

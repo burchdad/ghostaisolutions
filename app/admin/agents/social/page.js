@@ -2,11 +2,20 @@ import { getAllPosts } from "@/lib/allPosts";
 import { requireAdmin } from "@/lib/adminGuard";
 import SocialAgentClient from "./SocialAgentClient";
 import { listSocialDrafts } from "@/lib/socialDraftStore";
+import { getProviderConnection } from "@/lib/tokenStore";
 
 export const metadata = { title: "Social Agent - Admin", robots: { index: false, follow: false } };
 
 export default async function AdminSocialAgentPage() {
   requireAdmin("/admin/agents/social");
+
+  const metaConnection = getProviderConnection("meta", { orgId: "default" });
+  const facebookConnection = getProviderConnection("facebook", { orgId: "default" });
+  const facebookConnected = Boolean(
+    (process.env.FACEBOOK_PAGE_ACCESS_TOKEN && process.env.FACEBOOK_PAGE_ID) ||
+      metaConnection?.accessToken ||
+      facebookConnection?.accessToken
+  );
 
   const drafts = await listSocialDrafts().catch(() => []);
 
@@ -46,9 +55,9 @@ export default async function AdminSocialAgentPage() {
     {
       name: "Facebook Subagent",
       href: "/admin/agents/social/facebook",
-      description: "Business page community manager",
-      env: "FACEBOOK_PAGE_ACCESS_TOKEN, FACEBOOK_PAGE_ID",
-      connected: Boolean(process.env.FACEBOOK_PAGE_ACCESS_TOKEN && process.env.FACEBOOK_PAGE_ID),
+      description: "Meta business login and asset manager",
+      env: "META_APP_ID, META_APP_SECRET, META_REDIRECT_URI",
+      connected: facebookConnected,
       icon: "f",
     },
   ];
@@ -72,10 +81,10 @@ export default async function AdminSocialAgentPage() {
       scope: "Tweet create/read",
     },
     {
-      name: "Facebook Page",
-      env: "FACEBOOK_PAGE_ACCESS_TOKEN + FACEBOOK_PAGE_ID",
-      connected: Boolean(process.env.FACEBOOK_PAGE_ACCESS_TOKEN && process.env.FACEBOOK_PAGE_ID),
-      scope: "pages_manage_posts, pages_read_engagement",
+      name: "Meta Business Account",
+      env: "META_APP_ID / META_APP_SECRET / META_REDIRECT_URI",
+      connected: facebookConnected,
+      scope: "pages_manage_posts, pages_read_engagement, business_management, leads_retrieval",
     },
   ];
 

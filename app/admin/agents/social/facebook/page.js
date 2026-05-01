@@ -1,17 +1,25 @@
 import Link from "next/link";
+import MetaConnectionPanel from "@/components/MetaConnectionPanel";
 import { requireAdmin } from "@/lib/adminGuard";
+import { getProviderConnection } from "@/lib/tokenStore";
 
 export const metadata = { title: "Facebook Subagent — Admin", robots: { index: false, follow: false } };
 
-export default function FacebookSubagentPage() {
+export default function FacebookSubagentPage({ searchParams }) {
   requireAdmin("/admin/agents/social/facebook");
 
+  const orgId = "default";
+  const metaConnection = getProviderConnection("meta", { orgId });
+  const facebookFallback = getProviderConnection("facebook", { orgId });
+  const isConnected = Boolean(metaConnection?.accessToken || facebookFallback?.accessToken);
+
   const facebookStatus = {
-    connected: Boolean(process.env.FACEBOOK_PAGE_ACCESS_TOKEN && process.env.FACEBOOK_PAGE_ID),
-    accountType: "Business Page",
+    connected: isConnected,
+    accountType: "Meta Business Login",
     requiredEnvVars: [
-      "FACEBOOK_PAGE_ACCESS_TOKEN",
-      "FACEBOOK_PAGE_ID",
+      "META_APP_ID",
+      "META_APP_SECRET",
+      "META_REDIRECT_URI",
     ],
     availableScopes: [
       "pages_manage_posts",
@@ -25,24 +33,27 @@ export default function FacebookSubagentPage() {
     {
       title: "Page Posts",
       description: "Publish articles, images, videos, and links to business page",
-      enabled: facebookStatus.connected,
+      enabled: isConnected,
     },
     {
       title: "Engagement Insights",
       description: "Track page likes, post reactions, shares, and reach metrics",
-      enabled: facebookStatus.connected,
+      enabled: isConnected,
     },
     {
       title: "Community Management",
       description: "Monitor comments and manage audience interaction",
-      enabled: facebookStatus.connected,
+      enabled: isConnected,
     },
     {
       title: "Page Analytics",
       description: "View page performance, audience demographics, best times to post",
-      enabled: facebookStatus.connected,
+      enabled: isConnected,
     },
   ];
+
+  const status = searchParams?.status || "";
+  const message = searchParams?.message || "";
 
   return (
     <section className="py-16">
@@ -52,13 +63,22 @@ export default function FacebookSubagentPage() {
             <Link href="/admin/agents/social" className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300 hover:text-cyan-200">
               ← Social Agent
             </Link>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300 mt-2">Facebook Subagent</p>
-            <h1 className="mt-1 text-3xl font-bold text-white">Facebook Business Page Integration</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300 mt-2">Meta Provider</p>
+            <h1 className="mt-1 text-3xl font-bold text-white">Meta Business Login Integration</h1>
           </div>
           <Link href="/admin/agents" className="rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-slate-200">
             Back to Agent Hub
           </Link>
         </div>
+
+        <MetaConnectionPanel
+          connected={isConnected}
+          orgId={orgId}
+          profile={metaConnection?.profile || null}
+          assets={metaConnection?.assets || facebookFallback?.assets || null}
+          status={status}
+          message={message}
+        />
 
         {/* Connection Status */}
         <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-5 mb-6">
@@ -83,6 +103,9 @@ export default function FacebookSubagentPage() {
                   <code key={env} className="block text-sm text-slate-300 font-mono">{env}</code>
                 ))}
               </div>
+              {metaConnection?.expiresAt ? (
+                <p className="mt-3 text-sm text-slate-300">Token expires at: {new Date(metaConnection.expiresAt).toLocaleString()}</p>
+              ) : null}
             </div>
           </div>
         </div>
@@ -102,7 +125,7 @@ export default function FacebookSubagentPage() {
         {/* Platform-Specific Capabilities */}
         <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
           <h2 className="text-lg font-semibold text-white">Content Optimization</h2>
-          <p className="mt-2 text-slate-300">Facebook Subagent capabilities for repurposing content:</p>
+          <p className="mt-2 text-slate-300">Meta-connected capabilities available to Ghost after successful business login:</p>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {capabilities.map((cap) => (
               <article key={cap.title} className="rounded-xl border border-white/10 bg-slate-900/40 p-4">
