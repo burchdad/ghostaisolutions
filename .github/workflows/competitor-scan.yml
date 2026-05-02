@@ -33,3 +33,16 @@ jobs:
             echo "Competitor scan failed with status $response"
             exit 1
           fi
+
+      - name: Notify Slack on failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_WEBHOOK_URL not configured; skipping Slack notification"
+            exit 0
+          fi
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          PAYLOAD=$(printf '{"text":"GitHub Actions failure: %s (%s) on %s. Run: %s"}' "${{ github.workflow }}" "${{ github.job }}" "${{ github.ref_name }}" "$RUN_URL")
+          curl -sS -X POST -H "Content-type: application/json" --data "$PAYLOAD" "$SLACK_WEBHOOK_URL"
