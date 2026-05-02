@@ -81,18 +81,18 @@ async function runTrigger(request) {
 
         postResult.moderation = moderation;
 
-        if (moderation.status !== "approved") {
+        if (moderation.status === "blocked") {
           const draft = await createSocialDraft({
             slug: post.slug,
             title: post.title,
             excerpt: post.excerpt || "",
             sourceType: "ai-moderator-review",
-            status: moderation.status === "blocked" ? "rejected" : "review",
+            status: "rejected",
             platformVariants: variants,
           });
 
           postResult.draftId = draft.id;
-          postResult.status = moderation.status === "blocked" ? "blocked_by_moderator" : "queued_for_review";
+          postResult.status = "blocked_by_moderator";
           results.push(postResult);
           continue;
         }
@@ -105,13 +105,17 @@ async function runTrigger(request) {
         });
 
         postResult.publish = publishAll.results;
-        postResult.status = publishAll.success ? "published" : "publish_partial";
+        postResult.status = publishAll.success
+          ? moderation.status === "review"
+            ? "published_with_review_flags"
+            : "published"
+          : "publish_partial";
 
         const draft = await createSocialDraft({
           slug: post.slug,
           title: post.title,
           excerpt: post.excerpt || "",
-          sourceType: "automation-audit",
+          sourceType: moderation.status === "review" ? "automation-audit-reviewed" : "automation-audit",
           status: publishAll.success ? "published" : "review",
           platformVariants: variants,
           publishResults: publishAll.results,
