@@ -39,7 +39,7 @@ jobs:
         id: diff
         run: |
           git add content/auto-posts/
-          git add --ignore-unmatch public/generated/
+          if [ -d public/generated ] && [ "$(ls -A public/generated)" ]; then git add public/generated/; fi
           git diff --cached --exit-code && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Commit and push new post
