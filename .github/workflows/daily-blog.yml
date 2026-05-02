@@ -4,6 +4,10 @@ on:
   # Allow manual trigger from GitHub Actions UI
   workflow_dispatch:
 
+concurrency:
+  group: daily-blog-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -12,6 +16,7 @@ jobs:
     name: Generate & Publish Blog Post
     runs-on: ubuntu-latest
     environment: Production
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repo

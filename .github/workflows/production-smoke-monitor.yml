@@ -1,0 +1,87 @@
+name: Production Smoke Monitor
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 * * * *"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: production-smoke-monitor-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke-monitor:
+    name: Run Production Smoke Checks
+    runs-on: ubuntu-latest
+    environment: Production
+    timeout-minutes: 10
+
+    steps:
+      - name: Run health and route checks
+        env:
+          SITE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+        run: |
+          TARGET_URL="${SITE_URL%/}"
+          if [ "$TARGET_URL" = "https://ghostai.solutions" ]; then
+            TARGET_URL="https://www.ghostai.solutions"
+          fi
+
+          HEALTH_CODE=$(curl -sSL --retry 3 --retry-delay 2 --retry-all-errors --connect-timeout 15 --max-time 60 -o /tmp/health.json -w "%{http_code}" "$TARGET_URL/api/health")
+          echo "Health status: $HEALTH_CODE"
+          cat /tmp/health.json
+          if [ "$HEALTH_CODE" -ne 200 ]; then
+            echo "Health endpoint failed with status $HEALTH_CODE"
+            exit 1
+          fi
+
+          node -e 'const fs=require("fs");const d=JSON.parse(fs.readFileSync("/tmp/health.json","utf8"));if(!d.ok){console.error("Health payload missing ok=true");process.exit(1)}'
+
+          HOME_CODE=$(curl -sSL --retry 2 --retry-delay 2 --retry-all-errors --connect-timeout 15 --max-time 60 -o /dev/null -w "%{http_code}" "$TARGET_URL/")
+          echo "Homepage status: $HOME_CODE"
+          if [ "$HOME_CODE" -lt 200 ] || [ "$HOME_CODE" -ge 400 ]; then
+            echo "Homepage check failed with status $HOME_CODE"
+            exit 1
+          fi
+
+          ADMIN_CODE=$(curl -sSL --retry 2 --retry-delay 2 --retry-all-errors --connect-timeout 15 --max-time 60 -o /dev/null -w "%{http_code}" "$TARGET_URL/admin/login")
+          echo "Admin login status: $ADMIN_CODE"
+          if [ "$ADMIN_CODE" -lt 200 ] || [ "$ADMIN_CODE" -ge 400 ]; then
+            echo "Admin login check failed with status $ADMIN_CODE"
+            exit 1
+          fi
+
+      - name: Open or update failure issue
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const title = "Ops Alert: Production Smoke Monitor Failed";
+            const runUrl = `https://github.com/${owner}/${repo}/actions/runs/${context.runId}`;
+            const body = [
+              "Automated production smoke checks failed.",
+              "",
+              `Run: ${runUrl}`,
+              `Time: ${new Date().toISOString()}`,
+              "",
+              "Please inspect workflow logs and resolve before next cycle."
+            ].join("\n");
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "open",
+              per_page: 100,
+            });
+
+            const existing = issues.find((i) => i.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({ owner, repo, issue_number: existing.number, body });
+            } else {
+              await github.rest.issues.create({ owner, repo, title, body });
+            }

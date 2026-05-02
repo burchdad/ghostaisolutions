@@ -3,10 +3,15 @@ name: Competitor Intelligence Scan
 on:
   workflow_dispatch:
 
+concurrency:
+  group: competitor-scan-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   competitor-scan:
     runs-on: ubuntu-latest
     environment: Production
+    timeout-minutes: 10
     steps:
       - name: Run weekly competitor scan
         env:
@@ -17,10 +22,11 @@ jobs:
           if [ "$TARGET_URL" = "https://ghostai.solutions" ]; then
             TARGET_URL="https://www.ghostai.solutions"
           fi
-          response=$(curl -sL -o /dev/null -w "%{http_code}" \
+          response=$(curl -sSL --retry 3 --retry-delay 2 --retry-all-errors --connect-timeout 15 --max-time 120 -o /tmp/response.json -w "%{http_code}" \
             -H "Authorization: Bearer $CRON_SECRET" \
             "$TARGET_URL/api/agents/competitors/cron")
           echo "Response: $response"
+          cat /tmp/response.json
           if [ "$response" != "200" ]; then
             echo "Competitor scan failed with status $response"
             exit 1

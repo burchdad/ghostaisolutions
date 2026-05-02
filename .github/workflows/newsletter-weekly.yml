@@ -3,10 +3,15 @@ name: Newsletter Weekly Send
 on:
   workflow_dispatch:
 
+concurrency:
+  group: newsletter-weekly-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   send-newsletter:
     runs-on: ubuntu-latest
     environment: Production
+    timeout-minutes: 10
     steps:
       - name: Trigger weekly newsletter digest + send
         env:
@@ -17,7 +22,7 @@ jobs:
           if [ "$TARGET_URL" = "https://ghostai.solutions" ]; then
             TARGET_URL="https://www.ghostai.solutions"
           fi
-          response=$(curl -sL -o /tmp/response.json -w "%{http_code}" \
+          response=$(curl -sSL --retry 3 --retry-delay 2 --retry-all-errors --connect-timeout 15 --max-time 120 -o /tmp/response.json -w "%{http_code}" \
             -H "Authorization: Bearer $CRON_SECRET" \
             "$TARGET_URL/api/agents/newsletter/cron")
           echo "Response: $response"
