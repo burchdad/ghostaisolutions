@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { getAllPosts } from "@/lib/allPosts";
 import { repurposeBlogPost } from "@/lib/socialRepurpose";
-import { createSocialDraft, listSocialDrafts } from "@/lib/socialDraftStore";
+import { createSocialDraft } from "@/lib/socialDraftStore";
 import { publishVariants } from "@/lib/socialPublish";
+import { getPublishedSlugs, markSlugsPublished } from "@/lib/publishedSlugsStore";
 
 export const maxDuration = 60; // Allow up to 60 seconds for this endpoint
 
@@ -53,9 +54,8 @@ async function runTrigger(request) {
       );
     }
 
-    // Get already-processed slugs so cron never re-posts or re-queues the same content
-    const existingDrafts = await listSocialDrafts().catch(() => []);
-    const processedSlugs = new Set(existingDrafts.map((d) => d.slug).filter(Boolean));
+    // Get already-published slugs from the persistent store — works across Vercel invocations
+    const processedSlugs = await getPublishedSlugs();
 
     // Get queue of recent auto posts, skip any already in the draft store
     const allPosts = getAllPosts();
@@ -163,6 +163,10 @@ async function runTrigger(request) {
 
       results.push(postResult);
     }
+
+    // Persist all processed slugs so they're never re-posted across invocations
+    const slugsToMark = results.map((r) => r.slug).filter(Boolean);
+    await markSlugsPublished(slugsToMark).catch(() => null);
 
     return NextResponse.json(
       {
