@@ -13,7 +13,7 @@ jobs:
           SITE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" \
+          response=$(curl -sL -o /dev/null -w "%{http_code}" \
             -H "Authorization: Bearer $CRON_SECRET" \
             "$SITE_URL/api/agents/competitors/cron")
           echo "Response: $response"
