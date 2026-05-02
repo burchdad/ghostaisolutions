@@ -38,7 +38,8 @@ jobs:
       - name: Check for new post
         id: diff
         run: |
-          git add content/auto-posts/ public/generated/
+          git add content/auto-posts/
+          git add --ignore-unmatch public/generated/
           git diff --cached --exit-code && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Commit and push new post
