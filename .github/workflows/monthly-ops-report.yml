@@ -1,0 +1,42 @@
+name: Monthly Ops Report
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "10 14 1 * *"
+
+concurrency:
+  group: monthly-ops-report-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  send-report:
+    name: Build and Email Monthly Ops Report
+    runs-on: ubuntu-latest
+    environment: Production
+    timeout-minutes: 10
+
+    steps:
+      - name: Trigger monthly report endpoint
+        env:
+          SITE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          TARGET_URL="${SITE_URL%/}"
+          if [ "$TARGET_URL" = "https://ghostai.solutions" ]; then
+            TARGET_URL="https://www.ghostai.solutions"
+          fi
+
+          RESPONSE=$(curl -sSL --retry 3 --retry-delay 2 --retry-all-errors --connect-timeout 15 --max-time 180 -o /tmp/response.json -w "%{http_code}" \
+            -X POST \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            -H "Content-Type: application/json" \
+            "$TARGET_URL/api/agents/reports/monthly")
+
+          echo "HTTP status: $RESPONSE"
+          cat /tmp/response.json
+
+          if [ "$RESPONSE" -ne 200 ]; then
+            echo "Monthly report failed with status $RESPONSE"
+            exit 1
+          fi
