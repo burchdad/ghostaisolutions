@@ -3,6 +3,8 @@ name: Daily Blog Post
 on:
   # Allow manual trigger from GitHub Actions UI
   workflow_dispatch:
+  schedule:
+    - cron: "5 8 * * *"
 
 concurrency:
   group: daily-blog-${{ github.ref }}

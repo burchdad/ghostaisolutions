@@ -2,6 +2,8 @@ name: Competitor Intelligence Scan
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "20 13 * * 4"
 
 concurrency:
   group: competitor-scan-${{ github.ref }}

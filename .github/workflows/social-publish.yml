@@ -2,6 +2,8 @@ name: Daily Social Publishing
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "20 9 * * *"
 
 concurrency:
   group: social-publish-${{ github.ref }}
