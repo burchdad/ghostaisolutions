@@ -28,7 +28,10 @@ export async function POST(request) {
       );
     }
 
-    const repurposed = await repurposeBlogPost(blogData);
+    const repurposed = await repurposeBlogPost({
+      ...blogData,
+      slug,
+    });
 
     return NextResponse.json(
       {

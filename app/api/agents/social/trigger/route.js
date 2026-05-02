@@ -61,6 +61,7 @@ async function runTrigger(request) {
           title: post.title,
           excerpt: post.excerpt || "",
           content,
+          slug: post.slug,
         });
         const variants = repurposed.variants;
         const moderation = repurposed.moderation;
