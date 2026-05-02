@@ -1,0 +1,60 @@
+name: Deploy Notification
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-notify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  notify:
+    name: Notify Slack of Deployment
+    runs-on: ubuntu-latest
+    environment: Production
+    timeout-minutes: 5
+
+    steps:
+      - name: Post deployment notification to Slack
+        env:
+          SLACK_DEPLOY_WEBHOOK: ${{ secrets.SLACK_DEPLOY_WEBHOOK }}
+        run: |
+          if [ -z "$SLACK_DEPLOY_WEBHOOK" ]; then
+            echo "SLACK_DEPLOY_WEBHOOK not configured; skipping deployment notification"
+            exit 0
+          fi
+
+          SITE_URL="${{ secrets.NEXT_PUBLIC_BASE_URL }}"
+          DEPLOY_URL="${SITE_URL:-https://www.ghostai.solutions}"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          SHORT_SHA="${{ github.sha }}"
+          SHORT_SHA="${SHORT_SHA:0:7}"
+
+          PAYLOAD=$(jq -n \
+            --arg sha "$SHORT_SHA" \
+            --arg author "${{ github.actor }}" \
+            --arg branch "${{ github.ref_name }}" \
+            --arg commit_msg "${{ github.event.head_commit.message }}" \
+            --arg commit_url "$COMMIT_URL" \
+            --arg run_url "$RUN_URL" \
+            --arg site_url "$DEPLOY_URL" \
+            --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{ blocks: [
+              {type:"header",text:{type:"plain_text",text:"🚀 Deployment to main",emoji:true}},
+              {type:"section",fields:[
+                {type:"mrkdwn",text:("*Commit:* <" + $commit_url + "|`" + $sha + "`>")},
+                {type:"mrkdwn",text:("*Author:* " + $author)},
+                {type:"mrkdwn",text:("*Branch:* `" + $branch + "`")},
+                {type:"mrkdwn",text:("*Time:* " + $ts)}
+              ]},
+              {type:"section",text:{type:"mrkdwn",text:("*Message:* " + $commit_msg)}},
+              {type:"actions",elements:[
+                {type:"button",text:{type:"plain_text",text:"View Site"},url:$site_url},
+                {type:"button",text:{type:"plain_text",text:"View Run"},url:$run_url}
+              ]}
+            ]}')
+
+          curl -sS -X POST -H "Content-type: application/json" --data "$PAYLOAD" "$SLACK_DEPLOY_WEBHOOK"

@@ -10,6 +10,37 @@ function getCronSecret() {
   return process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET || "";
 }
 
+async function notifySlackBlock(slug, title, reasons) {
+  const webhook = process.env.SLACK_ALERTS_WEBHOOK;
+  if (!webhook) return;
+  try {
+    const reasonText = Array.isArray(reasons) && reasons.length ? reasons.join("; ") : "No reason provided";
+    const blocks = [
+      { type: "header", text: { type: "plain_text", text: "🚫 Social Post Blocked by Moderator", emoji: true } },
+      {
+        type: "section",
+        fields: [
+          { type: "mrkdwn", text: `*Post:* ${title || slug}` },
+          { type: "mrkdwn", text: `*Slug:* \`${slug}\`` },
+          { type: "mrkdwn", text: `*Reason:* ${reasonText}` },
+          { type: "mrkdwn", text: `*Time:* ${new Date().toISOString()}` },
+        ],
+      },
+      {
+        type: "context",
+        elements: [{ type: "mrkdwn", text: "Review this post in the admin dashboard before publishing." }],
+      },
+    ];
+    await fetch(webhook, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ blocks }),
+    });
+  } catch (_) {
+    // Best-effort — don't break the pipeline
+  }
+}
+
 async function runTrigger(request) {
   try {
     // Validate cron secret
@@ -90,6 +121,8 @@ async function runTrigger(request) {
             status: "rejected",
             platformVariants: variants,
           });
+
+          await notifySlackBlock(post.slug, post.title, moderation.reasons);
 
           postResult.draftId = draft.id;
           postResult.status = "blocked_by_moderator";

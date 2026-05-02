@@ -44,5 +44,20 @@ jobs:
             exit 0
           fi
           RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          PAYLOAD=$(printf '{"text":"GitHub Actions failure: %s (%s) on %s. Run: %s"}' "${{ github.workflow }}" "${{ github.job }}" "${{ github.ref_name }}" "$RUN_URL")
+          PAYLOAD=$(jq -n \
+            --arg title "⚠️ WARNING: Newsletter Weekly Send Failed" \
+            --arg workflow "${{ github.workflow }}" \
+            --arg branch "${{ github.ref_name }}" \
+            --arg run_url "$RUN_URL" \
+            --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            '{ blocks: [
+              {type:"header",text:{type:"plain_text",text:$title,emoji:true}},
+              {type:"section",fields:[
+                {type:"mrkdwn",text:("*Severity:* ⚠️ Warning")},
+                {type:"mrkdwn",text:("*Workflow:* " + $workflow)},
+                {type:"mrkdwn",text:("*Branch:* `" + $branch + "`")},
+                {type:"mrkdwn",text:("*Time:* " + $ts)}
+              ]},
+              {type:"actions",elements:[{type:"button",text:{type:"plain_text",text:"View Run"},url:$run_url}]}
+            ]}')
           curl -sS -X POST -H "Content-type: application/json" --data "$PAYLOAD" "$SLACK_WEBHOOK_URL"

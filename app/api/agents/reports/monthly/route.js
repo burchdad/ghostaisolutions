@@ -258,12 +258,50 @@ export async function POST(request) {
       html: buildReportHtml(report, siteUrl),
     });
 
+    // Cross-post compact summary to Slack
+    const opsWebhook = process.env.SLACK_OPS_SUMMARY_WEBHOOK;
+    let slackPosted = false;
+    if (opsWebhook) {
+      try {
+        const slackBlocks = [
+          {
+            type: "header",
+            text: { type: "plain_text", text: `📅 Monthly Ops Report — ${periodLabel}`, emoji: true },
+          },
+          {
+            type: "section",
+            fields: [
+              { type: "mrkdwn", text: `*Blog Posts:*\n${report.posts.totalPosts} (${report.posts.autoPosts} auto)` },
+              { type: "mrkdwn", text: `*Social Published:*\n${report.social.publishedTotal} posts` },
+              { type: "mrkdwn", text: `*Trends Captured:*\n${report.trends.trendsCaptured} (${report.trends.highScoreTrends} high)` },
+              { type: "mrkdwn", text: `*Subscribers:*\n${report.subscribers.active} active` },
+              { type: "mrkdwn", text: `*Campaigns Sent:*\n${report.campaigns.sent}` },
+              { type: "mrkdwn", text: `*Competitors Tracked:*\n${report.competitors.total}` },
+            ],
+          },
+          {
+            type: "context",
+            elements: [{ type: "mrkdwn", text: `Full report emailed to ${recipient} | Dashboard: ${siteUrl}/admin/agents` }],
+          },
+        ];
+        await fetch(opsWebhook, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ blocks: slackBlocks }),
+        });
+        slackPosted = true;
+      } catch (_) {
+        // Slack cross-post is best-effort; don't fail the report
+      }
+    }
+
     return NextResponse.json({
       success: true,
       recipient,
       periodLabel,
       report,
       emailId: emailResult?.id || null,
+      slackPosted,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {

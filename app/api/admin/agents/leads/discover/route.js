@@ -9,6 +9,37 @@ function ensureAdmin() {
   return verifyAdminSessionToken(token);
 }
 
+async function notifySlackHighValueLead(lead) {
+  const webhook = process.env.SLACK_ALERTS_WEBHOOK;
+  if (!webhook) return;
+  try {
+    const score = lead.score?.total ?? lead.aiOpportunity?.score ?? 0;
+    const company = lead.company || lead.domain || "Unknown";
+    const blocks = [
+      { type: "header", text: { type: "plain_text", text: "🎯 High-Value Lead Discovered", emoji: true } },
+      {
+        type: "section",
+        fields: [
+          { type: "mrkdwn", text: `*Company:* ${company}` },
+          { type: "mrkdwn", text: `*Score:* ${score}/100` },
+          { type: "mrkdwn", text: `*Domain:* ${lead.domain || "N/A"}` },
+          { type: "mrkdwn", text: `*Time:* ${new Date().toISOString()}` },
+        ],
+      },
+      ...(lead.score?.reasons?.length
+        ? [{ type: "section", text: { type: "mrkdwn", text: `*Signals:* ${lead.score.reasons.slice(0, 3).join("; ")}` } }]
+        : []),
+    ];
+    await fetch(webhook, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ blocks }),
+    });
+  } catch (_) {
+    // Best-effort
+  }
+}
+
 function parseUrlInputs(payload) {
   if (Array.isArray(payload?.urls)) {
     return payload.urls.map((u) => String(u || "").trim()).filter(Boolean);
@@ -43,6 +74,12 @@ export async function POST(request) {
         const lead = await upsertLeadByDomain(profile);
         item.success = true;
         item.lead = lead;
+
+        // Alert on high-value leads (score >= 75)
+        const score = lead.score?.total ?? lead.aiOpportunity?.score ?? 0;
+        if (score >= 75) {
+          await notifySlackHighValueLead(lead);
+        }
       } catch (error) {
         item.error = error?.message || String(error);
       }
