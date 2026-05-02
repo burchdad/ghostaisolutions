@@ -11,6 +11,7 @@ jobs:
   generate:
     name: Generate & Publish Blog Post
     runs-on: ubuntu-latest
+    environment: Production
 
     steps:
       - name: Checkout repo

@@ -6,6 +6,7 @@ on:
 jobs:
   send-newsletter:
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       - name: Trigger weekly newsletter digest + send
         env:

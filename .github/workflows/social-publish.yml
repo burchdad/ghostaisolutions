@@ -7,6 +7,7 @@ jobs:
   publish:
     name: Trigger Social Agent
     runs-on: ubuntu-latest
+    environment: Production
 
     steps:
       - name: Call social trigger endpoint

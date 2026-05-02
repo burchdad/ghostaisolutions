@@ -6,6 +6,7 @@ on:
 jobs:
   competitor-scan:
     runs-on: ubuntu-latest
+    environment: Production
     steps:
       - name: Run weekly competitor scan
         env:
