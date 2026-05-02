@@ -15,7 +15,10 @@ jobs:
           SITE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
-          TARGET_URL="${SITE_URL/https://ghostai.solutions/https://www.ghostai.solutions}"
+          TARGET_URL="${SITE_URL%/}"
+          if [ "$TARGET_URL" = "https://ghostai.solutions" ]; then
+            TARGET_URL="https://www.ghostai.solutions"
+          fi
           RESPONSE=$(curl -sL -o /tmp/response.json -w "%{http_code}" \
             -X POST \
             -H "Authorization: Bearer $CRON_SECRET" \
