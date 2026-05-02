@@ -13,9 +13,10 @@ jobs:
           SITE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
+          TARGET_URL="${SITE_URL/https://ghostai.solutions/https://www.ghostai.solutions}"
           response=$(curl -sL -o /dev/null -w "%{http_code}" \
             -H "Authorization: Bearer $CRON_SECRET" \
-            "$SITE_URL/api/agents/newsletter/cron")
+            "$TARGET_URL/api/agents/newsletter/cron")
           echo "Response: $response"
           if [ "$response" != "200" ]; then
             echo "Newsletter send failed with status $response"
