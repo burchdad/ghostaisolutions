@@ -2,7 +2,7 @@ import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { siteConfig } from "@/lib/siteConfig";
 
-const LAST_UPDATED = "April 25, 2026";
+const LAST_UPDATED = "May 20, 2026";
 
 const sections = [
   {
@@ -94,12 +94,23 @@ const sections = [
       "Request access to or correction of personal information we hold about you.",
       "Request deletion of personal information, subject to legal, contractual, and security exceptions.",
       "Opt out of marketing emails by using unsubscribe links or contacting us directly.",
+      "Opt out of SMS messages at any time by replying STOP, or reply HELP for assistance.",
       "Control cookies and tracking through browser settings, device controls, and applicable consent preferences.",
     ],
   },
   {
+    id: "sms-mobile-messaging",
+    title: "9. SMS and Mobile Messaging",
+    body: [
+      "If you provide your mobile phone number and consent to receive SMS messages from Ghost AI Solutions, we may send messages related to appointment scheduling, follow-up, support, service updates, and business communications.",
+      "Message frequency may vary. Message and data rates may apply. Consent to receive SMS messages is not a condition of purchase.",
+      "You can opt out of SMS messages at any time by replying STOP. You may reply HELP for assistance.",
+      "Ghost AI Solutions does not sell, rent, or share mobile phone numbers or SMS opt-in consent with third parties for their marketing or promotional purposes. Mobile opt-in information is used only to provide the messaging services requested or consented to by the recipient.",
+    ],
+  },
+  {
     id: "third-party-links",
-    title: "9. Third-Party Links and Integrations",
+    title: "10. Third-Party Links and Integrations",
     body: [
       "Our website and services may contain links to or integrations with third-party sites, platforms, and tools that we do not own or control.",
       "We are not responsible for the privacy practices of third parties. We encourage you to review their privacy notices and terms before sharing data.",
@@ -107,7 +118,7 @@ const sections = [
   },
   {
     id: "children",
-    title: "10. Children's Privacy",
+    title: "11. Children's Privacy",
     body: [
       "Our website and services are not directed to children under 13 years of age, and we do not knowingly collect personal information from children under 13.",
       "If you believe a child has provided us with personal information, contact us and we will take appropriate steps to review and remove such data where required.",
@@ -115,7 +126,7 @@ const sections = [
   },
   {
     id: "policy-changes",
-    title: "11. Changes to This Privacy Policy",
+    title: "12. Changes to This Privacy Policy",
     body: [
       "We may update this Privacy Policy from time to time to reflect changes in services, legal requirements, or business operations.",
       "When we update this policy, we will revise the Last Updated date above. Continued use of our website or services after updates indicates acknowledgment of the revised policy.",
@@ -123,7 +134,7 @@ const sections = [
   },
   {
     id: "contact",
-    title: "12. Contact Information",
+    title: "13. Contact Information",
     body: [
       "For questions, requests, or concerns related to privacy and data handling, contact us at the email below or through our contact form.",
     ],
