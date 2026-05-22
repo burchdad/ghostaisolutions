@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { siteConfig } from "@/lib/siteConfig";
 
 export const metadata = { title: "Terms of Service - Ghost AI Solutions" };
@@ -31,10 +32,11 @@ export default function Terms() {
 
         <h2 className="mt-8 text-xl font-semibold">4. SMS and Mobile Messaging</h2>
         <p className="mt-2 text-slate-600 dark:text-slate-300">
-          If you provide your mobile phone number and consent to receive SMS messages from Ghost AI Solutions,
-          we may send messages related to appointment scheduling, follow-up, support, service updates, and
-          business communications. Message frequency may vary. Message and data rates may apply. Consent to
-          receive SMS messages is not a condition of purchase.
+          If you provide your mobile phone number and separately consent to receive SMS messages from Ghost AI
+          Solutions, such as by checking the optional SMS consent box on our <Link className="underline" href="/contact">contact form</Link>,
+          we may send messages related to appointment scheduling, follow-up, support, service updates, and business
+          communications. Message frequency may vary. Message and data rates may apply. Consent to receive SMS
+          messages is not a condition of purchase.
         </p>
         <p className="mt-2 text-slate-600 dark:text-slate-300">
           You can opt out of SMS messages at any time by replying STOP. You may reply HELP for assistance.

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import TrackCTA from "@/components/TrackCTA";
 import { BOOKING_URL } from "@/lib/constants";
 
@@ -14,6 +15,8 @@ const steps = [
 const initialForm = {
   name: "",
   email: "",
+  phone: "",
+  smsConsent: false,
   company: "",
   role: "",
   industry: "",
@@ -57,6 +60,8 @@ export default function QualificationIntake({ supportEmail }) {
     () => [
       `Name: ${form.name}`,
       `Email: ${form.email}`,
+      `Phone: ${form.phone}`,
+      `SMS Consent: ${form.smsConsent ? "Yes" : "No"}`,
       `Company: ${form.company}`,
       `Role: ${form.role}`,
       `Industry: ${form.industry}`,
@@ -100,6 +105,29 @@ export default function QualificationIntake({ supportEmail }) {
         <div className="grid gap-3">
           <input value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Full name" className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none" />
           <input value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="Work email" className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none" />
+          <input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="Mobile phone (optional)" className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none" />
+          <label className="flex items-start gap-3 rounded-xl border border-white/15 bg-white/5 p-4 text-xs leading-5 text-slate-200">
+            <input
+              type="checkbox"
+              checked={form.smsConsent}
+              onChange={(e) => update("smsConsent", e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-white/30 bg-slate-950 accent-cyan-300"
+            />
+            <span>
+              I agree to receive SMS messages from Ghost AI Solutions about appointment scheduling, follow-up,
+              support, service updates, and business communications. Message frequency may vary. Message and data
+              rates may apply. Reply HELP for help or STOP to opt out. Consent is not a condition of purchase.
+              View our{" "}
+              <Link className="font-semibold text-cyan-200 underline underline-offset-4" href="/privacy-policy">
+                Privacy Policy
+              </Link>{" "}
+              and{" "}
+              <Link className="font-semibold text-cyan-200 underline underline-offset-4" href="/terms">
+                Terms of Service
+              </Link>
+              .
+            </span>
+          </label>
           <input value={form.company} onChange={(e) => update("company", e.target.value)} placeholder="Company" className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none" />
           <input value={form.role} onChange={(e) => update("role", e.target.value)} placeholder="Role" className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none" />
         </div>

@@ -20,7 +20,7 @@ const sections = [
       "We may collect information you provide directly, information collected automatically, and information obtained from authorized third-party connections.",
     ],
     bullets: [
-      "Personal and business information submitted through forms, strategy-call scheduling, or service intake (for example: name, email, company name, role, project details).",
+      "Personal and business information submitted through forms, strategy-call scheduling, or service intake (for example: name, email, mobile phone number, company name, role, project details, and optional SMS consent status).",
       "Contact and communication data exchanged by email, contact forms, and client communication channels.",
       "Usage and analytics data such as page views, session behavior, referrer data, and engagement events.",
       "Technical and device data such as browser type, IP address, operating system, and general geolocation derived from network metadata.",
@@ -102,10 +102,10 @@ const sections = [
     id: "sms-mobile-messaging",
     title: "9. SMS and Mobile Messaging",
     body: [
-      "If you provide your mobile phone number and consent to receive SMS messages from Ghost AI Solutions, we may send messages related to appointment scheduling, follow-up, support, service updates, and business communications.",
+      "If you provide your mobile phone number and separately consent to receive SMS messages from Ghost AI Solutions, such as by checking the optional SMS consent box on our contact form, we may send messages related to appointment scheduling, follow-up, support, service updates, and business communications.",
       "Message frequency may vary. Message and data rates may apply. Consent to receive SMS messages is not a condition of purchase.",
       "You can opt out of SMS messages at any time by replying STOP. You may reply HELP for assistance.",
-      "Ghost AI Solutions does not sell, rent, or share mobile phone numbers or SMS opt-in consent with third parties for their marketing or promotional purposes. Mobile opt-in information is used only to provide the messaging services requested or consented to by the recipient.",
+      "Ghost AI Solutions does not sell, rent, or share mobile phone numbers or SMS opt-in consent with third parties for their marketing or promotional purposes. Mobile phone numbers and SMS opt-in information are used only to provide the messaging services requested or consented to by the recipient.",
     ],
   },
   {
