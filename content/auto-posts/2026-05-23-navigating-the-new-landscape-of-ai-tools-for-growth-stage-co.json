@@ -1,0 +1,122 @@
+{
+  "slug": "2026-05-23-navigating-the-new-landscape-of-ai-tools-for-growth-stage-co",
+  "title": "Navigating the New Landscape of AI Tools for Growth-Stage Companies",
+  "date": "2026-05-23",
+  "excerpt": "This week, we explore the latest developments in AI tools that could significantly impact your operations. Learn how to leverage these innovations while avoiding potential pitfalls in your tech stack.",
+  "category": "tools",
+  "tags": [
+    "AI tools",
+    "automation",
+    "growth-stage companies"
+  ],
+  "sections": [
+    {
+      "type": "p",
+      "text": "The landscape of AI tools is evolving rapidly, and growth-stage companies need to stay informed. Recent developments highlight both the opportunities and challenges in adopting new technologies."
+    },
+    {
+      "type": "h2",
+      "text": "Cost of AI Tools: Value vs. Expense"
+    },
+    {
+      "type": "p",
+      "text": "One significant story is the release of Claude Code, which can cost up to $200 a month, while alternatives like Goose provide similar functionalities for free. This raises critical questions about budget allocation and ROI in your tech stack."
+    },
+    {
+      "type": "p",
+      "text": "As a COO or RevOps lead, it's essential to evaluate whether the price of premium tools genuinely aligns with your company's needs. Consider the specific functionalities that justify the investment."
+    },
+    {
+      "type": "h2",
+      "text": "New Capabilities: What Cowork Offers"
+    },
+    {
+      "type": "p",
+      "text": "Anthropic's new Cowork feature allows users to interact with files without requiring coding knowledge. This could streamline workflows for teams that might not have deep technical expertise."
+    },
+    {
+      "type": "p",
+      "text": "Evaluate how such capabilities could be integrated into your existing processes. Tools that require less specialized knowledge can improve team efficiency and reduce training time."
+    },
+    {
+      "type": "h2",
+      "text": "Building a Robust Infrastructure"
+    },
+    {
+      "type": "p",
+      "text": "The article about Kairon highlights the importance of a separate gRPC authorization service in multi-tenant platforms. This is particularly relevant for growth-stage companies as they scale operations."
+    },
+    {
+      "type": "p",
+      "text": "Consider your current infrastructure: Are your authorization protocols robust enough to handle increased user activity? Investing in solid infrastructure might save you from future headaches."
+    },
+    {
+      "type": "h2",
+      "text": "Exploring Local-first AI Solutions"
+    },
+    {
+      "type": "p",
+      "text": "Projects like W.A.D.E. and Jarvis are gaining traction as local-first AI solutions that prioritize user data ownership and autonomy. For companies concerned about data privacy, these tools may offer an appealing alternative."
+    },
+    {
+      "type": "p",
+      "text": "This week, consider piloting one of these local AI solutions to see if they meet your operational needs without the cloud dependency."
+    },
+    {
+      "type": "h2",
+      "text": "Practical Steps for This Week"
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Assess your budget and compare the ROI of premium AI tools vs. free alternatives.",
+        "Explore the integration of Anthropic's Cowork to enhance productivity without requiring coding skills.",
+        "Evaluate the robustness of your current infrastructure and consider upgrades if necessary.",
+        "Consider piloting local AI solutions like W.A.D.E. or Jarvis to improve data ownership and autonomy."
+      ]
+    },
+    {
+      "type": "callout",
+      "text": "This week's takeaway — Take a strategic look at your AI tool investments and consider piloting local-first solutions to enhance data ownership while optimizing costs."
+    }
+  ],
+  "sources": [
+    {
+      "title": "Claude Code costs up to $200 a month. Goose does the same thing for free.",
+      "url": "https://venturebeat.com/infrastructure/claude-code-costs-up-to-usd200-a-month-goose-does-the-same-thing-for-free",
+      "source": "VentureBeat AI",
+      "relevanceScore": 20
+    },
+    {
+      "title": "Anthropic launches Cowork, a Claude Desktop agent that works in your files — no coding required",
+      "url": "https://venturebeat.com/technology/anthropic-launches-cowork-a-claude-desktop-agent-that-works-in-your-files-no",
+      "source": "VentureBeat AI",
+      "relevanceScore": 15
+    },
+    {
+      "title": "Why Kairon runs a separate gRPC authorization service",
+      "url": "https://dev.to/greymothjp/why-kairon-runs-a-separate-grpc-authorization-service-foh",
+      "source": "Dev.to",
+      "relevanceScore": 10
+    },
+    {
+      "title": "The Download: coding&#8217;s future, the &#8216;Steroid Olympics,&#8217; and AI-driven science",
+      "url": "https://www.technologyreview.com/2026/05/22/1137845/the-download-coding-future-steroid-olympics-ai-science/",
+      "source": "MIT Tech Review",
+      "relevanceScore": 10
+    },
+    {
+      "title": "turntducky/wade-ai",
+      "url": "https://github.com/turntducky/wade-ai",
+      "source": "GitHub Trending",
+      "relevanceScore": 9
+    },
+    {
+      "title": "bionorthtech/Jarvis",
+      "url": "https://github.com/bionorthtech/Jarvis",
+      "source": "GitHub Trending",
+      "relevanceScore": 9
+    }
+  ],
+  "auto": true
+}
