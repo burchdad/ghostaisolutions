@@ -45,6 +45,8 @@ Optional alternatives for competitor market discovery:
 - `BRAVE_SEARCH_API_KEY`
 - `BING_SEARCH_API_KEY`
 
+`SERPAPI_API_KEY` is used by the shared market search layer for competitor intelligence, lead discovery, SEO/topic research, and trend enrichment.
+
 Competitor intelligence tuning:
 - `COMPETITOR_MARKET_PROFILE`
 - `COMPETITOR_MARKET_QUERIES`

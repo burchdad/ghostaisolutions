@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { upsertTrends, pruneOldTrends, getTrendStats } from "@/lib/trendStore";
+import { searchMany } from "@/lib/marketSearch";
 
 function getCronSecret() {
   return process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET || "";
@@ -34,8 +35,24 @@ async function fetchAll() {
       .then((d) => (Array.isArray(d) ? d : []).map((a) => ({ title: a.title ?? "", url: a.url ?? "", source: "Dev.to", description: a.description || a.title || "", points: a.positive_reactions_count || 0 })))
       .catch(() => []);
 
-  const [hn, reddit, devto] = await Promise.all([fetchHN(), fetchReddit(), fetchDevTo()]);
-  return [...hn, ...reddit, ...devto];
+  const fetchMarketSearch = () =>
+    searchMany([
+      "AI automation agents B2B operations news",
+      "AI voice agents business automation",
+      "RevOps AI automation workflow trends",
+      "custom GPT automation business use cases",
+    ], { limitPerQuery: 5, totalLimit: 15 })
+      .then((results) => results.map((r) => ({
+        title: r.title,
+        url: r.url,
+        source: `Market Search (${r.source})`,
+        description: r.snippet || r.title,
+        points: Math.max(1, 20 - Number(r.position || 10)),
+      })))
+      .catch(() => []);
+
+  const [hn, reddit, devto, marketSearch] = await Promise.all([fetchHN(), fetchReddit(), fetchDevTo(), fetchMarketSearch()]);
+  return [...hn, ...reddit, ...devto, ...marketSearch];
 }
 
 const HIGH_KEYWORDS = ["ai agent", "llm", "automation", "gpt", "claude", "openai", "anthropic", "startup", "saas", "workflow", "copilot", "rag", "vector", "embeddings", "fine-tun"];

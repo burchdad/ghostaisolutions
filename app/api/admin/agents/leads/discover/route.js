@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/adminSession";
 import { scrapeBusinessWebsite } from "@/lib/leadIntelligence";
 import { upsertLeadByDomain } from "@/lib/leadsStore";
+import { searchLeads } from "@/lib/marketSearch";
 
 function ensureAdmin() {
   const token = cookies().get(ADMIN_SESSION_COOKIE)?.value || "";
@@ -53,6 +54,25 @@ function parseUrlInputs(payload) {
     .filter(Boolean);
 }
 
+async function resolveLeadUrls(body) {
+  const urls = parseUrlInputs(body);
+  if (urls.length) return { urls, searchResults: [] };
+
+  const query = String(body?.query || body?.searchQuery || "").trim();
+  if (!query) return { urls: [], searchResults: [] };
+
+  const searchResults = await searchLeads({
+    query,
+    location: body?.location || "",
+    limit: Math.max(1, Math.min(25, Number(body?.limit || 15))),
+  });
+
+  return {
+    urls: searchResults.map((result) => result.url).filter(Boolean),
+    searchResults,
+  };
+}
+
 export async function POST(request) {
   if (!ensureAdmin()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -60,14 +80,15 @@ export async function POST(request) {
 
   try {
     const body = await request.json().catch(() => ({}));
-    const urls = parseUrlInputs(body).slice(0, 25);
+    const { urls, searchResults } = await resolveLeadUrls(body);
+    const limitedUrls = urls.slice(0, 25);
 
-    if (!urls.length) {
-      return NextResponse.json({ error: "No URLs provided" }, { status: 400 });
+    if (!limitedUrls.length) {
+      return NextResponse.json({ error: "No URLs or search results provided" }, { status: 400 });
     }
 
     const results = [];
-    for (const url of urls) {
+    for (const url of limitedUrls) {
       const item = { url, success: false };
       try {
         const profile = await scrapeBusinessWebsite(url);
@@ -88,6 +109,7 @@ export async function POST(request) {
 
     return NextResponse.json({
       success: true,
+      searched: searchResults.length,
       discovered: results.filter((r) => r.success).length,
       failed: results.filter((r) => !r.success).length,
       results,
