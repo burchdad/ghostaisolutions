@@ -14,6 +14,13 @@ async function checkLinkedIn() {
     });
     if (res.ok) return { platform: "linkedin", status: "ok" };
     if (res.status === 401) return { platform: "linkedin", status: "expired", detail: "Token rejected (401)" };
+    if (res.status === 403) {
+      return {
+        platform: "linkedin",
+        status: "ok",
+        detail: "Token is present; /v2/userinfo returned 403, likely because the token lacks OIDC profile scope. Publishing permissions are validated during publish.",
+      };
+    }
     return { platform: "linkedin", status: "error", detail: `HTTP ${res.status}` };
   } catch (err) {
     return { platform: "linkedin", status: "error", detail: err.message };

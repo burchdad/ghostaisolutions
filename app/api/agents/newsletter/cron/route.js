@@ -20,6 +20,16 @@ export async function GET(request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const subscribers = listSubscribers().filter((s) => s.status === "active");
+  if (subscribers.length === 0) {
+    return NextResponse.json({
+      success: true,
+      sent: 0,
+      skipped: true,
+      reason: "No active newsletter subscribers",
+    });
+  }
+
   const missingEnv = [];
   if (!OPENAI_API_KEY) missingEnv.push("OPENAI_API_KEY");
   if (!RESEND_API_KEY) missingEnv.push("RESEND_API_KEY");
@@ -61,7 +71,6 @@ export async function GET(request) {
   }
 
   // Send to active subscribers
-  const subscribers = listSubscribers().filter((s) => s.status === "active");
   let sent = 0;
   for (const sub of subscribers) {
     try {

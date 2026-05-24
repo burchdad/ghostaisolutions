@@ -243,20 +243,25 @@ export async function POST(request) {
 
     const siteUrl = canonicalSiteUrl();
     const recipient = process.env.MONTHLY_REPORT_TO_EMAIL || process.env.RESEND_REPLY_TO || process.env.OUTREACH_REPLY_TO || process.env.OUTREACH_FROM_EMAIL;
-    if (!recipient) {
-      return NextResponse.json({ error: "Missing monthly report recipient (set MONTHLY_REPORT_TO_EMAIL or RESEND_REPLY_TO/OUTREACH_REPLY_TO)" }, { status: 500 });
-    }
-
     const from = process.env.RESEND_FROM_EMAIL || "newsletter@ghostai.solutions";
     const replyTo = process.env.RESEND_REPLY_TO || process.env.OUTREACH_REPLY_TO || undefined;
+    let emailResult = null;
+    let emailSkipped = null;
 
-    const emailResult = await sendReportEmail({
-      to: recipient,
-      from,
-      replyTo,
-      subject: `Monthly Ops Report — ${periodLabel}`,
-      html: buildReportHtml(report, siteUrl),
-    });
+    if (recipient && process.env.RESEND_API_KEY) {
+      emailResult = await sendReportEmail({
+        to: recipient,
+        from,
+        replyTo,
+        subject: `Monthly Ops Report - ${periodLabel}`,
+        html: buildReportHtml(report, siteUrl),
+      });
+    } else {
+      emailSkipped = recipient
+        ? "RESEND_API_KEY not configured"
+        : "Missing monthly report recipient (set MONTHLY_REPORT_TO_EMAIL or RESEND_REPLY_TO/OUTREACH_REPLY_TO)";
+    }
+    const reportDeliveryNote = emailSkipped ? `Email skipped: ${emailSkipped}` : `Full report emailed to ${recipient}`;
 
     // Cross-post compact summary to Slack
     const opsWebhook = process.env.SLACK_OPS_SUMMARY_WEBHOOK;
@@ -281,7 +286,7 @@ export async function POST(request) {
           },
           {
             type: "context",
-            elements: [{ type: "mrkdwn", text: `Full report emailed to ${recipient} | Dashboard: ${siteUrl}/admin/agents` }],
+            elements: [{ type: "mrkdwn", text: `${reportDeliveryNote} | Dashboard: ${siteUrl}/admin/agents` }],
           },
         ];
         await fetch(opsWebhook, {
@@ -297,10 +302,11 @@ export async function POST(request) {
 
     return NextResponse.json({
       success: true,
-      recipient,
+      recipient: recipient || null,
       periodLabel,
       report,
       emailId: emailResult?.id || null,
+      emailSkipped,
       slackPosted,
       timestamp: new Date().toISOString(),
     });
