@@ -29,7 +29,8 @@ export default function CompetitorsClient({ initialCompetitors = [], initialScan
       const payload = await apiFetch("/api/agents/competitors", { method: "POST", body: JSON.stringify({ action: "scan" }) });
       setScans(payload.scans || []);
       setStats(payload.stats || {});
-      setMessage(`Scanned ${payload.scanned} competitor(s).`);
+      setCompetitors(payload.competitors || competitors);
+      setMessage(`Discovered ${payload.discovered || 0}, added ${payload.added || 0}, scanned ${payload.scanned} competitor(s).`);
     } catch (e) { setMessage(e.message); }
     finally { setScanning(false); }
   }
@@ -48,7 +49,7 @@ export default function CompetitorsClient({ initialCompetitors = [], initialScan
     if (!addForm.name.trim() || !addForm.domain.trim()) { setMessage("Name and domain are required."); return; }
     try {
       const payload = await apiFetch("/api/agents/competitors", { method: "POST", body: JSON.stringify({ action: "add", ...addForm }) });
-      setCompetitors((prev) => [...prev, payload]);
+      setCompetitors((prev) => [...prev.filter((c) => c.id !== payload.competitor?.id), payload.competitor]);
       setAddForm({ name: "", domain: "", linkedinUrl: "", twitterHandle: "", notes: "" });
       setShowAdd(false);
     } catch (e) { setMessage(e.message); }
@@ -96,8 +97,8 @@ export default function CompetitorsClient({ initialCompetitors = [], initialScan
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Tracked Competitors</p>
               <div className="flex gap-2">
-                <button onClick={handleScanAll} disabled={scanning || competitors.length === 0} className="rounded-xl bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-cyan-400 disabled:opacity-40">
-                  {scanning ? "Scanning…" : "Scan All"}
+                <button onClick={handleScanAll} disabled={scanning} className="rounded-xl bg-cyan-500 px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-cyan-400 disabled:opacity-40">
+                  {scanning ? "Scanning…" : "Research + Scan"}
                 </button>
                 <button onClick={() => setShowAdd((p) => !p)} className="rounded-xl border border-white/10 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:border-cyan-300/40 hover:text-white">+ Add</button>
               </div>
@@ -125,7 +126,7 @@ export default function CompetitorsClient({ initialCompetitors = [], initialScan
 
             {message && <p className="text-sm text-cyan-300">{message}</p>}
 
-            {competitors.length === 0 && <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center"><p className="text-xs text-slate-500">No competitors tracked yet. Click &ldquo;+ Add&rdquo; to get started.</p></div>}
+            {competitors.length === 0 && <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center"><p className="text-xs text-slate-500">No competitors tracked yet. Click &ldquo;Research + Scan&rdquo; to discover the market automatically.</p></div>}
 
             {competitors.map((comp) => (
               <div key={comp.id} className="rounded-2xl border border-white/10 bg-slate-950/60 p-4">
@@ -147,7 +148,7 @@ export default function CompetitorsClient({ initialCompetitors = [], initialScan
           {/* Scan Results */}
           <div className="lg:col-span-3 space-y-4">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Recent Intelligence</p>
-            {recentScans.length === 0 && <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-8 text-center"><p className="text-slate-400">No scans yet. Add competitors and click &ldquo;Scan All&rdquo;.</p></div>}
+            {recentScans.length === 0 && <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-8 text-center"><p className="text-slate-400">No scans yet. Run market research to discover and analyze competitors.</p></div>}
             {recentScans.map((scan) => (
               <article key={scan.id} className="rounded-2xl border border-white/10 bg-slate-950/60 overflow-hidden">
                 <div
@@ -185,6 +186,15 @@ export default function CompetitorsClient({ initialCompetitors = [], initialScan
                         <p className="text-[10px] font-semibold uppercase text-cyan-400 mb-1">Differentiation Opportunity</p>
                         <p className="text-xs text-slate-200">{scan.analysis.differentiationOpportunity}</p>
                       </div>
+                    )}
+                    {scan.analysis.ghostAdvantagePlays?.length > 0 && (
+                      <div className="rounded-xl border border-violet-300/20 bg-violet-950/10 p-3">
+                        <p className="text-[10px] font-semibold uppercase text-violet-300 mb-1">Ghost Advantage Plays</p>
+                        <ul className="space-y-0.5">{scan.analysis.ghostAdvantagePlays.map((s, i) => <li key={i} className="text-xs text-slate-200">• {s}</li>)}</ul>
+                      </div>
+                    )}
+                    {scan.analysis.websiteMessagingRecommendations?.length > 0 && (
+                      <div><p className="text-[10px] font-semibold uppercase text-slate-500 mb-1">Website Messaging Moves</p><ul className="space-y-0.5">{scan.analysis.websiteMessagingRecommendations.map((s, i) => <li key={i} className="text-xs text-slate-300">• {s}</li>)}</ul></div>
                     )}
                     {scan.analysis.actionableInsight && (
                       <div className="rounded-xl border border-amber-300/20 bg-amber-950/10 p-3">

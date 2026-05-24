@@ -37,8 +37,18 @@ Recommended for full agent stack:
 - `GITHUB_REPO_OWNER`
 - `GITHUB_REPO_NAME`
 - `GITHUB_TARGET_BRANCH`
+- `SERPAPI_API_KEY`
 - `PRODUCT_HUNT_TOKEN`
 - `GENERATE_BLOG_IMAGES`
+
+Optional alternatives for competitor market discovery:
+- `BRAVE_SEARCH_API_KEY`
+- `BING_SEARCH_API_KEY`
+
+Competitor intelligence tuning:
+- `COMPETITOR_MARKET_PROFILE`
+- `COMPETITOR_MARKET_QUERIES`
+- `COMPETITOR_SCAN_LIMIT`
 
 Compatibility fallback still supported:
 - `SOCIAL_AGENT_CRON_SECRET`
