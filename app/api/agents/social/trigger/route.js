@@ -5,6 +5,7 @@ import { createSocialDraft, listSocialDrafts } from "@/lib/socialDraftStore";
 import { publishVariants } from "@/lib/socialPublish";
 import { getPublishedSlugs, markSlugsPublished } from "@/lib/publishedSlugsStore";
 import { notifySlackSocialApproval } from "@/lib/socialApproval";
+import { withCronLogging } from "@/lib/cronRuns";
 
 export const maxDuration = 60; // Allow up to 60 seconds for this endpoint
 
@@ -202,10 +203,5 @@ async function runTrigger(request) {
   }
 }
 
-export async function GET(request) {
-  return runTrigger(request);
-}
-
-export async function POST(request) {
-  return runTrigger(request);
-}
+export const GET = withCronLogging("social-trigger", runTrigger);
+export const POST = withCronLogging("social-trigger", runTrigger);

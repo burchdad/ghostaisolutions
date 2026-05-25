@@ -4,6 +4,7 @@ import { listSocialDrafts } from "@/lib/socialDraftStore";
 import { listTrends, getTrendStats } from "@/lib/trendStore";
 import { getCampaignStats, getSubscriberStats } from "@/lib/newsletterStore";
 import { getCompetitorStats } from "@/lib/competitorStore";
+import { withCronLogging } from "@/lib/cronRuns";
 
 function getCronSecret() {
   return process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET || "";
@@ -208,7 +209,7 @@ async function sendReportEmail({ to, from, replyTo, subject, html }) {
   return response.json();
 }
 
-export async function POST(request) {
+async function handle(request) {
   const auth = request.headers.get("authorization") || "";
   const cronSecret = getCronSecret();
   if (!cronSecret || auth !== `Bearer ${cronSecret}`) {
@@ -315,6 +316,5 @@ export async function POST(request) {
   }
 }
 
-export async function GET(request) {
-  return POST(request);
-}
+export const POST = withCronLogging("monthly-ops-report", handle);
+export const GET = withCronLogging("monthly-ops-report", handle);

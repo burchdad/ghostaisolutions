@@ -80,6 +80,8 @@ Active production jobs:
 - Thursdays `13:20` UTC: competitor intelligence scan
 - First of month `14:10` UTC: monthly ops report
 
+When `DATABASE_URL` is configured, each scheduled route records a row in the `cron_runs` Postgres table with job name, status, HTTP status, timestamps, duration, and error details.
+
 Keep the matching GitHub Actions workflows manual-only unless Vercel Cron is intentionally disabled. Running both schedulers will duplicate posts, reports, and Slack alerts.
 
 ## 3) GitHub Actions secrets

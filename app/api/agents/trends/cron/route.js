@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { upsertTrends, pruneOldTrends, getTrendStats } from "@/lib/trendStore";
 import { searchMany } from "@/lib/marketSearch";
+import { withCronLogging } from "@/lib/cronRuns";
 
 function getCronSecret() {
   return process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET || "";
@@ -66,7 +67,7 @@ function scoreRelevance(title = "", description = "") {
   return Math.min(score, 100);
 }
 
-export async function POST(request) {
+async function handle(request) {
   const authHeader = request.headers.get("Authorization");
   const cronSecret = getCronSecret();
   if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
@@ -85,6 +86,5 @@ export async function POST(request) {
   return NextResponse.json({ success: true, added, updated, stats });
 }
 
-export async function GET(request) {
-  return POST(request);
-}
+export const POST = withCronLogging("trends-cron", handle);
+export const GET = withCronLogging("trends-cron", handle);

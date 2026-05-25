@@ -6,6 +6,7 @@ import {
   upsertCompetitorsAsync,
 } from "@/lib/competitorStore";
 import { discoverCompetitorWebsites, scanCompetitorWebsite } from "@/lib/competitorResearch";
+import { withCronLogging } from "@/lib/cronRuns";
 
 export const maxDuration = 60;
 
@@ -33,7 +34,7 @@ function errorScan(competitor, error) {
   };
 }
 
-export async function GET(request) {
+async function handle(request) {
   const auth = request.headers.get("authorization") || "";
   const cronSecret = getCronSecret();
   if (!cronSecret || auth !== `Bearer ${cronSecret}`) {
@@ -99,3 +100,6 @@ export async function GET(request) {
     );
   }
 }
+
+export const GET = withCronLogging("competitors-cron", handle);
+export const POST = withCronLogging("competitors-cron", handle);

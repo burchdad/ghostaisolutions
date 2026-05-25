@@ -3,6 +3,7 @@ import { getAllPosts } from "@/lib/allPosts";
 import { listSocialDrafts } from "@/lib/socialDraftStore";
 import { getTrendStats } from "@/lib/trendStore";
 import { getSubscriberStats, getCampaignStats } from "@/lib/newsletterStore";
+import { withCronLogging } from "@/lib/cronRuns";
 
 function getCronSecret() {
   return process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET || "";
@@ -35,7 +36,7 @@ async function postToSlack(webhookUrl, blocks) {
   });
 }
 
-export async function POST(request) {
+async function handle(request) {
   const auth = request.headers.get("authorization") || "";
   const cronSecret = getCronSecret();
   if (!cronSecret || auth !== `Bearer ${cronSecret}`) {
@@ -119,6 +120,5 @@ export async function POST(request) {
   }
 }
 
-export async function GET(request) {
-  return POST(request);
-}
+export const POST = withCronLogging("daily-ops-digest", handle);
+export const GET = withCronLogging("daily-ops-digest", handle);

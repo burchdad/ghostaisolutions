@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { listSubscribers, listCampaigns, createCampaign, updateCampaign } from "@/lib/newsletterStore";
 import { getAllPosts } from "@/lib/allPosts";
+import { withCronLogging } from "@/lib/cronRuns";
 
 function getCronSecret() {
   return process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET || "";
@@ -13,7 +14,7 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const RESEND_FROM_EMAIL = process.env.RESEND_FROM_EMAIL || "newsletter@ghostai.solutions";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://ghostai.solutions";
 
-export async function GET(request) {
+async function handle(request) {
   const auth = request.headers.get("authorization") || "";
   const cronSecret = getCronSecret();
   if (!cronSecret || auth !== `Bearer ${cronSecret}`) {
@@ -98,3 +99,6 @@ export async function GET(request) {
   updateCampaign(campaign.id, { status: "sent", sentAt: new Date().toISOString(), sentCount: sent });
   return NextResponse.json({ success: true, sent, campaignId: campaign.id });
 }
+
+export const GET = withCronLogging("newsletter-cron", handle);
+export const POST = withCronLogging("newsletter-cron", handle);
