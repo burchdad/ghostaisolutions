@@ -4,6 +4,7 @@ import { repurposeBlogPost } from "@/lib/socialRepurpose";
 import { createSocialDraft } from "@/lib/socialDraftStore";
 import { publishVariants } from "@/lib/socialPublish";
 import { markSlugsPublished } from "@/lib/publishedSlugsStore";
+import { notifySlackSocialApproval } from "@/lib/socialApproval";
 
 export const maxDuration = 60;
 
@@ -281,12 +282,14 @@ async function moderateAndPublish(post) {
       slug: post.slug,
       title: post.title,
       excerpt: post.excerpt || "",
-      sourceType: "content-agent-moderation",
-      status: moderation.status === "blocked" ? "rejected" : "review",
+      sourceType: "slack-approval-review",
+      status: "review",
       platformVariants: variants,
     });
 
-    return { success: false, stage: "moderation", moderation, draftId: draft.id };
+    await notifySlackSocialApproval({ draft, moderation, reason: "Content agent queued this draft for Slack approval." }).catch(() => null);
+
+    return { success: true, stage: "slack_approval_queued", moderation, draftId: draft.id };
   }
 
   const publishData = await publishVariants({

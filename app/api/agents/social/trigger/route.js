@@ -4,6 +4,7 @@ import { repurposeBlogPost } from "@/lib/socialRepurpose";
 import { createSocialDraft } from "@/lib/socialDraftStore";
 import { publishVariants } from "@/lib/socialPublish";
 import { getPublishedSlugs, markSlugsPublished } from "@/lib/publishedSlugsStore";
+import { notifySlackSocialApproval } from "@/lib/socialApproval";
 
 export const maxDuration = 60; // Allow up to 60 seconds for this endpoint
 
@@ -117,15 +118,16 @@ async function runTrigger(request) {
             slug: post.slug,
             title: post.title,
             excerpt: post.excerpt || "",
-            sourceType: "ai-moderator-review",
-            status: "rejected",
+            sourceType: "slack-approval-review",
+            status: "review",
             platformVariants: variants,
           });
 
-          await notifySlackBlock(post.slug, post.title, moderation.reasons);
+          await notifySlackSocialApproval({ draft, moderation, reason: "Moderator blocked this draft. Slack approval required." })
+            .catch(() => notifySlackBlock(post.slug, post.title, moderation.reasons));
 
           postResult.draftId = draft.id;
-          postResult.status = "blocked_by_moderator";
+          postResult.status = "queued_for_slack_approval";
           results.push(postResult);
           continue;
         }
