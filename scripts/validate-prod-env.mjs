@@ -30,6 +30,7 @@ const GROUPS = {
       "GHOSTBOT_API_URL",
       "RAILWAY_TRIGGER_SECRET",
       "AUTOMATION_INTERNAL_BASE_URL",
+      "DATABASE_URL",
       "RESEND_API_KEY",
       "RESEND_FROM_EMAIL",
       "LINKEDIN_ACCESS_TOKEN",
@@ -73,6 +74,7 @@ const GROUPS = {
     ],
     recommended: [
       "AUTOMATION_INTERNAL_BASE_URL",
+      "DATABASE_URL",
       "NEXT_PUBLIC_BASE_URL",
     ],
   },

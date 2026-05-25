@@ -18,6 +18,7 @@ Required:
 Recommended for full agent stack:
 - `OPENAI_MODEL` (default `gpt-4o-mini`)
 - `OPENAI_BASE_URL` (default `https://api.openai.com/v1`)
+- `DATABASE_URL` (Railway Postgres; used first for competitor intelligence storage when configured)
 - `RAILWAY_TRIGGER_SECRET`
 - `AUTOMATION_INTERNAL_BASE_URL`
 - `RESEND_API_KEY`
@@ -97,6 +98,7 @@ Required Railway variables:
 - `CRON_SECRET`
 
 Recommended:
+- `DATABASE_URL` (usually `${{Postgres.DATABASE_URL}}` as a Railway variable reference)
 - `AUTOMATION_INTERNAL_BASE_URL`
 - `NEXT_PUBLIC_BASE_URL`
 

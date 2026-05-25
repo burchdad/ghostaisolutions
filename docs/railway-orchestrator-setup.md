@@ -33,6 +33,7 @@ Optional query params:
 
 ## Optional environment variables
 
+- `DATABASE_URL`: Railway Postgres connection string. Use a variable reference such as `${{Postgres.DATABASE_URL}}` when a Railway app or worker needs direct database access.
 - `AUTOMATION_INTERNAL_BASE_URL`: Explicit base URL used by orchestrator to call internal endpoints
   - Example: `https://ghostai.solutions`
   - If omitted, orchestrator derives host from request headers.
