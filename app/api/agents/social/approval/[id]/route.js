@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
-import { getSocialDraft, markDraftPublished, updateSocialDraft } from "@/lib/socialDraftStore";
-import { publishVariants } from "@/lib/socialPublish";
 import { verifySocialDraftAction } from "@/lib/socialApproval";
-
-const ACTIONS = new Set(["approve", "approve_publish", "reject"]);
+import { runSocialApprovalAction, SOCIAL_APPROVAL_ACTIONS } from "@/lib/socialApprovalActions";
 
 function htmlResponse(title, body, status = 200) {
   return new NextResponse(
@@ -33,7 +30,7 @@ export async function GET(request, { params }) {
   const token = url.searchParams.get("token") || "";
   const draftId = params.id;
 
-  if (!ACTIONS.has(action)) {
+  if (!SOCIAL_APPROVAL_ACTIONS.has(action)) {
     return htmlResponse("Invalid social action", "This Slack approval link is missing a valid action.", 400);
   }
 
@@ -41,32 +38,10 @@ export async function GET(request, { params }) {
     return htmlResponse("Unauthorized", "This Slack approval link is invalid or was signed with an old secret.", 401);
   }
 
-  const draft = await getSocialDraft(draftId);
-  if (!draft) {
-    return htmlResponse("Draft not found", `No social draft exists for <code>${draftId}</code>.`, 404);
-  }
-
-  if (action === "reject") {
-    await updateSocialDraft(draftId, { status: "rejected" });
-    return htmlResponse("Social draft rejected", `Draft <code>${draftId}</code> was rejected from Slack.`);
-  }
-
-  if (action === "approve") {
-    await updateSocialDraft(draftId, { status: "approved" });
-    return htmlResponse("Social draft approved", `Draft <code>${draftId}</code> is approved and ready to publish.`);
-  }
-
-  await updateSocialDraft(draftId, { status: "approved" });
-  const results = await publishVariants({
-    platform: "all",
-    linkedinContent: draft.platformVariants?.linkedin?.text,
-    xContent: draft.platformVariants?.x?.text,
-    facebookContent: draft.platformVariants?.facebook?.text,
-  });
-  await markDraftPublished(draftId, results.results);
-
+  const result = await runSocialApprovalAction({ draftId, action });
   return htmlResponse(
-    results.success ? "Social draft published" : "Social draft partially published",
-    `Draft <code>${draftId}</code> was approved from Slack. Publishing success: <code>${String(results.success)}</code>.`
+    result.ok ? "Social action complete" : "Social action failed",
+    result.message,
+    result.status || (result.ok || result.partial ? 200 : 500)
   );
 }
