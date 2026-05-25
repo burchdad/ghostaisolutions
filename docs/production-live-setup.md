@@ -42,6 +42,8 @@ Recommended for full agent stack:
 - `SLACK_ACTION_TOKEN`
 - `SLACK_COMMAND_TOKEN`
 - `SOCIAL_APPROVAL_DAILY_LIMIT` (default `1`, maximum `3`)
+- `SOCIAL_ENGAGEMENT_DRAFT_LIMIT` (default `10`, maximum `20`)
+- `SOCIAL_ENGAGEMENT_PER_POST_LIMIT` (default `10`, maximum `50`)
 - `GITHUB_APP_ID`
 - `GITHUB_APP_PRIVATE_KEY`
 - `GITHUB_APP_INSTALLATION_ID`
@@ -75,6 +77,7 @@ Active production jobs:
 - `08:05` UTC: daily content trigger
 - `08:50` UTC: social token health check
 - `09:20` UTC: social queue publishing
+- `09:50` UTC: social engagement lead capture
 - `10:30` UTC: daily ops digest
 - Tuesdays `13:00` UTC: newsletter weekly send
 - Thursdays `13:20` UTC: competitor intelligence scan

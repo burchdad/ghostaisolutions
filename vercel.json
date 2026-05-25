@@ -17,6 +17,10 @@
       "schedule": "20 9 * * *"
     },
     {
+      "path": "/api/agents/leads/social-engagement/cron",
+      "schedule": "50 9 * * *"
+    },
+    {
       "path": "/api/agents/reports/daily-digest",
       "schedule": "30 10 * * *"
     },
