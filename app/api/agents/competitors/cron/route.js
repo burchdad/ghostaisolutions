@@ -7,8 +7,30 @@ import {
 } from "@/lib/competitorStore";
 import { discoverCompetitorWebsites, scanCompetitorWebsite } from "@/lib/competitorResearch";
 
+export const maxDuration = 60;
+
 function getCronSecret() {
   return process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET || "";
+}
+
+function errorScan(competitor, error) {
+  return {
+    competitorId: competitor.id,
+    competitorName: competitor.name,
+    domain: competitor.domain,
+    signals: { homepage: {}, pages: [], recentPosts: [] },
+    analysis: {
+      positioningSummary: "Scan failed before website intelligence could be collected.",
+      contentFocus: "Unavailable",
+      apparentStrengths: [],
+      apparentWeaknesses: ["Automated scan failed"],
+      differentiationOpportunity: "Retry this competitor in the next scan cycle.",
+      actionableInsight: error?.message || String(error),
+      threatLevel: "medium",
+      ghostAdvantagePlays: [],
+    },
+    error: error?.message || String(error),
+  };
 }
 
 export async function GET(request) {
@@ -35,26 +57,34 @@ export async function GET(request) {
       });
     }
 
-    const scanLimit = Math.max(1, Math.min(50, Number(process.env.COMPETITOR_SCAN_LIMIT || 25)));
+    const scanLimit = Math.max(1, Math.min(10, Number(process.env.COMPETITOR_SCAN_LIMIT || 5)));
     const scanResults = [];
+    const scanErrors = [];
 
     for (const competitor of competitors.slice(0, scanLimit)) {
-      const scan = await scanCompetitorWebsite(competitor);
-      scanResults.push(scan);
-      await updateCompetitorAsync(competitor.id, {
-        lastScannedAt: new Date().toISOString(),
-        lastDiscoverySource: competitor.discoverySource || competitor.lastDiscoverySource || "",
-      });
+      try {
+        const scan = await scanCompetitorWebsite(competitor);
+        scanResults.push(scan);
+        await saveScansAsync([scan]);
+        await updateCompetitorAsync(competitor.id, {
+          lastScannedAt: new Date().toISOString(),
+          lastDiscoverySource: competitor.discoverySource || competitor.lastDiscoverySource || "",
+        });
+      } catch (error) {
+        const scan = errorScan(competitor, error);
+        scanResults.push(scan);
+        scanErrors.push({ domain: competitor.domain, error: scan.error });
+        await saveScansAsync([scan]).catch(() => null);
+      }
     }
-
-    const saved = await saveScansAsync(scanResults);
 
     return NextResponse.json({
       success: true,
       discovered: discovery.competitors.length,
       added: upserted.added,
       updated: upserted.updated,
-      scanned: saved.length,
+      scanned: scanResults.length,
+      scanErrors,
       discoverySources: discovery.sources,
       competitors: competitors.slice(0, scanLimit).map(({ name, domain }) => ({ name, domain })),
       timestamp: new Date().toISOString(),

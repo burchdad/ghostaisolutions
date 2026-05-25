@@ -51,7 +51,7 @@ Optional alternatives for competitor market discovery:
 Competitor intelligence tuning:
 - `COMPETITOR_MARKET_PROFILE`
 - `COMPETITOR_MARKET_QUERIES`
-- `COMPETITOR_SCAN_LIMIT`
+- `COMPETITOR_SCAN_LIMIT` (default `5`, maximum `10` per cron run)
 
 Compatibility fallback still supported:
 - `SOCIAL_AGENT_CRON_SECRET`
