@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAllPosts } from "@/lib/allPosts";
 import { repurposeBlogPost } from "@/lib/socialRepurpose";
-import { createSocialDraft } from "@/lib/socialDraftStore";
+import { createSocialDraft, listSocialDrafts } from "@/lib/socialDraftStore";
 import { publishVariants } from "@/lib/socialPublish";
 import { getPublishedSlugs, markSlugsPublished } from "@/lib/publishedSlugsStore";
 import { notifySlackSocialApproval } from "@/lib/socialApproval";
@@ -10,6 +10,12 @@ export const maxDuration = 60; // Allow up to 60 seconds for this endpoint
 
 function getCronSecret() {
   return process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET || "";
+}
+
+function getDailyApprovalLimit() {
+  const requested = Number(process.env.SOCIAL_APPROVAL_DAILY_LIMIT || 1);
+  if (!Number.isFinite(requested)) return 1;
+  return Math.max(1, Math.min(3, Math.floor(requested)));
 }
 
 async function notifySlackBlock(slug, title, reasons) {
@@ -57,12 +63,16 @@ async function runTrigger(request) {
 
     // Get already-published slugs from the persistent store — works across Vercel invocations
     const processedSlugs = await getPublishedSlugs();
+    const existingDrafts = await listSocialDrafts().catch(() => []);
+    const draftedSlugs = new Set(existingDrafts.map((draft) => draft.slug).filter(Boolean));
+    const dailyLimit = getDailyApprovalLimit();
 
     // Get queue of recent auto posts, skip any already in the draft store
     const allPosts = getAllPosts();
     const autoPosts = allPosts
-      .filter((p) => p.auto && !processedSlugs.has(p.slug))
-      .slice(0, 3);
+      .filter((p) => p.auto && !processedSlugs.has(p.slug) && !draftedSlugs.has(p.slug))
+      .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+      .slice(0, dailyLimit);
 
     if (autoPosts.length === 0) {
       return NextResponse.json(
@@ -70,6 +80,7 @@ async function runTrigger(request) {
           success: true,
           message: "No new auto posts to process",
           skipped: processedSlugs.size,
+          existingDrafts: draftedSlugs.size,
           processed: [],
         },
         { status: 200 }
@@ -175,6 +186,8 @@ async function runTrigger(request) {
         success: true,
         message: `Processed ${results.length} AI-moderated post(s)`,
         skipped: processedSlugs.size,
+        existingDrafts: draftedSlugs.size,
+        dailyLimit,
         processed: results,
         timestamp: new Date().toISOString(),
       },
