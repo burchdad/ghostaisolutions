@@ -4,7 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CookieBanner from "@/components/CookieBanner";
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/next';
 import StickyCTA from "@/components/StickyCTA";
 import FloatingBot from "@/components/FloatingBot";
 import UTMTracker from "@/components/UTMTracker";
