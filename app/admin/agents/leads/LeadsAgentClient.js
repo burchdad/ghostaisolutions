@@ -646,6 +646,11 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
                       <p className="mt-2 text-[11px] text-slate-500">
                         Generated {selected.emailDraft.generatedAt ? new Date(selected.emailDraft.generatedAt).toLocaleString() : ""} via {selected.emailDraft.model || "unknown"}
                       </p>
+                      {selected.emailDraft.providerError ? (
+                        <p className="mt-2 rounded-lg border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-[11px] leading-relaxed text-amber-100">
+                          OpenAI fallback used: {selected.emailDraft.providerError}
+                        </p>
+                      ) : null}
                     </>
                   ) : (
                     <p className="mt-3 text-sm text-slate-500">No outreach draft yet.</p>
