@@ -150,6 +150,19 @@ export default async function AdminAgentsHubPage() {
           </Link>
         </div>
 
+        <div className="mb-6 rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-200">This Week</p>
+              <h2 className="mt-1 text-xl font-semibold text-white">Push lead generation through the intake funnel.</h2>
+              <p className="mt-1 text-sm text-slate-300">Run the lead agent first, then use social/content agents to support proof and follow-up.</p>
+            </div>
+            <Link href="/admin/agents/leads" className="rounded-xl bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-200">
+              Launch Lead Agent
+            </Link>
+          </div>
+        </div>
+
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {AGENTS.map((agent) => (
             <article key={agent.name} className="rounded-2xl border border-white/10 bg-slate-950/60 p-5">

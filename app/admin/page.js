@@ -9,6 +9,7 @@ import { getTrendStats } from "@/lib/trendStore";
 import { getCampaignStats, getSubscriberStats } from "@/lib/newsletterStore";
 import { getCompetitorStats } from "@/lib/competitorStore";
 import { listLeads } from "@/lib/leadsStore";
+import AdminSubnav from "@/components/AdminSubnav";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -133,6 +134,26 @@ export default async function AdminDashboardPage() {
               Log Out
             </button>
           </form>
+        </div>
+
+        <AdminSubnav className="mb-6" />
+
+        <div className="mb-6 rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-200">Priority Command</p>
+              <h2 className="mt-1 text-xl font-semibold text-white">Lead sprint control is ready in the agent workspace.</h2>
+              <p className="mt-1 text-sm text-slate-300">Open the lead agent to run targeted Google/local and LinkedIn discovery toward the intake funnel.</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/admin/agents/leads" className="rounded-xl bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-200">
+                Open Lead Sprint
+              </Link>
+              <Link href="/admin/agents" className="rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-slate-200 hover:border-cyan-300/40 hover:text-white">
+                View Agent Hub
+              </Link>
+            </div>
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -280,17 +301,6 @@ export default async function AdminDashboardPage() {
               <p className="text-xs uppercase tracking-[0.14em] text-slate-400">Business Managers</p>
               <p className="mt-2 text-2xl font-bold text-cyan-200">{assetCounts.businesses}</p>
             </article>
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/60 p-5">
-          <h2 className="text-lg font-semibold text-white">Agent Dashboard Pages</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5 text-sm">
-            <Link href="/admin/agents/content" className="rounded-xl border border-white/15 px-4 py-3 text-slate-200 hover:border-cyan-300/40 hover:text-white">Content Agent</Link>
-            <Link href="/admin/agents/seo" className="rounded-xl border border-white/15 px-4 py-3 text-slate-200 hover:border-cyan-300/40 hover:text-white">SEO Agent</Link>
-            <Link href="/admin/agents/social" className="rounded-xl border border-white/15 px-4 py-3 text-slate-200 hover:border-cyan-300/40 hover:text-white">Social Agent</Link>
-            <Link href="/admin/agents/cro" className="rounded-xl border border-white/15 px-4 py-3 text-slate-200 hover:border-cyan-300/40 hover:text-white">CRO Agent</Link>
-            <Link href="/admin/agents/leads" className="rounded-xl border border-cyan-300/40 bg-cyan-300/10 px-4 py-3 text-cyan-200 hover:bg-cyan-300/20">Lead Funnel Agent</Link>
           </div>
         </div>
 

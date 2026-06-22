@@ -275,9 +275,14 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
             <h1 className="mt-1 text-3xl font-bold text-white">Discovery, Qualification, and Outreach</h1>
             <p className="mt-2 text-sm text-slate-300">Scrape business sites, score opportunities, and send personalized outreach.</p>
           </div>
-          <Link href="/admin/agents" className="rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-slate-200 hover:border-cyan-300/40 hover:text-white">
-            Back to Agent Hub
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/admin/agents" className="rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-slate-200 hover:border-cyan-300/40 hover:text-white">
+              Agent Hub
+            </Link>
+            <Link href="/start" className="rounded-xl border border-amber-300/40 bg-amber-300/10 px-4 py-2 text-sm font-semibold text-amber-100 hover:bg-amber-300/20">
+              Intake Portal
+            </Link>
+          </div>
         </div>
 
         {message && (
@@ -285,6 +290,72 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
             {message}
           </div>
         )}
+
+        <div className="mb-6 rounded-2xl border border-cyan-300/20 bg-slate-950/75 p-5 shadow-[0_0_45px_rgba(34,211,238,0.08)]">
+          <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-200">Lead Sprint Command</p>
+              <h2 className="mt-1 text-2xl font-bold text-white">Find target businesses and push them toward the intake portal.</h2>
+              <p className="mt-2 text-sm text-slate-300">
+                Use Google/local for nearby service businesses or LinkedIn for company-led prospecting. Auto-send stays off unless the environment flag enables it.
+              </p>
+            </div>
+            <div className="flex flex-col justify-center gap-3">
+              <button
+                onClick={() => handleAutomationSprint({ autoSend: false })}
+                disabled={sprinting || !campaignIndustry.trim()}
+                className="rounded-xl bg-amber-300 px-5 py-3 text-sm font-bold text-slate-950 hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {sprinting ? "Running Lead Sprint..." : "Run AI Lead Sprint"}
+              </button>
+              <button
+                onClick={handleCampaignPlan}
+                disabled={planning || !campaignIndustry.trim()}
+                className="rounded-xl border border-cyan-300/30 bg-cyan-300/10 px-5 py-3 text-sm font-semibold text-cyan-100 hover:bg-cyan-300/20 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {planning ? "Building Plan..." : "Generate Sprint Plan"}
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-3 md:grid-cols-5">
+            <select
+              value={campaignChannel}
+              onChange={(e) => setCampaignChannel(e.target.value)}
+              className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50"
+            >
+              <option value="google">Google / Local Search</option>
+              <option value="linkedin">LinkedIn Company Search</option>
+            </select>
+            <input
+              value={campaignIndustry}
+              onChange={(e) => setCampaignIndustry(e.target.value)}
+              placeholder="Industries / niches"
+              className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50 md:col-span-2"
+            />
+            <input
+              value={campaignLocation}
+              onChange={(e) => setCampaignLocation(e.target.value)}
+              placeholder="Location"
+              className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50"
+            />
+            <select
+              value={campaignLimit}
+              onChange={(e) => setCampaignLimit(e.target.value)}
+              className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50"
+            >
+              <option value="10">10 leads</option>
+              <option value="25">25 leads</option>
+              <option value="50">50 leads</option>
+            </select>
+            <input
+              value={campaignIntent}
+              onChange={(e) => setCampaignIntent(e.target.value)}
+              placeholder="Search intent / pain"
+              className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50 md:col-span-5"
+            />
+          </div>
+        </div>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <article className="rounded-2xl border border-white/10 bg-slate-950/60 p-5"><p className="text-xs uppercase tracking-[0.14em] text-slate-400">Total Leads</p><p className="mt-2 text-3xl font-bold text-cyan-200">{summary.total}</p></article>
@@ -298,68 +369,16 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
           <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-5 lg:col-span-2">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <h2 className="text-lg font-semibold text-white">Targeted Outreach Campaign</h2>
-                <p className="mt-1 text-sm text-slate-400">Run Google/local or LinkedIn-focused discovery, then route outreach toward the /start intake.</p>
+                <h2 className="text-lg font-semibold text-white">Sprint Plan + Results</h2>
+                <p className="mt-1 text-sm text-slate-400">Campaign planning and automation results appear here after you run the command bar above.</p>
               </div>
               <button
                 onClick={handleCampaignDiscover}
                 disabled={loading || !campaignIndustry.trim()}
-                className="rounded-lg bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {loading ? "Running..." : "Run Campaign Discovery"}
-              </button>
-              <button
-                onClick={handleCampaignPlan}
-                disabled={planning || !campaignIndustry.trim()}
                 className="rounded-lg border border-amber-300/40 bg-amber-300/10 px-4 py-2 text-sm font-semibold text-amber-100 hover:bg-amber-300/20 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {planning ? "Planning..." : "Generate AI Sprint Plan"}
+                {loading ? "Discovering..." : "Discovery Only"}
               </button>
-              <button
-                onClick={() => handleAutomationSprint({ autoSend: false })}
-                disabled={sprinting || !campaignIndustry.trim()}
-                className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {sprinting ? "Running..." : "Run AI Lead Sprint"}
-              </button>
-            </div>
-
-            <div className="mt-5 grid gap-3 md:grid-cols-5">
-              <select
-                value={campaignChannel}
-                onChange={(e) => setCampaignChannel(e.target.value)}
-                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50"
-              >
-                <option value="google">Google / Local Search</option>
-                <option value="linkedin">LinkedIn Company Search</option>
-              </select>
-              <input
-                value={campaignIndustry}
-                onChange={(e) => setCampaignIndustry(e.target.value)}
-                placeholder="Industries / niches"
-                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50 md:col-span-2"
-              />
-              <input
-                value={campaignLocation}
-                onChange={(e) => setCampaignLocation(e.target.value)}
-                placeholder="Location"
-                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50"
-              />
-              <select
-                value={campaignLimit}
-                onChange={(e) => setCampaignLimit(e.target.value)}
-                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50"
-              >
-                <option value="10">10 leads</option>
-                <option value="25">25 leads</option>
-                <option value="50">50 leads</option>
-              </select>
-              <input
-                value={campaignIntent}
-                onChange={(e) => setCampaignIntent(e.target.value)}
-                placeholder="Search intent / pain"
-                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50 md:col-span-5"
-              />
             </div>
 
             {campaignPlan ? (
