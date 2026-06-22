@@ -125,36 +125,63 @@ async function sendIntakeEmail(payload) {
 }
 
 async function postIntakeToSlack(payload) {
-  const webhook = process.env.INTAKE_SLACK_WEBHOOK || process.env.SLACK_ALERTS_WEBHOOK || process.env.SLACK_OPS_SUMMARY_WEBHOOK;
+  const botToken = process.env.SLACK_BOT_TOKEN;
+  const channel =
+    process.env.SLACK_INTAKE_CHANNEL_ID ||
+    process.env.INTAKE_SLACK_CHANNEL_ID ||
+    process.env.SLACK_ALERTS_CHANNEL_ID ||
+    process.env.SLACK_DEFAULT_CHANNEL_ID;
+
+  const message = {
+    text: `New GhostAI website audit intake from ${payload.name || payload.company || "a lead"}`,
+    blocks: [
+      {
+        type: "header",
+        text: { type: "plain_text", text: "New Website Audit Intake" },
+      },
+      {
+        type: "section",
+        fields: [
+          { type: "mrkdwn", text: `*Name:*\n${payload.name || "Not provided"}` },
+          { type: "mrkdwn", text: `*Email:*\n${payload.email || "Not provided"}` },
+          { type: "mrkdwn", text: `*Company:*\n${payload.company || "Not provided"}` },
+          { type: "mrkdwn", text: `*Project:*\n${payload.projectType || "Not provided"}` },
+          { type: "mrkdwn", text: `*Budget:*\n${payload.budget || "Not provided"}` },
+          { type: "mrkdwn", text: `*Timeline:*\n${payload.timeline || "Not provided"}` },
+        ],
+      },
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: `*Goal:*\n${payload.desiredOutcome || "Not provided"}` },
+      },
+    ],
+  };
+
+  if (botToken && channel) {
+    const response = await fetch("https://slack.com/api/chat.postMessage", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${botToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ channel, ...message }),
+    });
+
+    const result = await response.json();
+    if (!response.ok || !result?.ok) {
+      throw new Error(`Slack app intake post failed: ${result?.error || response.status}`);
+    }
+
+    return { posted: true, channel, ts: result.ts || null };
+  }
+
+  const webhook = process.env.SLACK_ALERTS_WEBHOOK || process.env.SLACK_OPS_SUMMARY_WEBHOOK;
   if (!webhook) return { skipped: "Slack webhook not configured" };
 
   const response = await fetch(webhook, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      text: `New GhostAI website audit intake from ${payload.name || payload.company || "a lead"}`,
-      blocks: [
-        {
-          type: "header",
-          text: { type: "plain_text", text: "New Website Audit Intake" },
-        },
-        {
-          type: "section",
-          fields: [
-            { type: "mrkdwn", text: `*Name:*\n${payload.name || "Not provided"}` },
-            { type: "mrkdwn", text: `*Email:*\n${payload.email || "Not provided"}` },
-            { type: "mrkdwn", text: `*Company:*\n${payload.company || "Not provided"}` },
-            { type: "mrkdwn", text: `*Project:*\n${payload.projectType || "Not provided"}` },
-            { type: "mrkdwn", text: `*Budget:*\n${payload.budget || "Not provided"}` },
-            { type: "mrkdwn", text: `*Timeline:*\n${payload.timeline || "Not provided"}` },
-          ],
-        },
-        {
-          type: "section",
-          text: { type: "mrkdwn", text: `*Goal:*\n${payload.desiredOutcome || "Not provided"}` },
-        },
-      ],
-    }),
+    body: JSON.stringify(message),
   });
 
   if (!response.ok) {
