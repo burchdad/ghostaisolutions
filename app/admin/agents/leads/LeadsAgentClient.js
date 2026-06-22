@@ -127,7 +127,11 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
       });
       const firstLead = payload.results?.find((item) => item.success)?.lead;
       const label = campaignChannel === "linkedin" ? "LinkedIn" : "Google/local";
-      setMessage(`${label} campaign discovered ${payload.discovered} lead(s), ${payload.failed} failed.`);
+      setMessage(
+        payload.searched === 0
+          ? `${label} campaign returned 0 search results. Check the search provider key/quota and targeting.`
+          : `${label} campaign discovered ${payload.discovered} lead(s), ${payload.failed} failed.`
+      );
       await refreshLeads(firstLead?.id || selectedId);
     } catch (error) {
       setMessage(error.message);
@@ -175,7 +179,10 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
         }),
       });
       setSprintResult(payload);
-      setMessage(`Lead sprint completed: ${payload.discovered} discovered, ${payload.drafted} drafted, ${payload.sent} sent.`);
+      setMessage(
+        payload.warning ||
+          `Lead sprint completed: ${payload.discovered} discovered, ${payload.drafted} drafted, ${payload.sent} sent.`
+      );
       await refreshLeads(selectedId);
     } catch (error) {
       setMessage(error.message);

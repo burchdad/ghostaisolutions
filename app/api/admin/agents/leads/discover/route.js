@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/adminSession";
 import { scrapeBusinessWebsite } from "@/lib/leadIntelligence";
 import { upsertLeadByDomain, upsertLeadByLinkedIn } from "@/lib/leadsStore";
-import { searchLeads, searchMany, searchWeb } from "@/lib/marketSearch";
+import { configuredMarketSearchProviders, searchLeads, searchMany, searchWeb } from "@/lib/marketSearch";
 
 function ensureAdmin() {
   const token = cookies().get(ADMIN_SESSION_COOKIE)?.value || "";
@@ -53,25 +53,28 @@ function parseLinkedInCompanyTitle(title = "") {
     .trim();
 }
 
-function campaignQueries({ channel, industry, location, niche, intent }) {
+function campaignQueries({ channel, industry, location, niche }) {
   const market = clean(industry || niche || "local service businesses", 120);
   const place = clean(location || "", 120);
-  const pain = clean(intent || "website redesign lead generation booking", 180);
+  const markets = market
+    .split(/[,;/|]+/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+  const targets = markets.length ? markets : [market];
 
   if (channel === "linkedin") {
-    return [
-      `site:linkedin.com/company ${market} ${place}`,
-      `site:linkedin.com/company ${market} owner founder ${place}`,
-      `site:linkedin.com/company ${market} marketing operations ${place}`,
-    ].map((item) => item.replace(/\s+/g, " ").trim());
+    return targets.flatMap((target) => [
+      `site:linkedin.com/company ${target} ${place}`,
+      `site:linkedin.com/company ${target} owner founder ${place}`,
+    ]).map((item) => item.replace(/\s+/g, " ").trim()).slice(0, 10);
   }
 
-  return [
-    `${market} ${place} website`,
-    `${market} ${place} contact`,
-    `${market} ${place} book online`,
-    `${market} ${place} ${pain}`,
-  ].map((item) => item.replace(/\s+/g, " ").trim());
+  return targets.flatMap((target) => [
+    `${target} ${place}`,
+    `${target} near ${place}`,
+    `${target} ${place} contact`,
+  ]).map((item) => item.replace(/\s+/g, " ").trim()).slice(0, 12);
 }
 
 function parseUrlInputs(payload) {
@@ -91,12 +94,21 @@ async function resolveLeadUrls(body) {
   const urls = parseUrlInputs(body);
   if (urls.length) return { urls, searchResults: [] };
 
+  const providers = configuredMarketSearchProviders();
+  if (!providers.length) {
+    throw Object.assign(new Error("Lead search is not configured"), {
+      status: 503,
+      details: "Set at least one production search provider env var: SERPAPI_API_KEY, BRAVE_SEARCH_API_KEY, or BING_SEARCH_API_KEY.",
+    });
+  }
+
   if (body?.campaign?.channel === "google") {
     const queries = campaignQueries({ ...body.campaign, channel: "google" });
     const searchResults = await searchMany(queries, {
-      limitPerQuery: Math.max(3, Math.min(10, Number(body?.campaign?.limitPerQuery || 6))),
+      limitPerQuery: Math.max(2, Math.min(5, Number(body?.campaign?.limitPerQuery || Math.ceil(Number(body?.campaign?.limit || 25) / Math.max(1, queries.length))))),
       totalLimit: Math.max(5, Math.min(50, Number(body?.campaign?.limit || 25))),
       location: body.campaign.location || "",
+      excludeLeadVendors: true,
       providers: ["serpapi", "brave", "bing"],
     });
 
@@ -122,6 +134,14 @@ async function resolveLeadUrls(body) {
 }
 
 async function discoverLinkedInCampaign(body) {
+  const providers = configuredMarketSearchProviders();
+  if (!providers.length) {
+    throw Object.assign(new Error("Lead search is not configured"), {
+      status: 503,
+      details: "Set at least one production search provider env var: SERPAPI_API_KEY, BRAVE_SEARCH_API_KEY, or BING_SEARCH_API_KEY.",
+    });
+  }
+
   const campaign = body?.campaign || {};
   const queries = campaignQueries({ ...campaign, channel: "linkedin" });
   const searchResults = [];
@@ -132,6 +152,7 @@ async function discoverLinkedInCampaign(body) {
       providers: ["serpapi", "brave", "bing"],
       includeDefaultExclusions: false,
       excludeDomains: ["ghostai.solutions"],
+      excludeLeadVendors: true,
     });
     searchResults.push(...results.filter((result) => /linkedin\.com\/company/i.test(result.url)));
   }
@@ -238,8 +259,8 @@ export async function POST(request) {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: "Lead discovery failed", details: error?.message || String(error) },
-      { status: 500 }
+      { error: "Lead discovery failed", details: error?.details || error?.message || String(error) },
+      { status: error?.status || 500 }
     );
   }
 }

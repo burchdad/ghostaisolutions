@@ -4,7 +4,7 @@ import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/adminSessio
 import { withCronLogging } from "@/lib/cronRuns";
 import { generateOutreachDraft, scrapeBusinessWebsite, sendLeadEmail, toSimpleHtml } from "@/lib/leadIntelligence";
 import { listLeads, updateLead, upsertLeadByDomain, upsertLeadByLinkedIn } from "@/lib/leadsStore";
-import { searchMany, searchWeb } from "@/lib/marketSearch";
+import { configuredMarketSearchProviders, searchMany, searchWeb } from "@/lib/marketSearch";
 
 export const maxDuration = 60;
 
@@ -38,21 +38,27 @@ function sprintConfig(body = {}) {
   };
 }
 
+function targetMarkets(industry = "") {
+  const markets = String(industry || "")
+    .split(/[,;/|]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  return markets.length ? markets.slice(0, 6) : [clean(industry, "local service businesses")];
+}
+
 function googleQueries(cfg) {
-  return [
-    `${cfg.industry} ${cfg.location} website`,
-    `${cfg.industry} ${cfg.location} contact`,
-    `${cfg.industry} ${cfg.location} book online`,
-    `${cfg.industry} ${cfg.location} ${cfg.intent}`,
-  ];
+  return targetMarkets(cfg.industry).flatMap((market) => [
+    `${market} ${cfg.location}`,
+    `${market} near ${cfg.location}`,
+    `${market} ${cfg.location} contact`,
+  ]).slice(0, 12);
 }
 
 function linkedinQueries(cfg) {
-  return [
-    `site:linkedin.com/company ${cfg.industry} ${cfg.location}`,
-    `site:linkedin.com/company ${cfg.industry} owner founder ${cfg.location}`,
-    `site:linkedin.com/company ${cfg.industry} marketing operations ${cfg.location}`,
-  ];
+  return targetMarkets(cfg.industry).flatMap((market) => [
+    `site:linkedin.com/company ${market} ${cfg.location}`,
+    `site:linkedin.com/company ${market} owner founder ${cfg.location}`,
+  ]).slice(0, 10);
 }
 
 function parseLinkedInCompanyTitle(title = "") {
@@ -64,10 +70,12 @@ function parseLinkedInCompanyTitle(title = "") {
 }
 
 async function discoverGoogleLeads(cfg) {
-  const searchResults = await searchMany(googleQueries(cfg), {
-    limitPerQuery: Math.max(3, Math.min(8, Math.ceil(cfg.limit / 4))),
+  const queries = googleQueries(cfg);
+  const searchResults = await searchMany(queries, {
+    limitPerQuery: Math.max(2, Math.min(5, Math.ceil(cfg.limit / Math.max(1, queries.length)))),
     totalLimit: cfg.limit,
     location: cfg.location,
+    excludeLeadVendors: true,
     providers: ["serpapi", "brave", "bing"],
   });
 
@@ -97,6 +105,7 @@ async function discoverLinkedInLeads(cfg) {
       providers: ["serpapi", "brave", "bing"],
       includeDefaultExclusions: false,
       excludeDomains: ["ghostai.solutions"],
+      excludeLeadVendors: true,
     });
     found.push(...results.filter((result) => /linkedin\.com\/company/i.test(result.url)));
   }
@@ -212,7 +221,9 @@ async function draftAndMaybeSend(cfg) {
 async function postSlackSummary(summary) {
   const botToken = process.env.SLACK_BOT_TOKEN;
   const channel = process.env.SLACK_LEAD_SPRINT_CHANNEL_ID || process.env.SLACK_INTAKE_CHANNEL_ID || process.env.SLACK_DEFAULT_CHANNEL_ID;
-  const text = `Lead sprint automation completed: ${summary.discovered} discovered, ${summary.drafted} drafted, ${summary.sent} sent.`;
+  const text = summary.warning
+    ? `Lead sprint automation needs attention: ${summary.warning}`
+    : `Lead sprint automation completed: ${summary.discovered} discovered, ${summary.drafted} drafted, ${summary.sent} sent.`;
   const blocks = [
     { type: "header", text: { type: "plain_text", text: "Lead Sprint Automation" } },
     {
@@ -226,6 +237,9 @@ async function postSlackSummary(summary) {
         { type: "mrkdwn", text: `*Auto-send:*\n${summary.autoSend ? "enabled" : "disabled"}` },
       ],
     },
+    ...(summary.warning
+      ? [{ type: "section", text: { type: "mrkdwn", text: `*Needs attention:*\n${summary.warning}` } }]
+      : []),
   ];
 
   if (botToken && channel) {
@@ -255,9 +269,27 @@ async function handle(request) {
   const body = await request.json().catch(() => ({}));
   const cfg = sprintConfig(body);
   const dryRun = Boolean(body.dryRun);
+  const providers = configuredMarketSearchProviders();
 
   if (dryRun) {
-    return NextResponse.json({ success: true, dryRun: true, config: cfg, googleQueries: googleQueries(cfg), linkedinQueries: linkedinQueries(cfg) });
+    return NextResponse.json({
+      success: true,
+      dryRun: true,
+      config: cfg,
+      searchProviders: providers,
+      googleQueries: googleQueries(cfg),
+      linkedinQueries: linkedinQueries(cfg),
+    });
+  }
+
+  if (!providers.length) {
+    return NextResponse.json(
+      {
+        error: "Lead sprint search is not configured",
+        details: "Set at least one production search provider env var: SERPAPI_API_KEY, BRAVE_SEARCH_API_KEY, or BING_SEARCH_API_KEY.",
+      },
+      { status: 503 }
+    );
   }
 
   const [google, linkedin] = await Promise.all([
@@ -265,18 +297,29 @@ async function handle(request) {
     discoverLinkedInLeads(cfg).catch((error) => ({ created: [], failed: [{ error: error?.message || String(error) }], searched: 0 })),
   ]);
   const outreach = await draftAndMaybeSend(cfg);
+  const searched = google.searched + linkedin.searched;
+  const discovered = google.created.length + linkedin.created.length;
+  const failed = google.failed.length + linkedin.failed.length;
+  const firstFailure = [...google.failed, ...linkedin.failed][0];
+  const warning = searched === 0
+    ? `No search results returned from configured provider(s): ${providers.join(", ")}. Check provider quota, key validity, and query/location targeting.`
+    : discovered === 0 && failed > 0
+      ? `Found ${searched} search result(s), but none could be turned into leads. First failure: ${firstFailure?.url ? `${firstFailure.url} - ` : ""}${firstFailure?.error || "unknown scrape failure"}`
+      : "";
 
   const summary = {
     success: true,
     industry: cfg.industry,
     location: cfg.location,
     autoSend: cfg.autoSend,
-    searched: google.searched + linkedin.searched,
-    discovered: google.created.length + linkedin.created.length,
-    failed: google.failed.length + linkedin.failed.length,
+    searchProviders: providers,
+    searched,
+    discovered,
+    failed,
     drafted: outreach.drafted.length,
     sent: outreach.sent.length,
     skipped: outreach.skipped.length,
+    warning,
     timestamp: new Date().toISOString(),
   };
 

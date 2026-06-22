@@ -28,6 +28,11 @@ export async function POST(_request, { params }) {
 
     return NextResponse.json({ success: true, lead: updated, draft });
   } catch (error) {
+    console.error("Admin lead draft generation failed", {
+      leadId: params?.id,
+      message: error?.message || String(error),
+      stack: error?.stack,
+    });
     return NextResponse.json(
       { error: "Failed to generate outreach draft", details: error?.message || String(error) },
       { status: 500 }
