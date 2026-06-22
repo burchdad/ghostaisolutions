@@ -30,6 +30,14 @@ function statusBadgeClass(status) {
   return "border-slate-400/30 bg-slate-400/10 text-slate-300";
 }
 
+function safeRead(read, fallback) {
+  try {
+    return read();
+  } catch {
+    return fallback;
+  }
+}
+
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Agent Hub — Admin",
@@ -56,7 +64,7 @@ export default async function AdminAgentsHubPage() {
       process.env.X_ACCESS_TOKEN &&
       (process.env.X_ACCESS_SECRET || process.env.X_ACCESS_TOKEN_SECRET)
   );
-  const metaOk = Boolean(getProviderConnection("meta", { orgId: "default" })?.accessToken);
+  const metaOk = Boolean(safeRead(() => getProviderConnection("meta", { orgId: "default" })?.accessToken, null));
   const facebookOk = Boolean((process.env.FACEBOOK_PAGE_ACCESS_TOKEN && process.env.FACEBOOK_PAGE_ID) || metaOk);
   const schedulerReady = Boolean(process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET);
   const connectedCount = [linkedinOk, xOk, facebookOk].filter(Boolean).length;
@@ -73,7 +81,7 @@ export default async function AdminAgentsHubPage() {
   const hasSocialWorkflow = fs.existsSync(path.join(process.cwd(), ".github", "workflows", "social-publish.yml"));
   const analyticsStatus = autoPosts.length === 0 ? "Building" : hasSocialWorkflow && published7Days >= 1 ? "Healthy" : "Needs Review";
 
-  const trendStats = getTrendStats();
+  const trendStats = safeRead(getTrendStats, { total: 0, last24h: 0, undrafted: 0, highScore: 0 });
   const hasTrendWorkflow = fs.existsSync(path.join(process.cwd(), ".github", "workflows", "trend-refresh.yml"));
   const trendStatus = trendStats.total === 0 ? "Building" : trendStats.highScore >= 5 && hasTrendWorkflow ? "Healthy" : "Needs Review";
 
@@ -83,22 +91,22 @@ export default async function AdminAgentsHubPage() {
 
   const videoStatus = !process.env.OPENAI_API_KEY ? "Building" : autoPosts.length > 0 ? "Healthy" : "Needs Review";
 
-  const subStats = getSubscriberStats();
-  const campStats = getCampaignStats();
+  const subStats = safeRead(getSubscriberStats, { total: 0, active: 0, unsubscribed: 0 });
+  const campStats = safeRead(getCampaignStats, { total: 0, sent: 0, draft: 0, totalSent: 0 });
   const newsletterStatus = subStats.active === 0 ? "Building" : campStats.sent > 0 ? "Healthy" : "Needs Review";
 
-  const engStats = getEngagementStats();
+  const engStats = safeRead(getEngagementStats, { total: 0, pending: 0, drafted: 0, replied: 0, dismissed: 0 });
   const engagementStatus = !process.env.OPENAI_API_KEY ? "Building" : engStats.replied > 0 ? "Healthy" : engStats.pending > 0 || engStats.drafted > 0 ? "Needs Review" : "Building";
 
-  const calStats = getCalendarStats();
+  const calStats = safeRead(getCalendarStats, { total: 0, thisWeek: 0 });
   const editorialStatus = calStats.total === 0 ? "Building" : calStats.thisWeek > 0 ? "Healthy" : "Needs Review";
 
   const caseStudyStatus = !process.env.OPENAI_API_KEY ? "Building" : autoPosts.length > 0 ? "Needs Review" : "Building";
 
-  const compStats = getCompetitorStats();
+  const compStats = safeRead(getCompetitorStats, { total: 0, scans: 0 });
   const competitorStatus = compStats.total === 0 ? "Building" : compStats.scans > 0 ? "Healthy" : "Needs Review";
 
-  const orchestratorState = getOrchestratorState();
+  const orchestratorState = safeRead(getOrchestratorState, { tasks: {} });
   const orchestratorTasks = Object.values(orchestratorState.tasks || {});
   const hasSchedulerSecret = Boolean(process.env.RAILWAY_TRIGGER_SECRET || process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET);
   const hasRecentOrchestratorRun = orchestratorTasks.some((task) => {
