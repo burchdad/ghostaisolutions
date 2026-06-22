@@ -21,6 +21,10 @@
       "schedule": "50 9 * * *"
     },
     {
+      "path": "/api/agents/leads/sprint",
+      "schedule": "15 11 * * 1-5"
+    },
+    {
       "path": "/api/agents/reports/daily-digest",
       "schedule": "30 10 * * *"
     },

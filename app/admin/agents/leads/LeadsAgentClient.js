@@ -52,6 +52,8 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
   const [campaignPlan, setCampaignPlan] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [sprinting, setSprinting] = useState(false);
+  const [sprintResult, setSprintResult] = useState(null);
   const [drafting, setDrafting] = useState(false);
   const [sending, setSending] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -154,6 +156,31 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
       setMessage(error.message);
     } finally {
       setPlanning(false);
+    }
+  }
+
+  async function handleAutomationSprint({ autoSend = false } = {}) {
+    setSprinting(true);
+    setMessage("");
+    setSprintResult(null);
+    try {
+      const payload = await jsonFetch("/api/agents/leads/sprint", {
+        method: "POST",
+        body: JSON.stringify({
+          industry: campaignIndustry,
+          location: campaignLocation,
+          intent: campaignIntent,
+          limit: Number(campaignLimit || 25),
+          autoSend,
+        }),
+      });
+      setSprintResult(payload);
+      setMessage(`Lead sprint completed: ${payload.discovered} discovered, ${payload.drafted} drafted, ${payload.sent} sent.`);
+      await refreshLeads(selectedId);
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setSprinting(false);
     }
   }
 
@@ -288,6 +315,13 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
               >
                 {planning ? "Planning..." : "Generate AI Sprint Plan"}
               </button>
+              <button
+                onClick={() => handleAutomationSprint({ autoSend: false })}
+                disabled={sprinting || !campaignIndustry.trim()}
+                className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {sprinting ? "Running..." : "Run AI Lead Sprint"}
+              </button>
             </div>
 
             <div className="mt-5 grid gap-3 md:grid-cols-5">
@@ -384,6 +418,37 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
                     </div>
                   </div>
                 </article>
+              </div>
+            ) : null}
+
+            {sprintResult ? (
+              <div className="mt-5 rounded-xl border border-emerald-300/20 bg-emerald-300/5 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-200">Automation Result</p>
+                <div className="mt-3 grid gap-3 sm:grid-cols-5">
+                  <div className="rounded-lg border border-white/10 bg-slate-950/60 p-3">
+                    <p className="text-xs text-slate-400">Searched</p>
+                    <p className="text-xl font-bold text-white">{sprintResult.searched}</p>
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-slate-950/60 p-3">
+                    <p className="text-xs text-slate-400">Discovered</p>
+                    <p className="text-xl font-bold text-white">{sprintResult.discovered}</p>
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-slate-950/60 p-3">
+                    <p className="text-xs text-slate-400">Drafted</p>
+                    <p className="text-xl font-bold text-white">{sprintResult.drafted}</p>
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-slate-950/60 p-3">
+                    <p className="text-xs text-slate-400">Sent</p>
+                    <p className="text-xl font-bold text-white">{sprintResult.sent}</p>
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-slate-950/60 p-3">
+                    <p className="text-xs text-slate-400">Skipped</p>
+                    <p className="text-xl font-bold text-white">{sprintResult.skipped}</p>
+                  </div>
+                </div>
+                <p className="mt-3 text-xs text-slate-300">
+                  Auto-send is off by default. Enable `LEAD_SPRINT_AUTO_SEND=true` only when you want the agent to send capped email outreach automatically.
+                </p>
               </div>
             ) : null}
           </div>
