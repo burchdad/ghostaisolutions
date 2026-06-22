@@ -32,6 +32,8 @@ const initialForm = {
 export default function QualificationIntake({ supportEmail }) {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [form, setForm] = useState(initialForm);
 
   const highIntent = useMemo(() => {
@@ -77,17 +79,31 @@ export default function QualificationIntake({ supportEmail }) {
     [form]
   );
 
-  const handleSubmit = () => {
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    setSubmitError("");
 
-    if (highIntent) {
-      window.open(BOOKING_URL, "_blank", "noopener,noreferrer");
-      return;
+    try {
+      const response = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, highIntent }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Submission failed");
+      }
+
+      setSubmitted(true);
+
+      if (highIntent) {
+        window.open(BOOKING_URL, "_blank", "noopener,noreferrer");
+      }
+    } catch {
+      setSubmitError(`Something went wrong. Email ${supportEmail} directly and mention website audit intake.`);
+    } finally {
+      setSubmitting(false);
     }
-
-    const subject = encodeURIComponent("Ghost AI Website Audit Intake");
-    const body = encodeURIComponent(summary);
-    window.location.href = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
   };
 
   return (
@@ -204,18 +220,19 @@ export default function QualificationIntake({ supportEmail }) {
           </button>
         ) : (
           <TrackCTA
-            href={highIntent ? BOOKING_URL : `mailto:${supportEmail}`}
+            href="#submit-intake"
             event="contact_intake_submit"
             section="contact_intake"
             placement="submit"
-            label={highIntent ? "Book Strategy Call" : "Send Intake"}
+            label={highIntent ? "Submit and Book Call" : "Send Intake"}
             onClick={(e) => {
               e.preventDefault();
               handleSubmit();
             }}
-            className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
+            aria-disabled={submitting}
+            className="rounded-xl bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 aria-disabled:pointer-events-none aria-disabled:opacity-60"
           >
-            {highIntent ? "Book Strategy Call" : "Send Intake"}
+            {submitting ? "Sending..." : highIntent ? "Submit and Book Call" : "Send Intake"}
           </TrackCTA>
         )}
 
@@ -228,6 +245,9 @@ export default function QualificationIntake({ supportEmail }) {
         <p className="mt-4 text-xs text-cyan-200">
           Intake submitted. If calendar did not open, use Schedule Call and mention this submission.
         </p>
+      ) : null}
+      {submitError ? (
+        <p className="mt-4 text-xs text-red-200">{submitError}</p>
       ) : null}
     </div>
   );
