@@ -1,18 +1,17 @@
-// FILE: app/services/page.js
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TrackCTA from "@/components/TrackCTA";
 import { siteConfig } from "@/lib/siteConfig";
 
 export const metadata = {
-  title: "Capabilities — Ghost AI Solutions",
-  description: "Outcome-focused AI infrastructure, automation, voice systems, data intelligence, and custom platform engineering.",
+  title: "Capabilities - Ghost AI Solutions",
+  description: "Website, automation, AI, voice, data intelligence, and custom platform capabilities from Ghost AI Solutions.",
 };
 
 export default function ServicesPage() {
   const servicesJsonLd = {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: "Custom AI Infrastructure and Business Systems",
+    name: "Websites, Automation, and AI Business Systems",
     provider: {
       "@type": "Organization",
       name: "Ghost AI Solutions",
@@ -26,6 +25,8 @@ export default function ServicesPage() {
       ],
     },
     serviceType: [
+      "Website Design and Development",
+      "Lead Funnel Development",
       "AI Infrastructure",
       "Operational Automation",
       "Voice Systems",
@@ -37,6 +38,12 @@ export default function ServicesPage() {
   };
 
   const cards = [
+    {
+      id: "websites",
+      title: "Websites & Lead Funnels",
+      value: "Create a sharper first impression and guide visitors toward calls, quotes, bookings, or purchases.",
+      delivery: "Website strategy, page design, conversion copy, forms, booking paths, analytics, and launch support.",
+    },
     {
       id: "ai-infrastructure",
       title: "AI Infrastructure",
@@ -75,15 +82,14 @@ export default function ServicesPage() {
         <Breadcrumbs />
         <h1 className="text-4xl font-extrabold tracking-tight">Capabilities</h1>
 
-        {/* JSON-LD for Services */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(servicesJsonLd) }}
         />
 
-        <p className="mt-4 text-slate-600 dark:text-slate-300 max-w-2xl">
-          We design custom business systems where value comes first and technology follows: revenue performance, operational efficiency,
-          executive intelligence, and scalable AI transformation.
+        <p className="mt-4 max-w-2xl text-slate-600 dark:text-slate-300">
+          We design custom business systems where value comes first and technology follows: website conversion, revenue performance,
+          operational efficiency, executive intelligence, and scalable AI transformation.
         </p>
 
         <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -91,28 +97,27 @@ export default function ServicesPage() {
             <article
               key={c.title}
               id={c.id}
-              className="rounded-2xl border p-6 shadow-sm bg-white dark:bg-slate-900 hover:shadow-lg transition-shadow scroll-mt-24"
+              className="scroll-mt-24 rounded-2xl border bg-white p-6 shadow-sm transition-shadow hover:shadow-lg dark:bg-slate-900"
             >
               <h2 className="text-lg font-semibold">{c.title}</h2>
-              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                {c.value}
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{c.value}</p>
+              <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
+                <span className="font-semibold">How we deliver:</span> {c.delivery}
               </p>
-              <p className="mt-3 text-sm text-slate-600 dark:text-slate-300"><span className="font-semibold">How we deliver:</span> {c.delivery}</p>
             </article>
           ))}
         </div>
 
-        {/* Optional: CTA row */}
         <div className="mt-12">
           <TrackCTA
-            href="/contact"
+            href="/start"
             className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white shadow-glow hover:bg-brand-700"
-            event="book_strategy_call_services"
+            event="free_website_audit_services"
             section="services"
             placement="primary"
-            label="Book Strategy Call"
+            label="Get Free Website Audit"
           >
-            Book Strategy Call
+            Get Free Website Audit
           </TrackCTA>
         </div>
       </div>

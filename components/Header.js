@@ -18,6 +18,7 @@ export default function Header() {
     {
       label: "Capabilities",
       links: [
+        { href: "/services#websites", label: "Websites & Lead Funnels" },
         { href: "/services#ai-infrastructure", label: "AI Infrastructure" },
         { href: "/services#automation", label: "Automation" },
         { href: "/services#voice-systems", label: "Voice Systems" },
@@ -98,14 +99,14 @@ export default function Header() {
               Login
             </Link>
             <TrackCTA
-              href="/contact"
+              href="/start"
               className="inline-flex items-center gap-2 rounded-xl bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-950 shadow-[0_0_28px_rgba(251,191,36,0.32)] transition hover:bg-amber-200"
               event="book_strategy_call_click_header"
               section="header"
               placement="desktop_primary"
-              label="Book Strategy Call"
+              label="Free Website Audit"
             >
-              Book Strategy Call
+              Free Website Audit
             </TrackCTA>
           </div>
 
@@ -158,15 +159,15 @@ export default function Header() {
               Login
             </Link>
             <TrackCTA
-              href="/contact"
+              href="/start"
               className="rounded-xl bg-amber-300 px-4 py-2 font-semibold text-slate-950"
               onClick={() => setOpen(false)}
               event="book_strategy_call_click_mobile"
               section="header"
               placement="mobile_primary"
-              label="Book Strategy Call"
+              label="Free Website Audit"
             >
-              Book Strategy Call
+              Free Website Audit
             </TrackCTA>
           </div>
         </div>
