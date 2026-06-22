@@ -1,12 +1,12 @@
-import Link from 'next/link';
-import Image from 'next/image';
+import Link from "next/link";
+import Image from "next/image";
 import TrackCTA from "@/components/TrackCTA";
 import { siteConfig } from "@/lib/siteConfig";
 
-export default function Footer(){
+export default function Footer() {
   return (
     <footer className="border-t border-white/10 bg-slate-950/70">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
             <div className="flex items-center gap-3">
@@ -20,12 +20,12 @@ export default function Footer(){
               />
             </div>
             <p className="mt-4 max-w-md text-sm text-slate-300">
-              We architect and deploy custom AI infrastructure for organizations scaling revenue, operations, and executive decision-making.
+              We build modern websites, lead funnels, automations, and AI-powered systems for businesses that need a stronger digital presence.
             </p>
             <div className="mt-4 text-sm text-slate-400">
-              <p>Tyler, TX • Remote-first</p>
-              <p className="mt-1">Built by engineers. Designed for operators.</p>
-              <p className="mt-3 text-amber-200">Boutique consultancy. Custom builds. Enterprise-grade delivery.</p>
+              <p>Tyler, TX - Remote-first</p>
+              <p className="mt-1">Built by engineers. Designed for real business workflows.</p>
+              <p className="mt-3 text-amber-200">Boutique delivery. Custom builds. Practical growth systems.</p>
             </div>
           </div>
 
@@ -41,7 +41,7 @@ export default function Footer(){
 
             <nav className="grid gap-2 text-sm">
               <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Resources</p>
-              <Link className="text-slate-200 hover:text-cyan-300" href="/work">Case Studies</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/work">Work</Link>
               <Link className="text-slate-200 hover:text-cyan-300" href="/demo">Demos</Link>
               <Link className="text-slate-200 hover:text-cyan-300" href="/process">Process</Link>
               <Link className="text-slate-200 hover:text-cyan-300" href="/blog">Blog</Link>
@@ -59,13 +59,13 @@ export default function Footer(){
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Contact</p>
             <TrackCTA
               className="inline-flex w-fit items-center rounded-xl bg-amber-300 px-4 py-2 font-semibold text-slate-950 transition hover:bg-amber-200"
-              href="/contact"
-              event="book_strategy_call_footer"
+              href="/start"
+              event="free_website_audit_footer"
               section="footer"
               placement="primary"
-              label="Book Strategy Call"
+              label="Free Website Audit"
             >
-              Book Strategy Call
+              Free Website Audit
             </TrackCTA>
             <a className="text-slate-200 underline underline-offset-4" href={`mailto:${siteConfig.supportEmail}`}>
               {siteConfig.supportEmail}
@@ -76,7 +76,7 @@ export default function Footer(){
         </div>
 
         <div className="mt-10 border-t border-white/10 pt-5 text-xs text-slate-400">
-          <p>© 2026 Ghost AI Solutions. All rights reserved.</p>
+          <p>Copyright 2026 Ghost AI Solutions. All rights reserved.</p>
           <p className="mt-1">Built for performance, scalability, and real-world deployment.</p>
         </div>
       </div>

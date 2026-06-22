@@ -11,9 +11,9 @@ const fadeUp = {
 };
 
 const heroStats = [
-  { label: "Implementation Window", value: "2-8 weeks" },
-  { label: "Manual Throughput Gains", value: "30-70%" },
-  { label: "Custom Architecture", value: "100%" },
+  { label: "Live Builds", value: "8" },
+  { label: "Typical Launch Window", value: "2-8 weeks" },
+  { label: "Custom Fit", value: "100%" },
 ];
 
 export default function HeroSection() {
@@ -60,41 +60,41 @@ export default function HeroSection() {
             variants={fadeUp}
             className="inline-flex items-center rounded-full border border-amber-300/45 bg-amber-300/12 px-4 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-amber-100"
           >
-            Premium AI Transformation Consultancy
+            Websites, Automation, And AI Systems
           </motion.p>
 
           <motion.h1 variants={fadeUp} className="mt-6 text-4xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
-            Custom AI Infrastructure Built To Scale Revenue, Operations, and Decision-Making
+            Websites That Build Trust, Capture Leads, And Grow With Your Business
           </motion.h1>
 
           <motion.p variants={fadeUp} className="mx-auto mt-6 max-w-2xl text-lg text-slate-200 sm:text-xl">
-            We design and deploy custom AI systems for businesses that have outgrown off-the-shelf software and need technology built around how they actually operate.
+            GhostAI Solutions builds modern websites, intake funnels, automations, and AI-powered systems for businesses that need a sharper digital presence and cleaner operations.
           </motion.p>
 
           <motion.p variants={fadeUp} className="mx-auto mt-3 max-w-3xl text-sm uppercase tracking-[0.16em] text-cyan-300/90 sm:text-base">
-            Built for founders, operators, and executive teams scaling complex organizations.
+            Built for local businesses, founders, operators, and growing teams ready to look more credible online.
           </motion.p>
 
           <motion.div variants={fadeUp} className="mt-9 flex flex-wrap justify-center gap-4">
             <TrackCTA
-              href="/contact"
-              event="hero_book_strategy_call"
+              href="/start"
+              event="hero_start_website_audit"
               section="hero"
               placement="primary"
-              label="Book Strategy Call"
+              label="Get Free Website Audit"
               className="rounded-xl bg-amber-300 px-7 py-3.5 text-sm font-semibold text-slate-950 shadow-[0_0_35px_rgba(251,191,36,0.35)] transition hover:-translate-y-0.5 hover:bg-amber-200"
             >
-              Book Strategy Call
+              Get Free Website Audit
             </TrackCTA>
             <TrackCTA
-              href="/#segmentation"
+              href="/work"
               event="hero_explore_solutions"
               section="hero"
               placement="secondary"
-              label="Explore Solutions"
+              label="See Recent Builds"
               className="rounded-xl border border-white/25 px-7 py-3.5 text-sm font-semibold text-white transition hover:border-amber-300/60 hover:bg-amber-300/10"
             >
-              Explore Solutions
+              See Recent Builds
             </TrackCTA>
           </motion.div>
 
@@ -134,8 +134,8 @@ export default function HeroSection() {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">How We Work</p>
             <ul className="mt-2 grid gap-2 text-sm text-slate-200 sm:grid-cols-3">
               <li>Discovery call focused on business constraints</li>
-              <li>Custom architecture mapped to real operations</li>
-              <li>Delivery tied to measurable executive outcomes</li>
+              <li>Website and funnel mapped to customer action</li>
+              <li>Automation tied to real operational bottlenecks</li>
             </ul>
           </motion.div>
 

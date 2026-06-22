@@ -44,11 +44,20 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
   const [manualCompany, setManualCompany] = useState("");
   const [manualEmail, setManualEmail] = useState("");
   const [manualNotes, setManualNotes] = useState("");
+  const [campaignChannel, setCampaignChannel] = useState("google");
+  const [campaignIndustry, setCampaignIndustry] = useState("restaurants, HVAC, construction, detailing, salons");
+  const [campaignLocation, setCampaignLocation] = useState("Tyler TX");
+  const [campaignIntent, setCampaignIntent] = useState("outdated website online booking lead generation");
+  const [campaignLimit, setCampaignLimit] = useState("25");
+  const [campaignPlan, setCampaignPlan] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [sprinting, setSprinting] = useState(false);
+  const [sprintResult, setSprintResult] = useState(null);
   const [drafting, setDrafting] = useState(false);
   const [sending, setSending] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [planning, setPlanning] = useState(false);
 
   const selected = useMemo(() => leads.find((lead) => lead.id === selectedId) || null, [leads, selectedId]);
 
@@ -96,6 +105,82 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
       setMessage(error.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleCampaignDiscover() {
+    if (!campaignIndustry.trim()) return;
+    setLoading(true);
+    setMessage("");
+    try {
+      const payload = await jsonFetch("/api/admin/agents/leads/discover", {
+        method: "POST",
+        body: JSON.stringify({
+          campaign: {
+            channel: campaignChannel,
+            industry: campaignIndustry,
+            location: campaignLocation,
+            intent: campaignIntent,
+            limit: Number(campaignLimit || 25),
+          },
+        }),
+      });
+      const firstLead = payload.results?.find((item) => item.success)?.lead;
+      const label = campaignChannel === "linkedin" ? "LinkedIn" : "Google/local";
+      setMessage(`${label} campaign discovered ${payload.discovered} lead(s), ${payload.failed} failed.`);
+      await refreshLeads(firstLead?.id || selectedId);
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleCampaignPlan() {
+    setPlanning(true);
+    setMessage("");
+    try {
+      const payload = await jsonFetch("/api/admin/agents/leads/campaign-plan", {
+        method: "POST",
+        body: JSON.stringify({
+          channel: campaignChannel,
+          industry: campaignIndustry,
+          location: campaignLocation,
+          intent: campaignIntent,
+          limit: Number(campaignLimit || 25),
+        }),
+      });
+      setCampaignPlan(payload.plan || null);
+      setMessage("AI outreach sprint plan generated.");
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setPlanning(false);
+    }
+  }
+
+  async function handleAutomationSprint({ autoSend = false } = {}) {
+    setSprinting(true);
+    setMessage("");
+    setSprintResult(null);
+    try {
+      const payload = await jsonFetch("/api/agents/leads/sprint", {
+        method: "POST",
+        body: JSON.stringify({
+          industry: campaignIndustry,
+          location: campaignLocation,
+          intent: campaignIntent,
+          limit: Number(campaignLimit || 25),
+          autoSend,
+        }),
+      });
+      setSprintResult(payload);
+      setMessage(`Lead sprint completed: ${payload.discovered} discovered, ${payload.drafted} drafted, ${payload.sent} sent.`);
+      await refreshLeads(selectedId);
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setSprinting(false);
     }
   }
 
@@ -210,6 +295,164 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-5 lg:col-span-2">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-white">Targeted Outreach Campaign</h2>
+                <p className="mt-1 text-sm text-slate-400">Run Google/local or LinkedIn-focused discovery, then route outreach toward the /start intake.</p>
+              </div>
+              <button
+                onClick={handleCampaignDiscover}
+                disabled={loading || !campaignIndustry.trim()}
+                className="rounded-lg bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loading ? "Running..." : "Run Campaign Discovery"}
+              </button>
+              <button
+                onClick={handleCampaignPlan}
+                disabled={planning || !campaignIndustry.trim()}
+                className="rounded-lg border border-amber-300/40 bg-amber-300/10 px-4 py-2 text-sm font-semibold text-amber-100 hover:bg-amber-300/20 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {planning ? "Planning..." : "Generate AI Sprint Plan"}
+              </button>
+              <button
+                onClick={() => handleAutomationSprint({ autoSend: false })}
+                disabled={sprinting || !campaignIndustry.trim()}
+                className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {sprinting ? "Running..." : "Run AI Lead Sprint"}
+              </button>
+            </div>
+
+            <div className="mt-5 grid gap-3 md:grid-cols-5">
+              <select
+                value={campaignChannel}
+                onChange={(e) => setCampaignChannel(e.target.value)}
+                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50"
+              >
+                <option value="google">Google / Local Search</option>
+                <option value="linkedin">LinkedIn Company Search</option>
+              </select>
+              <input
+                value={campaignIndustry}
+                onChange={(e) => setCampaignIndustry(e.target.value)}
+                placeholder="Industries / niches"
+                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50 md:col-span-2"
+              />
+              <input
+                value={campaignLocation}
+                onChange={(e) => setCampaignLocation(e.target.value)}
+                placeholder="Location"
+                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50"
+              />
+              <select
+                value={campaignLimit}
+                onChange={(e) => setCampaignLimit(e.target.value)}
+                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50"
+              >
+                <option value="10">10 leads</option>
+                <option value="25">25 leads</option>
+                <option value="50">50 leads</option>
+              </select>
+              <input
+                value={campaignIntent}
+                onChange={(e) => setCampaignIntent(e.target.value)}
+                placeholder="Search intent / pain"
+                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50 md:col-span-5"
+              />
+            </div>
+
+            {campaignPlan ? (
+              <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
+                <article className="rounded-xl border border-white/10 bg-slate-950/60 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-200">AI Sprint Objective</p>
+                  <h3 className="mt-2 text-lg font-semibold text-white">{campaignPlan.headline}</h3>
+                  <p className="mt-2 text-sm text-slate-300">{campaignPlan.objective}</p>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.12em] text-slate-400">Best Targets</p>
+                      <ul className="mt-2 space-y-1 text-sm text-slate-300">
+                        {(campaignPlan.bestTargets || []).map((item) => <li key={item}>- {item}</li>)}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.12em] text-slate-400">Success Metrics</p>
+                      <ul className="mt-2 space-y-1 text-sm text-slate-300">
+                        {(campaignPlan.successMetrics || []).map((item) => <li key={item}>- {item}</li>)}
+                      </ul>
+                    </div>
+                  </div>
+                </article>
+
+                <article className="rounded-xl border border-white/10 bg-slate-950/60 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200">This Week Plan</p>
+                  <ol className="mt-3 space-y-2 text-sm text-slate-300">
+                    {(campaignPlan.dailyPlan || []).map((item) => <li key={item}>{item}</li>)}
+                  </ol>
+                </article>
+
+                <article className="rounded-xl border border-white/10 bg-slate-950/60 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200">Google / Local Angles</p>
+                  <ul className="mt-3 space-y-2 text-sm text-slate-300">
+                    {(campaignPlan.googleAngles || []).map((item) => <li key={item}>- {item}</li>)}
+                  </ul>
+                </article>
+
+                <article className="rounded-xl border border-white/10 bg-slate-950/60 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200">LinkedIn Angles</p>
+                  <ul className="mt-3 space-y-2 text-sm text-slate-300">
+                    {(campaignPlan.linkedinAngles || []).map((item) => <li key={item}>- {item}</li>)}
+                  </ul>
+                </article>
+
+                <article className="rounded-xl border border-amber-300/20 bg-amber-300/5 p-4 lg:col-span-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-200">Sendable Copy</p>
+                  <div className="mt-3 grid gap-3 md:grid-cols-2">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.12em] text-slate-400">First Touch</p>
+                      <pre className="mt-2 whitespace-pre-wrap rounded-lg border border-white/10 bg-slate-950/70 p-3 text-xs leading-relaxed text-slate-200">{campaignPlan.firstTouch}</pre>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.12em] text-slate-400">Follow Up</p>
+                      <pre className="mt-2 whitespace-pre-wrap rounded-lg border border-white/10 bg-slate-950/70 p-3 text-xs leading-relaxed text-slate-200">{campaignPlan.followUp}</pre>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            ) : null}
+
+            {sprintResult ? (
+              <div className="mt-5 rounded-xl border border-emerald-300/20 bg-emerald-300/5 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-200">Automation Result</p>
+                <div className="mt-3 grid gap-3 sm:grid-cols-5">
+                  <div className="rounded-lg border border-white/10 bg-slate-950/60 p-3">
+                    <p className="text-xs text-slate-400">Searched</p>
+                    <p className="text-xl font-bold text-white">{sprintResult.searched}</p>
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-slate-950/60 p-3">
+                    <p className="text-xs text-slate-400">Discovered</p>
+                    <p className="text-xl font-bold text-white">{sprintResult.discovered}</p>
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-slate-950/60 p-3">
+                    <p className="text-xs text-slate-400">Drafted</p>
+                    <p className="text-xl font-bold text-white">{sprintResult.drafted}</p>
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-slate-950/60 p-3">
+                    <p className="text-xs text-slate-400">Sent</p>
+                    <p className="text-xl font-bold text-white">{sprintResult.sent}</p>
+                  </div>
+                  <div className="rounded-lg border border-white/10 bg-slate-950/60 p-3">
+                    <p className="text-xs text-slate-400">Skipped</p>
+                    <p className="text-xl font-bold text-white">{sprintResult.skipped}</p>
+                  </div>
+                </div>
+                <p className="mt-3 text-xs text-slate-300">
+                  Auto-send is off by default. Enable `LEAD_SPRINT_AUTO_SEND=true` only when you want the agent to send capped email outreach automatically.
+                </p>
+              </div>
+            ) : null}
+          </div>
+
           <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
             <h2 className="text-lg font-semibold text-white">Discover Leads from Websites</h2>
             <p className="mt-1 text-sm text-slate-400">Paste one or more domains/URLs (newline, comma, or space separated)</p>
@@ -311,6 +554,24 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
                     <p className="text-xs uppercase tracking-[0.12em] text-slate-400">Contact</p>
                     <p className="mt-1 text-sm font-semibold text-cyan-200 line-clamp-2">{selected.ownerEmail || selected.contactEmail || "Missing"}</p>
                   </article>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                  {selected.website ? (
+                    <a className="rounded-full border border-white/15 px-3 py-1 text-slate-200 hover:border-cyan-300/40 hover:text-cyan-200" href={selected.website} target="_blank" rel="noopener noreferrer">
+                      Website
+                    </a>
+                  ) : null}
+                  {selected.linkedinUrl ? (
+                    <a className="rounded-full border border-white/15 px-3 py-1 text-slate-200 hover:border-cyan-300/40 hover:text-cyan-200" href={selected.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                      LinkedIn
+                    </a>
+                  ) : null}
+                  {selected.sourceType ? (
+                    <span className="rounded-full border border-white/10 px-3 py-1 text-slate-400">
+                      Source: {selected.sourceType}
+                    </span>
+                  ) : null}
                 </div>
 
                 <div className="mt-4 rounded-xl border border-white/10 bg-slate-900/40 p-4">

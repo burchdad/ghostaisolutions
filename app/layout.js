@@ -28,8 +28,8 @@ const bodyFont = Plus_Jakarta_Sans({
 
 export const metadata = {
   metadataBase: new URL("https://ghostai.solutions"),
-  title: "Ghost AI Solutions - AI Transformation and Custom Infrastructure",
-  description: "Premium AI transformation consultancy designing custom infrastructure to scale revenue, operations, and executive decision-making.",
+  title: "Ghost AI Solutions - Websites, Automation, and AI Systems",
+  description: "Modern websites, lead funnels, automations, and AI-powered systems for businesses that need a sharper digital presence and cleaner operations.",
   keywords: [
     "custom software development",
     "ai automation agency",
@@ -40,8 +40,8 @@ export const metadata = {
     "ghost ai solutions",
   ],
   openGraph: {
-    title: "Ghost AI Solutions - AI Transformation and Custom Infrastructure",
-    description: "Custom AI systems and strategic infrastructure for startups, scaling businesses, and enterprise teams.",
+    title: "Ghost AI Solutions - Websites, Automation, and AI Systems",
+    description: "Websites, intake funnels, automations, and AI systems for businesses ready to capture leads and operate cleaner.",
     url: "https://ghostai.solutions",
     siteName: "Ghost AI Solutions",
     images: ["/og-image.png"],
@@ -92,6 +92,8 @@ export default function RootLayout({ children }) {
       url: "https://ghostai.solutions",
     },
     serviceType: [
+      "Website Design and Development",
+      "Lead Funnel Development",
       "Custom Platform Development",
       "Workflow Automation Engineering",
       "AI Voice Systems",

@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { ADMIN_SESSION_COOKIE, verifyAdminSessionToken } from "@/lib/adminSession";
 import { scrapeBusinessWebsite } from "@/lib/leadIntelligence";
-import { upsertLeadByDomain } from "@/lib/leadsStore";
-import { searchLeads } from "@/lib/marketSearch";
+import { upsertLeadByDomain, upsertLeadByLinkedIn } from "@/lib/leadsStore";
+import { searchLeads, searchMany, searchWeb } from "@/lib/marketSearch";
 
 function ensureAdmin() {
   const token = cookies().get(ADMIN_SESSION_COOKIE)?.value || "";
@@ -41,6 +41,39 @@ async function notifySlackHighValueLead(lead) {
   }
 }
 
+function clean(value, max = 300) {
+  return String(value || "").trim().slice(0, max);
+}
+
+function parseLinkedInCompanyTitle(title = "") {
+  return String(title || "")
+    .replace(/\s*\|\s*LinkedIn.*$/i, "")
+    .replace(/\s*-\s*LinkedIn.*$/i, "")
+    .replace(/\s+on LinkedIn.*$/i, "")
+    .trim();
+}
+
+function campaignQueries({ channel, industry, location, niche, intent }) {
+  const market = clean(industry || niche || "local service businesses", 120);
+  const place = clean(location || "", 120);
+  const pain = clean(intent || "website redesign lead generation booking", 180);
+
+  if (channel === "linkedin") {
+    return [
+      `site:linkedin.com/company ${market} ${place}`,
+      `site:linkedin.com/company ${market} owner founder ${place}`,
+      `site:linkedin.com/company ${market} marketing operations ${place}`,
+    ].map((item) => item.replace(/\s+/g, " ").trim());
+  }
+
+  return [
+    `${market} ${place} website`,
+    `${market} ${place} contact`,
+    `${market} ${place} book online`,
+    `${market} ${place} ${pain}`,
+  ].map((item) => item.replace(/\s+/g, " ").trim());
+}
+
 function parseUrlInputs(payload) {
   if (Array.isArray(payload?.urls)) {
     return payload.urls.map((u) => String(u || "").trim()).filter(Boolean);
@@ -58,6 +91,21 @@ async function resolveLeadUrls(body) {
   const urls = parseUrlInputs(body);
   if (urls.length) return { urls, searchResults: [] };
 
+  if (body?.campaign?.channel === "google") {
+    const queries = campaignQueries({ ...body.campaign, channel: "google" });
+    const searchResults = await searchMany(queries, {
+      limitPerQuery: Math.max(3, Math.min(10, Number(body?.campaign?.limitPerQuery || 6))),
+      totalLimit: Math.max(5, Math.min(50, Number(body?.campaign?.limit || 25))),
+      location: body.campaign.location || "",
+      providers: ["serpapi", "brave", "bing"],
+    });
+
+    return {
+      urls: searchResults.map((result) => result.url).filter(Boolean),
+      searchResults,
+    };
+  }
+
   const query = String(body?.query || body?.searchQuery || "").trim();
   if (!query) return { urls: [], searchResults: [] };
 
@@ -73,6 +121,76 @@ async function resolveLeadUrls(body) {
   };
 }
 
+async function discoverLinkedInCampaign(body) {
+  const campaign = body?.campaign || {};
+  const queries = campaignQueries({ ...campaign, channel: "linkedin" });
+  const searchResults = [];
+
+  for (const query of queries) {
+    const results = await searchWeb(query, {
+      limit: Math.max(3, Math.min(10, Number(campaign.limitPerQuery || 6))),
+      providers: ["serpapi", "brave", "bing"],
+      includeDefaultExclusions: false,
+      excludeDomains: ["ghostai.solutions"],
+    });
+    searchResults.push(...results.filter((result) => /linkedin\.com\/company/i.test(result.url)));
+  }
+
+  const seen = new Set();
+  const limited = searchResults
+    .filter((result) => {
+      const key = String(result.url || "").split("?")[0].toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, Math.max(5, Math.min(50, Number(campaign.limit || 25))));
+
+  const results = [];
+  for (const result of limited) {
+    const companyName = parseLinkedInCompanyTitle(result.title) || result.domain || "LinkedIn prospect";
+    const lead = await upsertLeadByLinkedIn({
+      companyName,
+      domain: "",
+      website: "",
+      sourceType: "linkedin_search",
+      sourceUrl: result.url,
+      linkedinUrl: result.url,
+      summary: result.snippet || `Discovered through LinkedIn campaign search: ${result.query}`,
+      status: "new",
+      notes: [
+        `LinkedIn campaign result for ${campaign.industry || campaign.niche || "target market"}.`,
+        campaign.location ? `Location focus: ${campaign.location}.` : "",
+        "Outreach goal: invite them to the free website audit intake at /start.",
+      ].filter(Boolean).join("\n"),
+      signals: {
+        services: [campaign.industry || campaign.niche || "linkedin prospect"].filter(Boolean),
+        mentionsAI: false,
+      },
+      score: {
+        fit: 55,
+        urgency: 45,
+        total: 51,
+        reasons: ["LinkedIn company result found for targeted outreach campaign."],
+      },
+      aiOpportunity: {
+        score: 58,
+        reasons: ["LinkedIn prospect can be routed into website audit outreach."],
+      },
+    });
+
+    results.push({ url: result.url, success: true, lead });
+  }
+
+  return {
+    success: true,
+    searched: limited.length,
+    discovered: results.length,
+    failed: 0,
+    results,
+  };
+}
+
 export async function POST(request) {
   if (!ensureAdmin()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -80,6 +198,10 @@ export async function POST(request) {
 
   try {
     const body = await request.json().catch(() => ({}));
+    if (body?.campaign?.channel === "linkedin") {
+      return NextResponse.json(await discoverLinkedInCampaign(body));
+    }
+
     const { urls, searchResults } = await resolveLeadUrls(body);
     const limitedUrls = urls.slice(0, 25);
 

@@ -2,39 +2,40 @@ import Link from "next/link";
 import HeroSection from "@/components/HeroSection";
 import SectionWrapper from "@/components/SectionWrapper";
 import CTASection from "@/components/CTASection";
+import PortfolioShowcase from "@/components/PortfolioShowcase";
 import ScrollDepthTracker from "@/components/ScrollDepthTracker";
 import SectionViewTracker from "@/components/SectionViewTracker";
 import TrackCTA from "@/components/TrackCTA";
 
 const stageSolutions = [
   {
-    title: "Launch With AI-First Infrastructure",
-    audience: "Startups / Early-Stage",
-    description: "For founders building the right systems from day one.",
-    href: "/for-startups",
-    cta: "Explore Startup Solutions",
+    title: "Launch A Website That Builds Trust",
+    audience: "New Sites / Redesigns",
+    description: "For businesses that need a sharper online presence, clearer message, and better first impression.",
+    href: "/start",
+    cta: "Start Website Intake",
   },
   {
-    title: "Scale Without Operational Bottlenecks",
-    audience: "Growth / Scaling Businesses",
-    description: "Automate operations, improve visibility, and accelerate growth.",
+    title: "Turn Visitors Into Calls, Leads, and Bookings",
+    audience: "Growth / Lead Generation",
+    description: "Improve the conversion path with stronger calls-to-action, forms, follow-up, and tracking.",
     href: "/for-growth",
-    cta: "Explore Growth Solutions",
+    cta: "Explore Growth Systems",
   },
   {
-    title: "Enterprise AI Transformation",
-    audience: "Enterprise / Large Organizations",
-    description: "Deploy secure, enterprise-grade AI systems across your organization.",
-    href: "/enterprise",
-    cta: "Explore Enterprise Solutions",
+    title: "Add Automation and AI Where It Saves Time",
+    audience: "Automation / AI Systems",
+    description: "Connect the website to intake, CRM, content, reporting, chat, and workflow automation.",
+    href: "/services",
+    cta: "Explore AI Capabilities",
   },
 ];
 
 const capabilityCategories = [
   {
     title: "Growth & Revenue Systems",
-    value: "Increase qualified pipeline flow and speed-to-close through custom sales infrastructure.",
-    technology: "CRM architecture, lead orchestration, funnel automation, and conversion intelligence.",
+    value: "Capture more qualified leads from the website and move them into the right follow-up path.",
+    technology: "Landing pages, lead forms, booking flows, CRM routing, and conversion intelligence.",
   },
   {
     title: "Operational Automation",
@@ -48,8 +49,8 @@ const capabilityCategories = [
   },
   {
     title: "Customer Experience Systems",
-    value: "Improve response speed and consistency across high-volume customer interactions.",
-    technology: "Voice systems, messaging workflows, qualification logic, and human handoff controls.",
+    value: "Make it easier for customers to ask questions, book, request quotes, or get routed quickly.",
+    technology: "Chat, voice, messaging workflows, qualification logic, and human handoff controls.",
   },
   {
     title: "Custom AI Platforms",
@@ -59,10 +60,10 @@ const capabilityCategories = [
 ];
 
 const proofStats = [
+  { label: "Live Website Builds", value: "8" },
   { label: "Average Implementation Window", value: "2-8 weeks" },
-  { label: "Manual Throughput Improvement", value: "30-70%" },
-  { label: "Projects With KPI Dashboards", value: "100%" },
-  { label: "Template Reuse", value: "0" },
+  { label: "Custom Client Fit", value: "100%" },
+  { label: "Template-Only Builds", value: "0" },
 ];
 
 const caseStudies = [
@@ -114,10 +115,19 @@ export default function Page() {
       <HeroSection />
 
       <SectionWrapper
+        id="recent-builds"
+        eyebrow="Recent Builds"
+        title="Real Websites And Systems Already Shipped"
+        description="A few public examples of the websites, product surfaces, and digital experiences built through GhostAI Solutions."
+      >
+        <PortfolioShowcase limit={4} compact />
+      </SectionWrapper>
+
+      <SectionWrapper
         id="segmentation"
-        eyebrow="Solutions By Stage"
-        title="Choose The Track That Matches Your Business Maturity"
-        description="Every engagement is custom-built, but our strategy starts with your current stage and growth constraints."
+        eyebrow="Where To Start"
+        title="Choose The Track That Matches What You Need Next"
+        description="Start simple with a website audit or go deeper into automation, AI, and custom systems when the business is ready."
       >
         <div className="grid gap-5 lg:grid-cols-3">
           {stageSolutions.map((item) => (
@@ -143,8 +153,8 @@ export default function Page() {
       <SectionWrapper
         id="capabilities"
         eyebrow="Capabilities"
-        title="Business Solution Categories"
-        description="We lead with operational and revenue outcomes, then engineer the technology stack that makes them real."
+        title="Websites, Automation, And AI Under One Roof"
+        description="We lead with the business outcome first, then build the digital system that makes it easier to get leads, serve customers, and operate."
       >
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {capabilityCategories.map((item) => (
@@ -189,8 +199,8 @@ export default function Page() {
       <SectionWrapper
         id="proof"
         eyebrow="Proof"
-        title="Structured Case Studies, Not Vague Claims"
-        description="We measure outcomes against operational bottlenecks, revenue friction, and decision latency."
+        title="Proof Should Be Visible, Not Just Claimed"
+        description="Visitors should be able to see the quality of the work quickly. These signals show delivery, range, and real project momentum."
       >
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {proofStats.map((stat) => (
@@ -216,7 +226,7 @@ export default function Page() {
         id="fit"
         eyebrow="Qualification"
         title="Who We Work Best With"
-        description="We are best aligned with organizations treating AI as strategic infrastructure, not a one-off experiment."
+        description="We are best aligned with businesses that want their website and systems to create trust, capture leads, and reduce manual work."
       >
         <div className="grid gap-5 md:grid-cols-2">
           <article className="rounded-2xl border border-emerald-300/20 bg-emerald-300/5 p-6">
@@ -257,19 +267,19 @@ export default function Page() {
       <SectionWrapper
         id="next-step"
         eyebrow="Next Step"
-        title="Need A Strategic View Before Build?"
-        description="Book a strategy call for architecture guidance, timeline planning, and best-fit scope alignment."
+        title="Want A Clear Read On Your Website First?"
+        description="Start with a free website audit. If there is a fit, we will map the right website, automation, or AI build path from there."
       >
         <div className="flex flex-wrap justify-center gap-4">
           <TrackCTA
-            href="/contact"
-            event="homepage_book_strategy_call"
+            href="/start"
+            event="homepage_start_audit"
             section="next_step"
             placement="primary"
-            label="Book Strategy Call"
+            label="Get Free Website Audit"
             className="inline-flex rounded-xl bg-amber-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-200"
           >
-            Book Strategy Call
+            Get Free Website Audit
           </TrackCTA>
           <Link
             href="/services"
