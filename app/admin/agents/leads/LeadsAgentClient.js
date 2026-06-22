@@ -49,11 +49,13 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
   const [campaignLocation, setCampaignLocation] = useState("Tyler TX");
   const [campaignIntent, setCampaignIntent] = useState("outdated website online booking lead generation");
   const [campaignLimit, setCampaignLimit] = useState("25");
+  const [campaignPlan, setCampaignPlan] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [drafting, setDrafting] = useState(false);
   const [sending, setSending] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [planning, setPlanning] = useState(false);
 
   const selected = useMemo(() => leads.find((lead) => lead.id === selectedId) || null, [leads, selectedId]);
 
@@ -129,6 +131,29 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
       setMessage(error.message);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleCampaignPlan() {
+    setPlanning(true);
+    setMessage("");
+    try {
+      const payload = await jsonFetch("/api/admin/agents/leads/campaign-plan", {
+        method: "POST",
+        body: JSON.stringify({
+          channel: campaignChannel,
+          industry: campaignIndustry,
+          location: campaignLocation,
+          intent: campaignIntent,
+          limit: Number(campaignLimit || 25),
+        }),
+      });
+      setCampaignPlan(payload.plan || null);
+      setMessage("AI outreach sprint plan generated.");
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setPlanning(false);
     }
   }
 
@@ -256,6 +281,13 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
               >
                 {loading ? "Running..." : "Run Campaign Discovery"}
               </button>
+              <button
+                onClick={handleCampaignPlan}
+                disabled={planning || !campaignIndustry.trim()}
+                className="rounded-lg border border-amber-300/40 bg-amber-300/10 px-4 py-2 text-sm font-semibold text-amber-100 hover:bg-amber-300/20 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {planning ? "Planning..." : "Generate AI Sprint Plan"}
+              </button>
             </div>
 
             <div className="mt-5 grid gap-3 md:grid-cols-5">
@@ -295,6 +327,65 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
                 className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50 md:col-span-5"
               />
             </div>
+
+            {campaignPlan ? (
+              <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_1fr]">
+                <article className="rounded-xl border border-white/10 bg-slate-950/60 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-200">AI Sprint Objective</p>
+                  <h3 className="mt-2 text-lg font-semibold text-white">{campaignPlan.headline}</h3>
+                  <p className="mt-2 text-sm text-slate-300">{campaignPlan.objective}</p>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.12em] text-slate-400">Best Targets</p>
+                      <ul className="mt-2 space-y-1 text-sm text-slate-300">
+                        {(campaignPlan.bestTargets || []).map((item) => <li key={item}>- {item}</li>)}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.12em] text-slate-400">Success Metrics</p>
+                      <ul className="mt-2 space-y-1 text-sm text-slate-300">
+                        {(campaignPlan.successMetrics || []).map((item) => <li key={item}>- {item}</li>)}
+                      </ul>
+                    </div>
+                  </div>
+                </article>
+
+                <article className="rounded-xl border border-white/10 bg-slate-950/60 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200">This Week Plan</p>
+                  <ol className="mt-3 space-y-2 text-sm text-slate-300">
+                    {(campaignPlan.dailyPlan || []).map((item) => <li key={item}>{item}</li>)}
+                  </ol>
+                </article>
+
+                <article className="rounded-xl border border-white/10 bg-slate-950/60 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200">Google / Local Angles</p>
+                  <ul className="mt-3 space-y-2 text-sm text-slate-300">
+                    {(campaignPlan.googleAngles || []).map((item) => <li key={item}>- {item}</li>)}
+                  </ul>
+                </article>
+
+                <article className="rounded-xl border border-white/10 bg-slate-950/60 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200">LinkedIn Angles</p>
+                  <ul className="mt-3 space-y-2 text-sm text-slate-300">
+                    {(campaignPlan.linkedinAngles || []).map((item) => <li key={item}>- {item}</li>)}
+                  </ul>
+                </article>
+
+                <article className="rounded-xl border border-amber-300/20 bg-amber-300/5 p-4 lg:col-span-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-200">Sendable Copy</p>
+                  <div className="mt-3 grid gap-3 md:grid-cols-2">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.12em] text-slate-400">First Touch</p>
+                      <pre className="mt-2 whitespace-pre-wrap rounded-lg border border-white/10 bg-slate-950/70 p-3 text-xs leading-relaxed text-slate-200">{campaignPlan.firstTouch}</pre>
+                    </div>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.12em] text-slate-400">Follow Up</p>
+                      <pre className="mt-2 whitespace-pre-wrap rounded-lg border border-white/10 bg-slate-950/70 p-3 text-xs leading-relaxed text-slate-200">{campaignPlan.followUp}</pre>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            ) : null}
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
