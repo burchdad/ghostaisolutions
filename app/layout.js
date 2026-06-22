@@ -1,12 +1,8 @@
 // app/layout.js
 import './globals.css';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import CookieBanner from "@/components/CookieBanner";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Analytics } from '@vercel/analytics/react';
-import StickyCTA from "@/components/StickyCTA";
-import FloatingBot from "@/components/FloatingBot";
+import SiteChrome from "@/components/SiteChrome";
 import UTMTracker from "@/components/UTMTracker";
 import { siteConfig } from "@/lib/siteConfig";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
@@ -137,12 +133,7 @@ export default function RootLayout({ children }) {
         >
           Skip to content
         </a>
-        <Header />
-        <main id="main">{children}</main>
-        <Footer />
-        <StickyCTA />
-        <CookieBanner />
-        <FloatingBot />
+        <SiteChrome>{children}</SiteChrome>
         <SpeedInsights />
         <Analytics />
       </body>

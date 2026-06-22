@@ -9,7 +9,6 @@ import { getTrendStats } from "@/lib/trendStore";
 import { getCampaignStats, getSubscriberStats } from "@/lib/newsletterStore";
 import { getCompetitorStats } from "@/lib/competitorStore";
 import { listLeads } from "@/lib/leadsStore";
-import AdminSubnav from "@/components/AdminSubnav";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -119,24 +118,14 @@ export default async function AdminDashboardPage() {
   return (
     <section className="py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <div className="mb-8">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">Admin</p>
             <h1 className="mt-1 text-3xl font-bold text-white">Operations Dashboard</h1>
             <p className="mt-2 text-sm text-slate-300">Live control center for content velocity, social distribution, lead flow, and automation health.</p>
             <p className="mt-2 text-xs uppercase tracking-[0.12em] text-slate-400">Snapshot: {new Date().toLocaleString()} · Dynamic runtime data</p>
           </div>
-          <form action="/api/admin/logout" method="post">
-            <button
-              type="submit"
-              className="rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-cyan-300/40 hover:text-white"
-            >
-              Log Out
-            </button>
-          </form>
         </div>
-
-        <AdminSubnav className="mb-6" />
 
         <div className="mb-6 rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-5">
           <div className="flex flex-wrap items-center justify-between gap-4">
