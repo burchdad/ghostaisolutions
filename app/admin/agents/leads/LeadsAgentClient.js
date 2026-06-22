@@ -44,6 +44,11 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
   const [manualCompany, setManualCompany] = useState("");
   const [manualEmail, setManualEmail] = useState("");
   const [manualNotes, setManualNotes] = useState("");
+  const [campaignChannel, setCampaignChannel] = useState("google");
+  const [campaignIndustry, setCampaignIndustry] = useState("restaurants, HVAC, construction, detailing, salons");
+  const [campaignLocation, setCampaignLocation] = useState("Tyler TX");
+  const [campaignIntent, setCampaignIntent] = useState("outdated website online booking lead generation");
+  const [campaignLimit, setCampaignLimit] = useState("25");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [drafting, setDrafting] = useState(false);
@@ -91,6 +96,34 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
       const firstLead = payload.results?.find((item) => item.success)?.lead;
       setMessage(`Discovered ${payload.discovered} lead(s), ${payload.failed} failed.`);
       setUrlInput("");
+      await refreshLeads(firstLead?.id || selectedId);
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleCampaignDiscover() {
+    if (!campaignIndustry.trim()) return;
+    setLoading(true);
+    setMessage("");
+    try {
+      const payload = await jsonFetch("/api/admin/agents/leads/discover", {
+        method: "POST",
+        body: JSON.stringify({
+          campaign: {
+            channel: campaignChannel,
+            industry: campaignIndustry,
+            location: campaignLocation,
+            intent: campaignIntent,
+            limit: Number(campaignLimit || 25),
+          },
+        }),
+      });
+      const firstLead = payload.results?.find((item) => item.success)?.lead;
+      const label = campaignChannel === "linkedin" ? "LinkedIn" : "Google/local";
+      setMessage(`${label} campaign discovered ${payload.discovered} lead(s), ${payload.failed} failed.`);
       await refreshLeads(firstLead?.id || selectedId);
     } catch (error) {
       setMessage(error.message);
@@ -210,6 +243,60 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
         </div>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-5 lg:col-span-2">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-white">Targeted Outreach Campaign</h2>
+                <p className="mt-1 text-sm text-slate-400">Run Google/local or LinkedIn-focused discovery, then route outreach toward the /start intake.</p>
+              </div>
+              <button
+                onClick={handleCampaignDiscover}
+                disabled={loading || !campaignIndustry.trim()}
+                className="rounded-lg bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loading ? "Running..." : "Run Campaign Discovery"}
+              </button>
+            </div>
+
+            <div className="mt-5 grid gap-3 md:grid-cols-5">
+              <select
+                value={campaignChannel}
+                onChange={(e) => setCampaignChannel(e.target.value)}
+                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50"
+              >
+                <option value="google">Google / Local Search</option>
+                <option value="linkedin">LinkedIn Company Search</option>
+              </select>
+              <input
+                value={campaignIndustry}
+                onChange={(e) => setCampaignIndustry(e.target.value)}
+                placeholder="Industries / niches"
+                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50 md:col-span-2"
+              />
+              <input
+                value={campaignLocation}
+                onChange={(e) => setCampaignLocation(e.target.value)}
+                placeholder="Location"
+                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50"
+              />
+              <select
+                value={campaignLimit}
+                onChange={(e) => setCampaignLimit(e.target.value)}
+                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50"
+              >
+                <option value="10">10 leads</option>
+                <option value="25">25 leads</option>
+                <option value="50">50 leads</option>
+              </select>
+              <input
+                value={campaignIntent}
+                onChange={(e) => setCampaignIntent(e.target.value)}
+                placeholder="Search intent / pain"
+                className="rounded-lg border border-white/15 bg-slate-900/50 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300/50 md:col-span-5"
+              />
+            </div>
+          </div>
+
           <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
             <h2 className="text-lg font-semibold text-white">Discover Leads from Websites</h2>
             <p className="mt-1 text-sm text-slate-400">Paste one or more domains/URLs (newline, comma, or space separated)</p>
@@ -311,6 +398,24 @@ export default function LeadsAgentClient({ initialLeads = [] }) {
                     <p className="text-xs uppercase tracking-[0.12em] text-slate-400">Contact</p>
                     <p className="mt-1 text-sm font-semibold text-cyan-200 line-clamp-2">{selected.ownerEmail || selected.contactEmail || "Missing"}</p>
                   </article>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-2 text-xs">
+                  {selected.website ? (
+                    <a className="rounded-full border border-white/15 px-3 py-1 text-slate-200 hover:border-cyan-300/40 hover:text-cyan-200" href={selected.website} target="_blank" rel="noopener noreferrer">
+                      Website
+                    </a>
+                  ) : null}
+                  {selected.linkedinUrl ? (
+                    <a className="rounded-full border border-white/15 px-3 py-1 text-slate-200 hover:border-cyan-300/40 hover:text-cyan-200" href={selected.linkedinUrl} target="_blank" rel="noopener noreferrer">
+                      LinkedIn
+                    </a>
+                  ) : null}
+                  {selected.sourceType ? (
+                    <span className="rounded-full border border-white/10 px-3 py-1 text-slate-400">
+                      Source: {selected.sourceType}
+                    </span>
+                  ) : null}
                 </div>
 
                 <div className="mt-4 rounded-xl border border-white/10 bg-slate-900/40 p-4">
