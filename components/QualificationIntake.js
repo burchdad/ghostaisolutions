@@ -127,9 +127,9 @@ function ChoiceCard({ active, label, eyebrow, description, onClick }) {
 
 function SectionIntro({ step, children }) {
   return (
-    <div className="mb-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-200">Step {step + 1}</p>
-      <h3 className="mt-1 text-xl font-bold text-white">{steps[step].label}</h3>
+    <div className="mb-5">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-cyan-200">Step {step + 1}</p>
+      <h3 className="mt-1 text-2xl font-bold text-white">{steps[step].label}</h3>
       <p className="mt-1 text-sm text-slate-300">{children || steps[step].kicker}</p>
     </div>
   );
@@ -263,14 +263,14 @@ export default function QualificationIntake({ supportEmail }) {
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-cyan-200/15 bg-slate-950/90 shadow-[0_24px_80px_rgba(2,6,23,0.42)]">
-      <div className="border-b border-white/10 bg-white/[0.035] p-5">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="overflow-hidden rounded-2xl border border-cyan-200/15 bg-slate-950/85 shadow-[0_24px_80px_rgba(2,6,23,0.34)]">
+      <div className="border-b border-white/10 bg-white/[0.025] p-5 sm:p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">Growth route builder</p>
-            <p className="mt-1 text-sm text-slate-300">Your answers tune the recommendation as you go.</p>
+            <p className="mt-1 max-w-xl text-sm leading-6 text-slate-300">Your answers tune the recommendation as you go.</p>
           </div>
-          <div className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-semibold text-slate-200">
+          <div className="rounded-full border border-cyan-200/20 bg-cyan-200/10 px-3 py-1 text-xs font-semibold text-cyan-100">
             {progress}% complete
           </div>
         </div>
@@ -279,9 +279,9 @@ export default function QualificationIntake({ supportEmail }) {
         </div>
       </div>
 
-      <div className="grid gap-5 p-5 xl:grid-cols-[1fr_0.72fr]">
+      <div className="p-5 sm:p-6">
         <div className="min-w-0">
-          <div className="mb-5 flex flex-wrap gap-2">
+          <div className="mb-5 flex flex-wrap gap-2.5">
             {steps.map((item, index) => (
               <button
                 key={item.label}
@@ -300,6 +300,15 @@ export default function QualificationIntake({ supportEmail }) {
             ))}
           </div>
 
+          <div className="mb-6 grid gap-3 md:grid-cols-3">
+            {routePreview.map(([label, value]) => (
+              <div key={label} className="rounded-xl border border-white/10 bg-white/[0.045] p-3.5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">{label}</p>
+                <p className="mt-1 text-sm font-semibold text-white">{value}</p>
+              </div>
+            ))}
+          </div>
+
           {submitted ? (
             <div className="mb-5 rounded-xl border border-cyan-300/25 bg-cyan-300/10 p-4 text-sm text-cyan-100">
               Thank you. Your intake was submitted, a confirmation email is on the way, and we will follow up with the
@@ -310,7 +319,7 @@ export default function QualificationIntake({ supportEmail }) {
           {step === 0 ? (
             <div>
               <SectionIntro step={step} />
-              <div className="grid gap-3">
+              <div className="grid gap-3.5">
                 <input value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Full name" className={fieldClass} />
                 <input value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="Work email" className={fieldClass} />
                 <input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="Mobile phone (optional)" className={fieldClass} />
@@ -364,7 +373,7 @@ export default function QualificationIntake({ supportEmail }) {
           {step === 2 ? (
             <div>
               <SectionIntro step={step} />
-              <div className="grid gap-3">
+              <div className="grid gap-3 md:grid-cols-3">
                 {offerPaths.map(([value, label, description]) => (
                   <ChoiceCard
                     key={value}
@@ -382,7 +391,7 @@ export default function QualificationIntake({ supportEmail }) {
           {step === 3 ? (
             <div>
               <SectionIntro step={step} />
-              <div className="grid gap-3">
+              <div className="grid gap-3.5">
                 <input value={form.websiteUrl} onChange={(e) => update("websiteUrl", e.target.value)} placeholder="Current website URL (optional)" className={fieldClass} />
 
                 {form.offerPath === "package" ? (
@@ -471,7 +480,7 @@ export default function QualificationIntake({ supportEmail }) {
             <div>
               <SectionIntro step={step} />
               <div className="grid gap-4">
-                <div className="rounded-xl border border-cyan-300/20 bg-cyan-300/10 p-4">
+                <div className="rounded-xl border border-cyan-300/20 bg-cyan-300/10 p-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-200">Likely best path</p>
                   <p className="mt-2 text-lg font-bold text-white">{recommendation.path}</p>
                   <p className="mt-1 text-sm text-slate-300">{recommendation.tier}</p>
@@ -527,33 +536,6 @@ export default function QualificationIntake({ supportEmail }) {
             <p className="mt-4 text-xs text-red-200">{submitError}</p>
           ) : null}
         </div>
-
-        <aside className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 xl:sticky xl:top-24 xl:self-start">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-200">Live route preview</p>
-          <div className="mt-4 space-y-3">
-            {routePreview.map(([label, value]) => (
-              <div key={label} className="rounded-xl border border-white/10 bg-slate-950/55 p-3">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">{label}</p>
-                <p className="mt-1 text-sm font-semibold text-white">{value}</p>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 rounded-xl border border-cyan-300/20 bg-cyan-300/10 p-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-cyan-200">Recommendation</p>
-            <p className="mt-2 text-sm font-bold text-white">{recommendation.path}</p>
-            <p className="mt-1 text-xs text-slate-300">{recommendation.tier}</p>
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-2 text-center">
-            <div className="rounded-xl border border-white/10 bg-white/[0.045] p-3">
-              <p className="text-lg font-bold text-cyan-100">{step + 1}</p>
-              <p className="text-[11px] uppercase tracking-[0.12em] text-slate-400">Current step</p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.045] p-3">
-              <p className="text-lg font-bold text-cyan-100">{form.selectedServices.length}</p>
-              <p className="text-[11px] uppercase tracking-[0.12em] text-slate-400">Services</p>
-            </div>
-          </div>
-        </aside>
       </div>
     </div>
   );

@@ -12,9 +12,9 @@ export default function Contact() {
 
   return (
     <section className="bg-slate-50 py-20 dark:bg-ink">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <Breadcrumbs />
-        <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.25fr]">
+        <div className="grid items-start gap-10 lg:grid-cols-[0.82fr_1.35fr]">
           <div>
             <h1 className="text-4xl font-extrabold tracking-tight">Start with a free growth fit review</h1>
             <p className="mt-4 text-slate-600 dark:text-slate-300">
