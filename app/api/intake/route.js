@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { siteConfig } from "@/lib/siteConfig";
+import { createLead } from "@/lib/leadsStore";
 
 export const runtime = "nodejs";
 
@@ -83,6 +84,83 @@ function buildHtml(payload) {
     </div>`;
 }
 
+function normalizeDomain(websiteUrl = "") {
+  const value = String(websiteUrl || "").trim();
+  if (!value) return "";
+
+  try {
+    const url = new URL(value.startsWith("http") ? value : `https://${value}`);
+    return url.hostname.replace(/^www\./i, "").toLowerCase();
+  } catch {
+    return value
+      .replace(/^https?:\/\//i, "")
+      .replace(/^www\./i, "")
+      .split("/")[0]
+      .toLowerCase();
+  }
+}
+
+function buildLeadNotes(payload) {
+  return FIELD_LABELS.map(([key, label]) => `${label}: ${payload[key] || "Not provided"}`).join("\n");
+}
+
+function getLeadScore(payload) {
+  const highIntent = payload.highIntent === "Send to booking";
+  const urgentTimeline = payload.timeline === "2-4 weeks" || payload.timeline === "30 days";
+  const largerBudget = payload.budget === "5-10k" || payload.budget === "10k+";
+  const total = highIntent ? 72 : largerBudget || urgentTimeline ? 64 : 56;
+
+  return {
+    fit: payload.projectType === "Not sure yet" ? 54 : 68,
+    urgency: highIntent ? 76 : urgentTimeline ? 66 : 48,
+    total,
+    reasons: [
+      "Submitted the website and build intake form.",
+      payload.highIntent === "Send to booking"
+        ? "Ready-now routing selected based on budget or timeline."
+        : "Needs email follow-up before booking.",
+      payload.desiredOutcome ? `Primary goal: ${payload.desiredOutcome}` : "",
+    ].filter(Boolean),
+  };
+}
+
+async function createIntakeLead(payload) {
+  const domain = normalizeDomain(payload.websiteUrl);
+  const companyName = payload.company || payload.name || "Website intake lead";
+  const summary = [
+    `Website/build intake from ${payload.name || companyName}.`,
+    payload.projectType ? `Project type: ${payload.projectType}.` : "",
+    payload.desiredOutcome ? `Goal: ${payload.desiredOutcome}` : "",
+  ].filter(Boolean).join(" ");
+
+  return createLead({
+    companyName,
+    domain,
+    website: payload.websiteUrl,
+    sourceType: "website_intake",
+    sourceUrl: "https://ghostai.solutions/start",
+    ownerName: payload.name,
+    ownerRole: payload.industry,
+    ownerEmail: payload.email,
+    contactEmail: payload.email,
+    summary,
+    status: "new",
+    aiOpportunity: {
+      score: payload.highIntent === "Send to booking" ? 72 : 58,
+      reasons: [
+        "Requested website, funnel, automation, or AI build help.",
+        payload.currentProblem ? `Current issue: ${payload.currentProblem}` : "",
+      ].filter(Boolean),
+    },
+    signals: {
+      services: [payload.projectType, payload.desiredOutcome, payload.industry].filter(Boolean),
+      techHints: [payload.budget, payload.timeline, `sms consent: ${payload.smsConsent}`].filter(Boolean),
+    },
+    score: getLeadScore(payload),
+    notes: buildLeadNotes(payload),
+  });
+}
+
 async function sendIntakeEmail(payload) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -122,6 +200,72 @@ async function sendIntakeEmail(payload) {
   }
 
   return { to, id: result?.id || null };
+}
+
+async function sendConfirmationEmail(payload) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey || !payload.email) {
+    return { skipped: !apiKey ? "RESEND_API_KEY not configured" : "Lead email not provided" };
+  }
+
+  const from = process.env.RESEND_FROM_EMAIL || "Ghost AI <newsletter@ghostai.solutions>";
+  const replyTo = process.env.RESEND_REPLY_TO || process.env.OUTREACH_REPLY_TO || siteConfig.supportEmail;
+  const subject = "We received your Ghost AI website audit intake";
+  const bookingLine =
+    payload.highIntent === "Send to booking"
+      ? `Since your request looks ready-now, you can also grab a call time here: ${siteConfig.calendlyUrl}`
+      : "We will review the intake first and follow up with the best next step.";
+
+  const text = [
+    `Hi ${payload.name || "there"},`,
+    "",
+    "Thanks for sending over your website and build intake. We received it and have it queued for review.",
+    bookingLine,
+    "",
+    "If anything changes, reply to this email and we will add it to your intake.",
+    "",
+    "Best,",
+    "Ghost AI Solutions",
+  ].join("\n");
+
+  const html = `
+    <div style="font-family:Inter,Arial,sans-serif;line-height:1.55;color:#0f172a;">
+      <p>Hi ${escapeHtml(payload.name || "there")},</p>
+      <p>Thanks for sending over your website and build intake. We received it and have it queued for review.</p>
+      <p>${escapeHtml(bookingLine)}</p>
+      <p>If anything changes, reply to this email and we will add it to your intake.</p>
+      <p>Best,<br/>Ghost AI Solutions</p>
+    </div>`;
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [payload.email],
+      reply_to: replyTo,
+      subject,
+      html,
+      text,
+    }),
+  });
+
+  const raw = await response.text();
+  let result = {};
+  try {
+    result = raw ? JSON.parse(raw) : {};
+  } catch {
+    result = { raw };
+  }
+
+  if (!response.ok) {
+    throw new Error(`Resend confirmation send failed (${response.status}): ${raw}`);
+  }
+
+  return { to: payload.email, id: result?.id || null };
 }
 
 async function postIntakeToSlack(payload) {
@@ -201,13 +345,18 @@ export async function POST(request) {
       return NextResponse.json({ error: "Missing required intake fields" }, { status: 400 });
     }
 
+    const lead = await createIntakeLead(payload);
     const email = await sendIntakeEmail(payload);
+    const confirmation = await sendConfirmationEmail(payload).catch((error) => {
+      console.error("Intake confirmation email failed", error);
+      return { error: "Confirmation email failed" };
+    });
     const slack = await postIntakeToSlack(payload).catch((error) => {
       console.error("Intake Slack notification failed", error);
       return { error: "Slack notification failed" };
     });
 
-    return NextResponse.json({ success: true, email, slack });
+    return NextResponse.json({ success: true, leadId: lead.id, email, confirmation, slack });
   } catch (error) {
     console.error("Intake submission failed", error);
     return NextResponse.json({ error: "Failed to submit intake" }, { status: 500 });

@@ -15,6 +15,20 @@ body {
 
 h1, h2, h3, h4 { font-family: var(--font-display), sans-serif; }
 
+select {
+  color-scheme: dark;
+}
+
+select option {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+select option:checked {
+  background-color: #155e75;
+  color: #ecfeff;
+}
+
 .hero-grid {
   background-image:
     linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),

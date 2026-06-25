@@ -80,6 +80,7 @@ export default function QualificationIntake({ supportEmail }) {
   );
 
   const handleSubmit = async () => {
+    const shouldOpenBooking = highIntent;
     setSubmitting(true);
     setSubmitError("");
 
@@ -87,7 +88,7 @@ export default function QualificationIntake({ supportEmail }) {
       const response = await fetch("/api/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, highIntent }),
+        body: JSON.stringify({ ...form, highIntent: shouldOpenBooking }),
       });
 
       if (!response.ok) {
@@ -95,8 +96,10 @@ export default function QualificationIntake({ supportEmail }) {
       }
 
       setSubmitted(true);
+      setForm(initialForm);
+      setStep(0);
 
-      if (highIntent) {
+      if (shouldOpenBooking) {
         window.open(BOOKING_URL, "_blank", "noopener,noreferrer");
       }
     } catch {
@@ -118,6 +121,13 @@ export default function QualificationIntake({ supportEmail }) {
           </span>
         ))}
       </div>
+
+      {submitted ? (
+        <div className="mb-5 rounded-xl border border-cyan-300/25 bg-cyan-300/10 p-4 text-sm text-cyan-100">
+          Thank you. Your intake was submitted, a confirmation email is on the way, and we will follow up with the
+          right next step. The form has been reset for a fresh submission.
+        </div>
+      ) : null}
 
       {step === 0 ? (
         <div className="grid gap-3">
@@ -164,7 +174,7 @@ export default function QualificationIntake({ supportEmail }) {
             <option value="Not sure yet">Not sure yet</option>
           </select>
           <textarea value={form.desiredOutcome} onChange={(e) => update("desiredOutcome", e.target.value)} placeholder="What do you want the website to help you do?" rows={3} className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none" />
-          <textarea value={form.currentProblem} onChange={(e) => update("currentProblem", e.target.value)} placeholder="What feels broken, outdated, missing, or unclear right now?" rows={3} className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none" />
+          <textarea value={form.currentProblem} onChange={(e) => update("currentProblem", e.target.value)} placeholder="What feels missing, unclear, outdated, or not working right now?" rows={3} className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none" />
           <textarea value={form.visualDirection} onChange={(e) => update("visualDirection", e.target.value)} placeholder="Any ideas for the look, feel, colors, style, or sections you want?" rows={3} className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none" />
           <textarea value={form.exampleSites} onChange={(e) => update("exampleSites", e.target.value)} placeholder="Example websites you like, if any" rows={3} className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white outline-none" />
         </div>
@@ -241,11 +251,6 @@ export default function QualificationIntake({ supportEmail }) {
         </a>
       </div>
 
-      {submitted ? (
-        <p className="mt-4 text-xs text-cyan-200">
-          Intake submitted. If calendar did not open, use Schedule Call and mention this submission.
-        </p>
-      ) : null}
       {submitError ? (
         <p className="mt-4 text-xs text-red-200">{submitError}</p>
       ) : null}
