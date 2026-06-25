@@ -43,6 +43,7 @@ export default function Footer() {
               <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Resources</p>
               <Link className="text-slate-200 hover:text-cyan-300" href="/work">Work</Link>
               <Link className="text-slate-200 hover:text-cyan-300" href="/demo">Demos</Link>
+              <Link className="text-slate-200 hover:text-cyan-300" href="/client-portal">Client Portal</Link>
               <Link className="text-slate-200 hover:text-cyan-300" href="/process">Process</Link>
               <Link className="text-slate-200 hover:text-cyan-300" href="/blog">Blog</Link>
             </nav>
