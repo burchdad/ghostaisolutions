@@ -161,6 +161,91 @@ async function createIntakeLead(payload) {
   });
 }
 
+function getMissionControlClientsUrl() {
+  const explicit =
+    process.env.GHOST_MISSION_CONTROL_CLIENTS_URL ||
+    process.env.MISSION_CONTROL_CLIENTS_URL ||
+    "";
+  if (explicit) return explicit;
+
+  const base =
+    process.env.GHOST_MISSION_CONTROL_URL ||
+    process.env.MISSION_CONTROL_URL ||
+    "https://ghostmissioncontrol-production.up.railway.app";
+  return `${base.replace(/\/+$/, "")}/mission/clients`;
+}
+
+function buildMissionControlNotes(payload) {
+  return [
+    "GhostAI website intake submitted from /start.",
+    "",
+    buildLeadNotes(payload),
+  ].join("\n");
+}
+
+async function createMissionControlLead(payload) {
+  const url = getMissionControlClientsUrl();
+  if (!url) {
+    return { skipped: "Mission Control client URL not configured" };
+  }
+
+  const body = {
+    clientName: payload.company || payload.name,
+    stage: "lead",
+    status: "lead",
+    leadStage: "new-lead",
+    leadSource: "email",
+    leadSourceDetail: "GhostAI website intake",
+    relationshipType: "prospect",
+    pricingTier: "standard",
+    websiteUrl: payload.websiteUrl,
+    businessEmail: payload.email,
+    businessPhone: payload.phone,
+    contact: payload.name,
+    plan: payload.projectType || "Website intake",
+    services: ["website-build"],
+    plannedServices: payload.projectType === "Website + automation" || payload.projectType === "AI chatbot / assistant"
+      ? ["ai-automation", "lead-funnel"]
+      : ["lead-funnel"],
+    proposalSent: false,
+    depositInvoiceSent: false,
+    proposalSigned: false,
+    depositPaid: false,
+    notes: buildMissionControlNotes(payload),
+  };
+
+  const headers = { "Content-Type": "application/json" };
+  const secret = process.env.GHOST_MISSION_CONTROL_WEBHOOK_SECRET || process.env.MISSION_CONTROL_WEBHOOK_SECRET || "";
+  if (secret) {
+    headers["X-Ghost-Webhook-Secret"] = secret;
+  }
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
+
+  const raw = await response.text();
+  let result = {};
+  try {
+    result = raw ? JSON.parse(raw) : {};
+  } catch {
+    result = { raw };
+  }
+
+  if (!response.ok) {
+    throw new Error(`Mission Control lead create failed (${response.status}): ${raw}`);
+  }
+
+  return {
+    url,
+    clientId: result?.created?.id || null,
+    clientName: result?.created?.clientName || body.clientName,
+    storage: result?.storage || null,
+  };
+}
+
 async function sendIntakeEmail(payload) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -346,6 +431,10 @@ export async function POST(request) {
     }
 
     const lead = await createIntakeLead(payload);
+    const missionControl = await createMissionControlLead(payload).catch((error) => {
+      console.error("Mission Control lead creation failed", error);
+      return { error: "Mission Control lead creation failed" };
+    });
     const email = await sendIntakeEmail(payload);
     const confirmation = await sendConfirmationEmail(payload).catch((error) => {
       console.error("Intake confirmation email failed", error);
@@ -356,7 +445,7 @@ export async function POST(request) {
       return { error: "Slack notification failed" };
     });
 
-    return NextResponse.json({ success: true, leadId: lead.id, email, confirmation, slack });
+    return NextResponse.json({ success: true, leadId: lead.id, missionControl, email, confirmation, slack });
   } catch (error) {
     console.error("Intake submission failed", error);
     return NextResponse.json({ error: "Failed to submit intake" }, { status: 500 });
