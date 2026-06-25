@@ -13,6 +13,7 @@ const FIELD_LABELS = [
   ["industry", "Industry"],
   ["websiteUrl", "Current Website"],
   ["primaryNeed", "Primary Need"],
+  ["primaryNeeds", "Selected Needs"],
   ["offerPath", "Offer Path"],
   ["selectedServices", "Selected Services"],
   ["businessStage", "Business Stage"],
@@ -65,6 +66,7 @@ function normalizePayload(body = {}) {
     industry: clean(body.industry, 180),
     websiteUrl: clean(body.websiteUrl, 500),
     primaryNeed: clean(body.primaryNeed, 160),
+    primaryNeeds: cleanList(body.primaryNeeds),
     offerPath: clean(body.offerPath, 160),
     selectedServices: cleanList(body.selectedServices),
     businessStage: clean(body.businessStage, 160),
@@ -217,15 +219,16 @@ function buildMissionControlNotes(payload) {
 
 function getMissionServices(payload) {
   const selected = new Set(payload.selectedServices || []);
+  const needs = new Set([payload.primaryNeed, ...(payload.primaryNeeds || [])].filter(Boolean));
   const mapped = new Set(["website-build"]);
 
-  if (selected.has("seo-aeo-geo") || payload.primaryNeed === "seo") mapped.add("search-intelligence");
-  if (selected.has("social-management") || selected.has("video-commercials") || payload.primaryNeed === "social") mapped.add("content-social");
-  if (selected.has("google-ads") || selected.has("social-ads") || payload.primaryNeed === "ads") mapped.add("paid-ads");
-  if (selected.has("ai-automation") || payload.primaryNeed === "automation") mapped.add("ai-automation");
-  if (selected.has("mobile-app") || selected.has("saas-build") || payload.primaryNeed === "software") mapped.add("software-tool");
-  if (selected.has("fractional-cto") || payload.primaryNeed === "strategy") mapped.add("reporting");
-  if (payload.primaryNeed === "more-leads" || selected.size > 1 || payload.offerPath === "package") mapped.add("lead-funnel");
+  if (selected.has("seo-aeo-geo") || needs.has("seo")) mapped.add("search-intelligence");
+  if (selected.has("social-management") || selected.has("video-commercials") || needs.has("social")) mapped.add("content-social");
+  if (selected.has("google-ads") || selected.has("social-ads") || needs.has("ads")) mapped.add("paid-ads");
+  if (selected.has("ai-automation") || needs.has("automation")) mapped.add("ai-automation");
+  if (selected.has("mobile-app") || selected.has("saas-build") || needs.has("software")) mapped.add("software-tool");
+  if (selected.has("fractional-cto") || needs.has("strategy")) mapped.add("reporting");
+  if (needs.has("more-leads") || selected.size > 1 || payload.offerPath === "package") mapped.add("lead-funnel");
 
   return [...mapped];
 }

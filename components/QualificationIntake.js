@@ -53,6 +53,7 @@ const initialForm = {
   industry: "",
   websiteUrl: "",
   primaryNeed: "",
+  primaryNeeds: [],
   offerPath: "",
   selectedServices: [],
   businessStage: "",
@@ -77,11 +78,16 @@ function selectedLabel(options, value) {
   return options.find(([id]) => id === value)?.[1] || value || "Not provided";
 }
 
+function hasNeed(form, value) {
+  const needs = form.primaryNeeds?.length ? form.primaryNeeds : form.primaryNeed ? [form.primaryNeed] : [];
+  return needs.includes(value);
+}
+
 function getRecommendedPath(form) {
   if (form.offerPath === "ala-carte") return "One-time / a la carte project";
   if (form.offerPath === "package") return "Growth partner package";
-  if (["software", "automation", "strategy"].includes(form.primaryNeed)) return "Custom build or strategic engagement";
-  if (form.selectedServices.length > 1 || ["ads", "social", "seo", "more-leads"].includes(form.primaryNeed)) {
+  if (["software", "automation", "strategy"].some((need) => hasNeed(form, need))) return "Custom build or strategic engagement";
+  if (form.selectedServices.length > 1 || ["ads", "social", "seo", "more-leads"].some((need) => hasNeed(form, need))) {
     return "Growth partner package";
   }
   return "One-time / a la carte project";
@@ -98,7 +104,7 @@ function getRecommendedTier(form) {
   }
   if (form.investmentComfort === "500-1500" || form.investmentComfort === "1500-3k") return "Startup";
   if (form.businessStage === "new" || form.investmentComfort === "under-500") return "Founder Launch";
-  if (["software", "automation", "strategy"].includes(form.primaryNeed)) return "Custom";
+  if (["software", "automation", "strategy"].some((need) => hasNeed(form, need))) return "Custom";
   return "Startup";
 }
 
@@ -107,13 +113,22 @@ function ChoiceCard({ active, label, eyebrow, description, onClick }) {
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={`group relative overflow-hidden rounded-xl border p-4 text-left transition duration-200 ${
         active
           ? "border-cyan-300/80 bg-cyan-300/15 shadow-[0_0_0_1px_rgba(103,232,249,0.22),0_18px_45px_rgba(8,145,178,0.14)]"
           : "border-white/12 bg-white/[0.055] hover:border-cyan-200/40 hover:bg-white/[0.085]"
       }`}
     >
-      <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-slate-600 transition group-hover:bg-cyan-300" />
+      <span
+        className={`absolute right-3 top-3 rounded-full transition ${
+          active
+            ? "bg-cyan-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-950"
+            : "h-2 w-2 bg-slate-600 group-hover:bg-cyan-300"
+        }`}
+      >
+        {active ? "Selected" : ""}
+      </span>
       <span className={`inline-flex rounded-md border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${
         active ? "border-cyan-200/50 bg-cyan-200/15 text-cyan-100" : "border-white/10 bg-white/5 text-slate-300"
       }`}>
@@ -153,22 +168,23 @@ export default function QualificationIntake({ supportEmail }) {
   const progress = Math.round(((step + 1) / steps.length) * 100);
 
   const routePreview = useMemo(() => {
-    const primary = selectedLabel(primaryNeeds, form.primaryNeed);
+    const selectedNeeds = form.primaryNeeds?.length ? form.primaryNeeds : form.primaryNeed ? [form.primaryNeed] : [];
+    const primary = selectedNeeds.map((need) => selectedLabel(primaryNeeds, need)).join(", ");
     const path = selectedLabel(offerPaths, form.offerPath);
     const serviceCount = form.selectedServices.length;
     return [
-      ["Need", form.primaryNeed ? primary : "Waiting on goal"],
+      ["Need", selectedNeeds.length ? primary : "Waiting on goal"],
       ["Path", form.offerPath ? path : "Not selected"],
       ["Services", serviceCount ? `${serviceCount} selected` : "To be determined"],
     ];
-  }, [form.offerPath, form.primaryNeed, form.selectedServices.length]);
+  }, [form.offerPath, form.primaryNeed, form.primaryNeeds, form.selectedServices.length]);
 
   const highIntent = useMemo(() => {
     const urgent = form.timeline === "now" || form.timeline === "30-days";
     const highBudget = ["3k-5k", "5k+"].includes(form.investmentComfort);
-    const strategic = ["software", "automation", "strategy"].includes(form.primaryNeed);
+    const strategic = ["software", "automation", "strategy"].some((need) => hasNeed(form, need));
     return urgent || highBudget || strategic || recommendation.tier === "Enterprise / Custom";
-  }, [form.investmentComfort, form.primaryNeed, form.timeline, recommendation.tier]);
+  }, [form, recommendation.tier]);
 
   const update = (key, value) => {
     setSubmitted(false);
@@ -185,9 +201,24 @@ export default function QualificationIntake({ supportEmail }) {
     });
   };
 
+  const togglePrimaryNeed = (value) => {
+    setSubmitted(false);
+    setForm((current) => {
+      const selected = new Set(current.primaryNeeds || []);
+      if (selected.has(value)) selected.delete(value);
+      else selected.add(value);
+      const primaryNeedsList = [...selected];
+      return {
+        ...current,
+        primaryNeeds: primaryNeedsList,
+        primaryNeed: primaryNeedsList[0] || "",
+      };
+    });
+  };
+
   const canContinue = useMemo(() => {
     if (step === 0) return form.name.trim() && form.email.trim();
-    if (step === 1) return form.primaryNeed && form.desiredOutcome.trim();
+    if (step === 1) return form.primaryNeeds.length > 0 && form.desiredOutcome.trim();
     if (step === 2) return form.offerPath;
     if (step === 3) {
       if (!form.timeline || !form.investmentComfort) return false;
@@ -208,6 +239,7 @@ export default function QualificationIntake({ supportEmail }) {
       `Industry: ${form.industry || "Not provided"}`,
       `Current Website: ${form.websiteUrl || "Not provided"}`,
       `Primary Need: ${selectedLabel(primaryNeeds, form.primaryNeed)}`,
+      `Selected Needs: ${form.primaryNeeds.map((item) => selectedLabel(primaryNeeds, item)).join(", ") || "Not provided"}`,
       `Offer Path: ${selectedLabel(offerPaths, form.offerPath)}`,
       `Selected Services: ${form.selectedServices.map((item) => selectedLabel(services, item)).join(", ") || "Not provided"}`,
       `Business Stage: ${form.businessStage || "Not provided"}`,
@@ -353,20 +385,23 @@ export default function QualificationIntake({ supportEmail }) {
 
           {step === 1 ? (
             <div>
-              <SectionIntro step={step} />
+              <SectionIntro step={step}>Choose every lane that applies, then write the first win you want us to focus on.</SectionIntro>
               <div className="grid gap-3 sm:grid-cols-2">
                 {primaryNeeds.map(([value, label, eyebrow, description]) => (
                   <ChoiceCard
                     key={value}
-                    active={form.primaryNeed === value}
+                    active={form.primaryNeeds.includes(value)}
                     label={label}
                     eyebrow={eyebrow}
                     description={description}
-                    onClick={() => update("primaryNeed", value)}
+                    onClick={() => togglePrimaryNeed(value)}
                   />
                 ))}
               </div>
-              <textarea value={form.desiredOutcome} onChange={(e) => update("desiredOutcome", e.target.value)} placeholder="What do you want to accomplish first?" rows={3} className={`${fieldClass} mt-4`} />
+              <textarea value={form.desiredOutcome} onChange={(e) => update("desiredOutcome", e.target.value)} placeholder="What is the first win you want from this?" rows={3} className={`${fieldClass} mt-4`} />
+              <p className="mt-2 text-xs text-slate-400">
+                Example: more booked calls, a cleaner website, better local search visibility, or automating follow-up.
+              </p>
             </div>
           ) : null}
 
