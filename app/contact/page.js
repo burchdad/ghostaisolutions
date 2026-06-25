@@ -16,12 +16,12 @@ export default function Contact() {
         <Breadcrumbs />
         <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.25fr]">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">Start with a free website audit</h1>
+            <h1 className="text-4xl font-extrabold tracking-tight">Start with a free growth fit review</h1>
             <p className="mt-4 text-slate-600 dark:text-slate-300">
-              Share your current website, goals, examples you like, and the kind of help you need. We will route you to the right website, automation, or AI build path.
+              Share your goals, current bottleneck, and the kind of help you need. We will route you to the right package, one-time project, or custom build path.
             </p>
             <ul className="mt-6 space-y-2 text-slate-600 dark:text-slate-300">
-              <li>- Free first-pass website and funnel review</li>
+              <li>- Free first-pass growth and offer review</li>
               <li>- Qualification response within 1 business day</li>
               <li>- Optional onboarding call after the intake</li>
             </ul>
@@ -55,9 +55,9 @@ export default function Contact() {
               </iframe>
             ) : (
               <div className="p-6" id="blueprint">
-                <h2 className="text-2xl font-bold tracking-tight">Website and build intake</h2>
+                <h2 className="text-2xl font-bold tracking-tight">Growth package and build intake</h2>
                 <p className="mt-3 text-slate-600 dark:text-slate-300">
-                  Start light. Tell us where your website is today, what you want it to do, and what would make the project successful.
+                  Start light. Tell us what you want to improve first, then we will recommend the right partner tier or one-time project path.
                 </p>
                 <div className="mt-6">
                   <QualificationIntake supportEmail={siteConfig.supportEmail} />

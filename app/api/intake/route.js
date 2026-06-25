@@ -12,7 +12,16 @@ const FIELD_LABELS = [
   ["company", "Company"],
   ["industry", "Industry"],
   ["websiteUrl", "Current Website"],
+  ["primaryNeed", "Primary Need"],
+  ["offerPath", "Offer Path"],
+  ["selectedServices", "Selected Services"],
+  ["businessStage", "Business Stage"],
+  ["teamSize", "Team Size"],
+  ["revenueRange", "Revenue Range"],
+  ["investmentComfort", "Investment Comfort"],
   ["projectType", "Project Type"],
+  ["recommendedPath", "Recommended Path"],
+  ["recommendedTier", "Recommended Tier"],
   ["desiredOutcome", "Primary Goal"],
   ["currentProblem", "Current Problem"],
   ["visualDirection", "Visual Direction"],
@@ -24,6 +33,17 @@ const FIELD_LABELS = [
 
 function clean(value, max = 2000) {
   return String(value || "").trim().slice(0, max);
+}
+
+function cleanList(value, maxItems = 20) {
+  return Array.isArray(value)
+    ? value.map((item) => clean(item, 120)).filter(Boolean).slice(0, maxItems)
+    : [];
+}
+
+function formatValue(value) {
+  if (Array.isArray(value)) return value.length ? value.join(", ") : "";
+  return value;
 }
 
 function escapeHtml(value = "") {
@@ -44,7 +64,16 @@ function normalizePayload(body = {}) {
     company: clean(body.company, 180),
     industry: clean(body.industry, 180),
     websiteUrl: clean(body.websiteUrl, 500),
+    primaryNeed: clean(body.primaryNeed, 160),
+    offerPath: clean(body.offerPath, 160),
+    selectedServices: cleanList(body.selectedServices),
+    businessStage: clean(body.businessStage, 160),
+    teamSize: clean(body.teamSize, 80),
+    revenueRange: clean(body.revenueRange, 120),
+    investmentComfort: clean(body.investmentComfort || body.budget, 120),
     projectType: clean(body.projectType, 160),
+    recommendedPath: clean(body.recommendedPath, 180),
+    recommendedTier: clean(body.recommendedTier, 120),
     desiredOutcome: clean(body.desiredOutcome, 2000),
     currentProblem: clean(body.currentProblem, 2000),
     visualDirection: clean(body.visualDirection, 2000),
@@ -61,12 +90,12 @@ function normalizePayload(body = {}) {
 }
 
 function buildText(payload) {
-  return FIELD_LABELS.map(([key, label]) => `${label}: ${payload[key] || "Not provided"}`).join("\n");
+  return FIELD_LABELS.map(([key, label]) => `${label}: ${formatValue(payload[key]) || "Not provided"}`).join("\n");
 }
 
 function buildHtml(payload) {
   const rows = FIELD_LABELS.map(([key, label]) => {
-    const value = payload[key] || "Not provided";
+    const value = formatValue(payload[key]) || "Not provided";
     return `
       <tr>
         <td style="padding:10px 12px;border-bottom:1px solid #e2e8f0;font-weight:700;color:#0f172a;vertical-align:top;">${escapeHtml(label)}</td>
@@ -101,24 +130,25 @@ function normalizeDomain(websiteUrl = "") {
 }
 
 function buildLeadNotes(payload) {
-  return FIELD_LABELS.map(([key, label]) => `${label}: ${payload[key] || "Not provided"}`).join("\n");
+  return FIELD_LABELS.map(([key, label]) => `${label}: ${formatValue(payload[key]) || "Not provided"}`).join("\n");
 }
 
 function getLeadScore(payload) {
   const highIntent = payload.highIntent === "Send to booking";
-  const urgentTimeline = payload.timeline === "2-4 weeks" || payload.timeline === "30 days";
-  const largerBudget = payload.budget === "5-10k" || payload.budget === "10k+";
-  const total = highIntent ? 72 : largerBudget || urgentTimeline ? 64 : 56;
+  const urgentTimeline = ["now", "30-days", "2-4 weeks", "30 days"].includes(payload.timeline);
+  const largerBudget = ["3k-5k", "5k+", "5-10k", "10k+"].includes(payload.investmentComfort || payload.budget);
+  const total = highIntent ? 74 : largerBudget || urgentTimeline ? 64 : 56;
 
   return {
     fit: payload.projectType === "Not sure yet" ? 54 : 68,
     urgency: highIntent ? 76 : urgentTimeline ? 66 : 48,
     total,
     reasons: [
-      "Submitted the website and build intake form.",
+      "Submitted the GhostAI growth intake form.",
       payload.highIntent === "Send to booking"
         ? "Ready-now routing selected based on budget or timeline."
         : "Needs email follow-up before booking.",
+      payload.recommendedTier ? `Recommended path: ${payload.recommendedTier}` : "",
       payload.desiredOutcome ? `Primary goal: ${payload.desiredOutcome}` : "",
     ].filter(Boolean),
   };
@@ -128,8 +158,9 @@ async function createIntakeLead(payload) {
   const domain = normalizeDomain(payload.websiteUrl);
   const companyName = payload.company || payload.name || "Website intake lead";
   const summary = [
-    `Website/build intake from ${payload.name || companyName}.`,
-    payload.projectType ? `Project type: ${payload.projectType}.` : "",
+    `Growth intake from ${payload.name || companyName}.`,
+    payload.recommendedPath ? `Recommended path: ${payload.recommendedPath}.` : "",
+    payload.recommendedTier ? `Recommended tier: ${payload.recommendedTier}.` : "",
     payload.desiredOutcome ? `Goal: ${payload.desiredOutcome}` : "",
   ].filter(Boolean).join(" ");
 
@@ -148,13 +179,14 @@ async function createIntakeLead(payload) {
     aiOpportunity: {
       score: payload.highIntent === "Send to booking" ? 72 : 58,
       reasons: [
-        "Requested website, funnel, automation, or AI build help.",
+        "Requested growth, marketing, website, software, or AI help.",
+        payload.offerPath ? `Offer path: ${payload.offerPath}` : "",
         payload.currentProblem ? `Current issue: ${payload.currentProblem}` : "",
       ].filter(Boolean),
     },
     signals: {
-      services: [payload.projectType, payload.desiredOutcome, payload.industry].filter(Boolean),
-      techHints: [payload.budget, payload.timeline, `sms consent: ${payload.smsConsent}`].filter(Boolean),
+      services: [payload.projectType, payload.recommendedTier, ...payload.selectedServices, payload.desiredOutcome, payload.industry].filter(Boolean),
+      techHints: [payload.investmentComfort, payload.timeline, payload.teamSize, payload.revenueRange, `sms consent: ${payload.smsConsent}`].filter(Boolean),
     },
     score: getLeadScore(payload),
     notes: buildLeadNotes(payload),
@@ -177,10 +209,25 @@ function getMissionControlClientsUrl() {
 
 function buildMissionControlNotes(payload) {
   return [
-    "GhostAI website intake submitted from /start.",
+    "GhostAI growth intake submitted from /start.",
     "",
     buildLeadNotes(payload),
   ].join("\n");
+}
+
+function getMissionServices(payload) {
+  const selected = new Set(payload.selectedServices || []);
+  const mapped = new Set(["website-build"]);
+
+  if (selected.has("seo-aeo-geo") || payload.primaryNeed === "seo") mapped.add("search-intelligence");
+  if (selected.has("social-management") || selected.has("video-commercials") || payload.primaryNeed === "social") mapped.add("content-social");
+  if (selected.has("google-ads") || selected.has("social-ads") || payload.primaryNeed === "ads") mapped.add("paid-ads");
+  if (selected.has("ai-automation") || payload.primaryNeed === "automation") mapped.add("ai-automation");
+  if (selected.has("mobile-app") || selected.has("saas-build") || payload.primaryNeed === "software") mapped.add("software-tool");
+  if (selected.has("fractional-cto") || payload.primaryNeed === "strategy") mapped.add("reporting");
+  if (payload.primaryNeed === "more-leads" || selected.size > 1 || payload.offerPath === "package") mapped.add("lead-funnel");
+
+  return [...mapped];
 }
 
 async function createMissionControlLead(payload) {
@@ -202,11 +249,9 @@ async function createMissionControlLead(payload) {
     businessEmail: payload.email,
     businessPhone: payload.phone,
     contact: payload.name,
-    plan: payload.projectType || "Website intake",
+    plan: payload.recommendedTier || payload.recommendedPath || payload.projectType || "Growth intake",
     services: ["website-build"],
-    plannedServices: payload.projectType === "Website + automation" || payload.projectType === "AI chatbot / assistant"
-      ? ["ai-automation", "lead-funnel"]
-      : ["lead-funnel"],
+    plannedServices: getMissionServices(payload).filter((service) => service !== "website-build"),
     proposalSent: false,
     depositInvoiceSent: false,
     proposalSigned: false,
@@ -266,7 +311,7 @@ async function sendIntakeEmail(payload) {
       from,
       to: [to],
       reply_to: replyTo,
-      subject: `New website audit intake - ${payload.name || payload.company || "GhostAI lead"}`,
+      subject: `New GhostAI growth intake - ${payload.name || payload.company || "GhostAI lead"}`,
       html: buildHtml(payload),
       text: buildText(payload),
     }),
@@ -295,7 +340,7 @@ async function sendConfirmationEmail(payload) {
 
   const from = process.env.RESEND_FROM_EMAIL || "Ghost AI <newsletter@ghostai.solutions>";
   const replyTo = process.env.RESEND_REPLY_TO || process.env.OUTREACH_REPLY_TO || siteConfig.supportEmail;
-  const subject = "We received your Ghost AI website audit intake";
+  const subject = "We received your Ghost AI growth intake";
   const bookingLine =
     payload.highIntent === "Send to booking"
       ? `Since your request looks ready-now, you can also grab a call time here: ${siteConfig.calendlyUrl}`
@@ -304,7 +349,7 @@ async function sendConfirmationEmail(payload) {
   const text = [
     `Hi ${payload.name || "there"},`,
     "",
-    "Thanks for sending over your website and build intake. We received it and have it queued for review.",
+    "Thanks for sending over your Ghost AI growth intake. We received it and have it queued for review.",
     bookingLine,
     "",
     "If anything changes, reply to this email and we will add it to your intake.",
@@ -316,7 +361,7 @@ async function sendConfirmationEmail(payload) {
   const html = `
     <div style="font-family:Inter,Arial,sans-serif;line-height:1.55;color:#0f172a;">
       <p>Hi ${escapeHtml(payload.name || "there")},</p>
-      <p>Thanks for sending over your website and build intake. We received it and have it queued for review.</p>
+      <p>Thanks for sending over your Ghost AI growth intake. We received it and have it queued for review.</p>
       <p>${escapeHtml(bookingLine)}</p>
       <p>If anything changes, reply to this email and we will add it to your intake.</p>
       <p>Best,<br/>Ghost AI Solutions</p>
@@ -362,11 +407,11 @@ async function postIntakeToSlack(payload) {
     process.env.SLACK_DEFAULT_CHANNEL_ID;
 
   const message = {
-    text: `New GhostAI website audit intake from ${payload.name || payload.company || "a lead"}`,
+    text: `New GhostAI growth intake from ${payload.name || payload.company || "a lead"}`,
     blocks: [
       {
         type: "header",
-        text: { type: "plain_text", text: "New Website Audit Intake" },
+        text: { type: "plain_text", text: "New GhostAI Growth Intake" },
       },
       {
         type: "section",
@@ -374,8 +419,9 @@ async function postIntakeToSlack(payload) {
           { type: "mrkdwn", text: `*Name:*\n${payload.name || "Not provided"}` },
           { type: "mrkdwn", text: `*Email:*\n${payload.email || "Not provided"}` },
           { type: "mrkdwn", text: `*Company:*\n${payload.company || "Not provided"}` },
-          { type: "mrkdwn", text: `*Project:*\n${payload.projectType || "Not provided"}` },
-          { type: "mrkdwn", text: `*Budget:*\n${payload.budget || "Not provided"}` },
+          { type: "mrkdwn", text: `*Path:*\n${payload.recommendedPath || payload.projectType || "Not provided"}` },
+          { type: "mrkdwn", text: `*Investment:*\n${payload.investmentComfort || payload.budget || "Not provided"}` },
+          { type: "mrkdwn", text: `*Recommended:*\n${payload.recommendedTier || "Not provided"}` },
           { type: "mrkdwn", text: `*Timeline:*\n${payload.timeline || "Not provided"}` },
         ],
       },
@@ -426,7 +472,7 @@ export async function POST(request) {
     const body = await request.json();
     const payload = normalizePayload(body);
 
-    if (!payload.name || !payload.email || !payload.projectType || !payload.desiredOutcome) {
+    if (!payload.name || !payload.email || !payload.primaryNeed || !payload.offerPath || !payload.desiredOutcome) {
       return NextResponse.json({ error: "Missing required intake fields" }, { status: 400 });
     }
 
