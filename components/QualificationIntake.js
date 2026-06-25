@@ -8,7 +8,7 @@ import { BOOKING_URL } from "@/lib/constants";
 const steps = [
   { label: "Contact", kicker: "Who should we follow up with?" },
   { label: "Goal", kicker: "Pick the first business outcome." },
-  { label: "Path", kicker: "Choose the buying motion." },
+  { label: "Start", kicker: "Pick the way you would prefer to work with us." },
   { label: "Details", kicker: "Help us route it correctly." },
   { label: "Review", kicker: "Check the recommended path." },
 ];
@@ -26,9 +26,9 @@ const primaryNeeds = [
 ];
 
 const offerPaths = [
-  ["package", "Ongoing growth partner", "Best when you want marketing, systems, reporting, and strategy handled together."],
-  ["ala-carte", "One-time / a la carte", "Best when you know the exact project or service you need right now."],
-  ["unsure", "Help me choose", "Best when you want us to recommend the right starting point."],
+  ["package", "Ongoing growth support", "Best when you want marketing, systems, reporting, and strategy handled together."],
+  ["ala-carte", "One-time project", "Best when you know the exact project or service you need right now."],
+  ["unsure", "Recommend the best fit", "Best when you want us to suggest the smartest starting point."],
 ];
 
 const services = [
@@ -117,7 +117,7 @@ function ChoiceCard({ active, label, eyebrow, description, onClick }) {
       className={`group relative overflow-hidden rounded-xl border p-4 text-left transition duration-200 ${
         active
           ? "border-cyan-300/80 bg-cyan-300/15 shadow-[0_0_0_1px_rgba(103,232,249,0.22),0_18px_45px_rgba(8,145,178,0.14)]"
-          : "border-white/12 bg-white/[0.055] hover:border-cyan-200/40 hover:bg-white/[0.085]"
+          : "border-white/10 bg-white/[0.045] hover:border-cyan-200/35 hover:bg-white/[0.075]"
       }`}
     >
       <span
@@ -130,7 +130,7 @@ function ChoiceCard({ active, label, eyebrow, description, onClick }) {
         {active ? "Selected" : ""}
       </span>
       <span className={`inline-flex rounded-md border px-2 py-1 text-[10px] font-bold uppercase tracking-[0.14em] ${
-        active ? "border-cyan-200/50 bg-cyan-200/15 text-cyan-100" : "border-white/10 bg-white/5 text-slate-300"
+        active ? "border-cyan-200/50 bg-cyan-200/15 text-cyan-100" : "border-white/10 bg-white/[0.04] text-slate-300"
       }`}>
         {eyebrow}
       </span>
@@ -173,9 +173,9 @@ export default function QualificationIntake({ supportEmail }) {
     const path = selectedLabel(offerPaths, form.offerPath);
     const serviceCount = form.selectedServices.length;
     return [
-      ["Need", selectedNeeds.length ? primary : "Waiting on goal"],
-      ["Path", form.offerPath ? path : "Not selected"],
-      ["Services", serviceCount ? `${serviceCount} selected` : "To be determined"],
+      ["Focus", selectedNeeds.length ? primary : "Waiting on goal"],
+      ["Start", form.offerPath ? path : "Not selected"],
+      ["Add-ons", serviceCount ? `${serviceCount} selected` : "Optional later"],
     ];
   }, [form.offerPath, form.primaryNeed, form.primaryNeeds, form.selectedServices.length]);
 
@@ -334,9 +334,9 @@ export default function QualificationIntake({ supportEmail }) {
 
           <div className="mb-6 grid gap-3 md:grid-cols-3">
             {routePreview.map(([label, value]) => (
-              <div key={label} className="rounded-xl border border-white/10 bg-white/[0.045] p-3.5">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">{label}</p>
-                <p className="mt-1 text-sm font-semibold text-white">{value}</p>
+              <div key={label} className="rounded-xl border border-white/10 bg-white/[0.035] p-3.5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-cyan-200/75">{label}</p>
+                <p className="mt-1 text-sm font-semibold leading-5 text-white">{value}</p>
               </div>
             ))}
           </div>
@@ -407,7 +407,7 @@ export default function QualificationIntake({ supportEmail }) {
 
           {step === 2 ? (
             <div>
-              <SectionIntro step={step} />
+              <SectionIntro step={step}>Pick the way you would prefer to start. You can change this after we review the intake.</SectionIntro>
               <div className="grid gap-3 md:grid-cols-3">
                 {offerPaths.map(([value, label, description]) => (
                   <ChoiceCard
@@ -528,9 +528,9 @@ export default function QualificationIntake({ supportEmail }) {
             </div>
           ) : null}
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-white/10 pt-5">
             {step > 0 ? (
-              <button type="button" onClick={() => setStep((current) => current - 1)} className="rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10">
+              <button type="button" onClick={() => setStep((current) => current - 1)} className="rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10">
                 Back
               </button>
             ) : null}
@@ -540,7 +540,7 @@ export default function QualificationIntake({ supportEmail }) {
                 type="button"
                 disabled={!canContinue}
                 onClick={() => setStep((current) => current + 1)}
-                className="rounded-xl bg-cyan-300 px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl bg-cyan-300 px-6 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Continue
               </button>
@@ -556,7 +556,7 @@ export default function QualificationIntake({ supportEmail }) {
                   handleSubmit();
                 }}
                 aria-disabled={submitting}
-                className="rounded-xl bg-cyan-300 px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-cyan-200 aria-disabled:pointer-events-none aria-disabled:opacity-60"
+                className="rounded-xl bg-cyan-300 px-6 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-cyan-200 aria-disabled:pointer-events-none aria-disabled:opacity-60"
               >
                 {submitting ? "Sending..." : highIntent ? "Submit and Book Call" : "Send Intake"}
               </TrackCTA>
