@@ -128,6 +128,46 @@ const toneClasses = {
   violet: "border-violet-300/25 bg-violet-300/10 text-violet-100",
 };
 
+const serviceAccents = ["cyan", "emerald", "amber", "violet", "rose", "blue"];
+
+function buildPortalView(portalData) {
+  const snapshot = portalData?.snapshot || {};
+  const dynamicServices = Array.isArray(portalData?.services)
+    ? portalData.services.map((service, index) => ({
+        name: service.name,
+        status: service.status,
+        result: service.result || service.pricingLabel || "Managed by Ghost",
+        description: service.description,
+        metrics: Array.isArray(service.metrics) && service.metrics.length ? service.metrics : [service.status || "Mapped", service.pricingLabel || "Ghost", "Service"],
+        accent: serviceAccents[index % serviceAccents.length],
+      }))
+    : [];
+
+  return {
+    connected: Boolean(portalData?.ok),
+    greeting: snapshot.greeting || "Good Morning, Gray Matters",
+    mode: snapshot.mode || "Demo data showing how a connected client portal will feel.",
+    monthLabel: snapshot.monthLabel || "This Month",
+    revenueInfluenced: snapshot.revenueInfluenced || "$18,420",
+    overviewStats: portalData?.ok
+      ? [
+          { label: "Growth Score", value: String(snapshot.growthScore || 72), detail: "Mission Control score", tone: "cyan" },
+          { label: "Revenue Influenced", value: snapshot.revenueInfluenced || "Mapped", detail: snapshot.monthLabel || "Current snapshot", tone: "emerald" },
+          { label: "Leads Generated", value: String(snapshot.leadsGenerated ?? 0), detail: "Tracked from client record", tone: "amber" },
+          { label: "Active Services", value: String(snapshot.activeServices ?? dynamicServices.length), detail: `${snapshot.plannedServices || 0} planned`, tone: "violet" },
+        ]
+      : overviewStats,
+    highlights: Array.isArray(portalData?.highlights) && portalData.highlights.length ? portalData.highlights : highlights,
+    services: dynamicServices.length ? dynamicServices : services,
+    moneyRows: Array.isArray(portalData?.moneyRows) && portalData.moneyRows.length ? portalData.moneyRows : moneyRows,
+    projectItems: Array.isArray(portalData?.progress) && portalData.progress.length ? portalData.progress : projectItems,
+    recommendations: Array.isArray(portalData?.recommendations) && portalData.recommendations.length ? portalData.recommendations : recommendations,
+    supportActions: Array.isArray(portalData?.support?.actions) && portalData.support.actions.length ? portalData.support.actions : supportActions,
+    supportUrl: portalData?.support?.supportUrl || "",
+    openRequests: Array.isArray(portalData?.support?.openRequests) ? portalData.support.openRequests : [],
+  };
+}
+
 function Panel({ title, eyebrow, children, className = "" }) {
   return (
     <section className={`rounded-3xl border border-white/10 bg-slate-950/70 p-5 shadow-[0_28px_90px_rgba(2,6,23,0.35)] ${className}`}>
@@ -174,18 +214,18 @@ function ServiceCard({ service }) {
   );
 }
 
-function OverviewTab() {
+function OverviewTab({ view }) {
   return (
     <div className="grid gap-5">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {overviewStats.map((metric) => (
+        {view.overviewStats.map((metric) => (
           <MetricCard key={metric.label} metric={metric} />
         ))}
       </div>
       <div className="grid gap-5 xl:grid-cols-[1fr_0.74fr]">
         <Panel eyebrow="Today's Highlights" title="What Ghost Is Moving">
           <div className="grid gap-3">
-            {highlights.map((item) => (
+            {view.highlights.map((item) => (
               <div key={item} className="rounded-2xl border border-white/10 bg-slate-900/70 p-4 text-sm text-slate-200">
                 {item}
               </div>
@@ -194,9 +234,9 @@ function OverviewTab() {
         </Panel>
         <Panel eyebrow="Nova Recommendation" title="Next Best Move">
           <div className="rounded-2xl border border-amber-300/25 bg-amber-300/10 p-5">
-            <p className="text-lg font-semibold text-white">Add Local Service Ads</p>
+            <p className="text-lg font-semibold text-white">{view.recommendations[0]?.title || "Add Local Service Ads"}</p>
             <p className="mt-3 text-sm leading-6 text-slate-200">
-              Organic and website leads are converting. A small local ads sprint could increase monthly lead volume by an estimated 18-25%.
+              {view.recommendations[0]?.reason || "Organic and website leads are converting. A small local ads sprint could increase monthly lead volume by an estimated 18-25%."}
             </p>
             <button className="mt-5 rounded-xl bg-amber-300 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-amber-200" type="button">
               Review Recommendation
@@ -208,11 +248,11 @@ function OverviewTab() {
   );
 }
 
-function ServicesTab() {
+function ServicesTab({ view }) {
   return (
     <Panel eyebrow="Purchased Services" title="What Ghost Is Managing">
       <div className="grid gap-4 md:grid-cols-2">
-        {services.map((service) => (
+        {view.services.map((service) => (
           <ServiceCard key={service.name} service={service} />
         ))}
       </div>
@@ -220,9 +260,9 @@ function ServicesTab() {
   );
 }
 
-function MoneyTab() {
-  const totalLeads = moneyRows.reduce((sum, row) => sum + row.leads, 0);
-  const totalWon = moneyRows.reduce((sum, row) => sum + row.won, 0);
+function MoneyTab({ view }) {
+  const totalLeads = view.moneyRows.reduce((sum, row) => sum + Number(row.leads || 0), 0);
+  const totalWon = view.moneyRows.reduce((sum, row) => sum + Number(row.won || 0), 0);
 
   return (
     <div className="grid gap-5">
@@ -239,7 +279,7 @@ function MoneyTab() {
             <span>Won</span>
             <span>Value</span>
           </div>
-          {moneyRows.map((row) => (
+          {view.moneyRows.map((row) => (
             <div key={row.source} className="grid grid-cols-[1.2fr_0.5fr_0.5fr_0.7fr] border-t border-white/10 px-4 py-4 text-sm text-slate-200">
               <div>
                 <p className="font-semibold text-white">{row.source}</p>
@@ -256,11 +296,11 @@ function MoneyTab() {
   );
 }
 
-function ProgressTab() {
+function ProgressTab({ view }) {
   return (
     <Panel eyebrow="Project Progress" title="Deliverables And Open Work">
       <div className="grid gap-4">
-        {projectItems.map((item) => (
+        {view.projectItems.map((item) => (
           <article key={item.title} className="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -279,47 +319,45 @@ function ProgressTab() {
   );
 }
 
-function SupportTab() {
+function SupportTab({ view }) {
   return (
     <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
       <Panel eyebrow="Support" title="What Do You Need?">
         <div className="grid gap-3">
-          {supportActions.map((action) => (
-            <button
+          {view.supportActions.map((action) => (
+            <a
               key={action}
+              href={view.supportUrl || "/start"}
               className="rounded-2xl border border-white/10 bg-slate-900/70 p-4 text-left text-sm font-semibold text-slate-100 transition hover:border-cyan-300/50 hover:bg-cyan-300/10"
-              type="button"
             >
               {action}
-            </button>
+            </a>
           ))}
         </div>
       </Panel>
       <Panel eyebrow="Open Requests" title="Client Action Queue">
         <div className="grid gap-3 text-sm">
-          <div className="rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4">
-            <p className="font-semibold text-white">Need new team photos</p>
-            <p className="mt-1 text-slate-300">Used for homepage trust section and Google profile updates.</p>
-          </div>
-          <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-4">
-            <p className="font-semibold text-white">Approve service page copy</p>
-            <p className="mt-1 text-slate-300">Ready for review before publishing next website update.</p>
-          </div>
-          <div className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 p-4">
-            <p className="font-semibold text-white">CRM pipeline audit complete</p>
-            <p className="mt-1 text-slate-300">Ghost will recommend one follow-up improvement this week.</p>
-          </div>
+          {(view.openRequests.length ? view.openRequests : [
+            { title: "Need new team photos", detail: "Used for homepage trust section and Google profile updates." },
+            { title: "Approve service page copy", detail: "Ready for review before publishing next website update." },
+            { title: "CRM pipeline audit complete", detail: "Ghost will recommend one follow-up improvement this week." },
+          ]).map((request, index) => (
+            <div key={request.title} className={`rounded-2xl border p-4 ${index === 0 ? "border-amber-300/20 bg-amber-300/10" : index === 1 ? "border-cyan-300/20 bg-cyan-300/10" : "border-emerald-300/20 bg-emerald-300/10"}`}>
+              <p className="font-semibold text-white">{request.title}</p>
+              <p className="mt-1 text-slate-300">{request.detail || request.status}</p>
+            </div>
+          ))}
         </div>
       </Panel>
     </div>
   );
 }
 
-function RecommendationsTab() {
+function RecommendationsTab({ view }) {
   return (
     <Panel eyebrow="Recommendations" title="Next Growth Moves">
       <div className="grid gap-4">
-        {recommendations.map((item, index) => (
+        {view.recommendations.map((item, index) => (
           <article key={item.title} className="rounded-2xl border border-white/10 bg-slate-900/70 p-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
@@ -339,8 +377,9 @@ function RecommendationsTab() {
   );
 }
 
-export default function ClientPortalDashboard() {
+export default function ClientPortalDashboard({ portalData = null }) {
   const [activeTab, setActiveTab] = useState("overview");
+  const view = useMemo(() => buildPortalView(portalData), [portalData]);
   const ActivePanel = useMemo(() => {
     if (activeTab === "services") return ServicesTab;
     if (activeTab === "money") return MoneyTab;
@@ -356,12 +395,12 @@ export default function ClientPortalDashboard() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-200">Client Snapshot</p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">Good Morning, Gray Matters</h2>
-            <p className="mt-2 text-sm text-slate-400">Demo data showing how a connected client portal will feel.</p>
+            <h2 className="mt-2 text-2xl font-semibold text-white">{view.greeting}</h2>
+            <p className="mt-2 text-sm text-slate-400">{view.mode}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-right">
-            <p className="text-xs uppercase tracking-[0.14em] text-slate-500">This Month</p>
-            <p className="mt-1 text-xl font-bold text-emerald-200">$18,420</p>
+            <p className="text-xs uppercase tracking-[0.14em] text-slate-500">{view.monthLabel}</p>
+            <p className="mt-1 text-xl font-bold text-emerald-200">{view.revenueInfluenced}</p>
           </div>
         </div>
 
@@ -384,7 +423,7 @@ export default function ClientPortalDashboard() {
       </div>
 
       <div className="mt-4">
-        <ActivePanel />
+        <ActivePanel view={view} />
       </div>
     </div>
   );

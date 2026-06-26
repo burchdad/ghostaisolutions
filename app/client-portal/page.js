@@ -1,6 +1,7 @@
 import Link from "next/link";
 import TrackCTA from "@/components/TrackCTA";
 import ClientPortalDashboard from "./ClientPortalDashboard";
+import { getClientPortalData } from "@/lib/clientPortalData";
 
 export const metadata = {
   title: "Client Portal - Ghost AI Solutions",
@@ -8,7 +9,11 @@ export const metadata = {
     "Ghost Growth Portal is the client-facing command center for services, project progress, metrics, support, and next growth moves.",
 };
 
-export default function ClientPortalPage() {
+export default async function ClientPortalPage({ searchParams }) {
+  const accessKey = typeof searchParams?.key === "string" ? searchParams.key : "";
+  const portalData = accessKey ? await getClientPortalData(accessKey) : null;
+  const isConnected = Boolean(portalData?.ok);
+
   return (
     <main className="relative overflow-hidden">
       <section className="relative py-16 sm:py-20">
@@ -28,8 +33,21 @@ export default function ClientPortalPage() {
                   <span className="font-semibold text-white">Not just a CRM.</span> This is the client-facing layer that tells the story of services, progress, money, and momentum.
                 </div>
                 <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-4">
-                  <span className="font-semibold text-cyan-100">V1:</span> portal experience and client entry point. <span className="font-semibold text-cyan-100">V2:</span> live HighLevel, website, ads, SEO, and Mission Control data.
+                  {isConnected ? (
+                    <>
+                      <span className="font-semibold text-cyan-100">Connected:</span> this view is loading read-only client data from Mission Control.
+                    </>
+                  ) : (
+                    <>
+                      <span className="font-semibold text-cyan-100">V1:</span> portal experience and client entry point. <span className="font-semibold text-cyan-100">V2:</span> live HighLevel, website, ads, SEO, and Mission Control data.
+                    </>
+                  )}
                 </div>
+                {portalData && !portalData.ok ? (
+                  <div className="rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 text-amber-100">
+                    Portal key not recognized yet. Showing the demo dashboard until access is configured.
+                  </div>
+                ) : null}
               </div>
               <div className="mt-8 flex flex-wrap gap-4">
                 <TrackCTA
@@ -51,7 +69,7 @@ export default function ClientPortalPage() {
               </div>
             </div>
 
-            <ClientPortalDashboard />
+            <ClientPortalDashboard portalData={portalData?.ok ? portalData : null} />
           </div>
         </div>
       </section>
