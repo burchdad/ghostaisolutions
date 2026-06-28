@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClientPortalAccount } from "@/lib/clientPortalData";
+import { CLIENT_PORTAL_SESSION_COOKIE, clientPortalCookieOptions, createClientPortalAccount } from "@/lib/clientPortalData";
 
 export const runtime = "nodejs";
 
@@ -13,6 +13,7 @@ export async function POST(request) {
     name: clean(form.get("name"), 160),
     email: clean(form.get("email"), 240),
     inviteKey: clean(form.get("inviteKey"), 500),
+    password: clean(form.get("password"), 500),
   };
 
   const result = await createClientPortalAccount(payload);
@@ -27,13 +28,15 @@ export async function POST(request) {
   if (result.account?.existing && !result.accessKey) {
     const signInUrl = new URL("/client-portal/sign-in", request.url);
     signInUrl.searchParams.set("email", payload.email);
-    signInUrl.searchParams.set("error", "That client portal account already exists. Sign in with the portal key that was issued for this account.");
+    signInUrl.searchParams.set("error", "That client portal account already exists. Sign in with your email and password.");
     return NextResponse.redirect(signInUrl, { status: 303 });
   }
 
-  const accessKey = result.accessKey;
   const portalUrl = new URL("/client-portal", request.url);
-  portalUrl.searchParams.set("key", accessKey);
   portalUrl.searchParams.set("created", result.account?.existing ? "existing" : "true");
-  return NextResponse.redirect(portalUrl, { status: 303 });
+  const response = NextResponse.redirect(portalUrl, { status: 303 });
+  if (result.sessionToken) {
+    response.cookies.set(CLIENT_PORTAL_SESSION_COOKIE, result.sessionToken, clientPortalCookieOptions());
+  }
+  return response;
 }

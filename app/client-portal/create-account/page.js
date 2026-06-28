@@ -65,6 +65,18 @@ export default function ClientPortalCreateAccountPage({ searchParams }) {
                   className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/20"
                 />
               </label>
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold text-slate-200">Create password</span>
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  minLength={10}
+                  autoComplete="new-password"
+                  placeholder="At least 10 characters"
+                  className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/20"
+                />
+              </label>
               <button
                 type="submit"
                 className="inline-flex w-fit rounded-xl bg-amber-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-200"

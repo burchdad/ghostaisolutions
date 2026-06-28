@@ -45,12 +45,13 @@ export default function ClientPortalSignInPage({ searchParams }) {
                 />
               </label>
               <label className="grid gap-2">
-                <span className="text-sm font-semibold text-slate-200">Portal access key</span>
+                <span className="text-sm font-semibold text-slate-200">Password</span>
                 <input
-                  name="accessKey"
+                  name="password"
+                  type="password"
                   required
-                  autoComplete="one-time-code"
-                  placeholder="Paste your portal key"
+                  autoComplete="current-password"
+                  placeholder="Enter your password"
                   className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300/70 focus:ring-2 focus:ring-cyan-300/20"
                 />
               </label>
@@ -63,7 +64,15 @@ export default function ClientPortalSignInPage({ searchParams }) {
             </form>
 
             <div className="mt-6 rounded-2xl border border-cyan-300/15 bg-cyan-300/5 p-4 text-sm text-slate-300">
-              Need access created? Use the account setup path only after your discovery call or approved proposal.
+              Need a different sign-in path?{" "}
+              <Link href="/client-portal/magic" className="text-cyan-200 underline-offset-4 hover:underline">
+                Email me a magic link
+              </Link>
+              {" "}or{" "}
+              <Link href="/client-portal/reset-password" className="text-cyan-200 underline-offset-4 hover:underline">
+                reset my password
+              </Link>
+              .
             </div>
           </div>
         </div>

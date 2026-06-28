@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import TrackCTA from "@/components/TrackCTA";
 import ClientPortalDashboard from "./ClientPortalDashboard";
-import { getClientPortalData } from "@/lib/clientPortalData";
+import { CLIENT_PORTAL_SESSION_COOKIE, getClientPortalData } from "@/lib/clientPortalData";
 
 export const metadata = {
   title: "Client Portal - Ghost AI Solutions",
@@ -11,7 +12,8 @@ export const metadata = {
 
 export default async function ClientPortalPage({ searchParams }) {
   const accessKey = typeof searchParams?.key === "string" ? searchParams.key : "";
-  const portalData = accessKey ? await getClientPortalData(accessKey) : null;
+  const sessionToken = cookies().get(CLIENT_PORTAL_SESSION_COOKIE)?.value || "";
+  const portalData = accessKey || sessionToken ? await getClientPortalData(accessKey, sessionToken) : null;
   const isConnected = Boolean(portalData?.ok);
 
   return (
@@ -72,6 +74,14 @@ export default async function ClientPortalPage({ searchParams }) {
                 >
                   See How Ghost Works
                 </Link>
+                {isConnected ? (
+                  <Link
+                    href="/client-portal/account"
+                    className="inline-flex rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:border-cyan-300/60 hover:bg-cyan-300/10"
+                  >
+                    Account Settings
+                  </Link>
+                ) : null}
               </div>
             </div>
 

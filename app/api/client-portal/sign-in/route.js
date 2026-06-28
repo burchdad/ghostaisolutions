@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { signInClientPortalAccount } from "@/lib/clientPortalData";
+import { CLIENT_PORTAL_SESSION_COOKIE, clientPortalCookieOptions, signInClientPortalAccount } from "@/lib/clientPortalData";
 
 export const runtime = "nodejs";
 
@@ -11,6 +11,7 @@ export async function POST(request) {
   const form = await request.formData();
   const payload = {
     email: clean(form.get("email"), 240),
+    password: clean(form.get("password"), 500),
     accessKey: clean(form.get("accessKey"), 500),
   };
 
@@ -23,7 +24,10 @@ export async function POST(request) {
   }
 
   const portalUrl = new URL("/client-portal", request.url);
-  portalUrl.searchParams.set("key", result.accessKey || payload.accessKey);
   portalUrl.searchParams.set("signin", "true");
-  return NextResponse.redirect(portalUrl, { status: 303 });
+  const response = NextResponse.redirect(portalUrl, { status: 303 });
+  if (result.sessionToken) {
+    response.cookies.set(CLIENT_PORTAL_SESSION_COOKIE, result.sessionToken, clientPortalCookieOptions());
+  }
+  return response;
 }
