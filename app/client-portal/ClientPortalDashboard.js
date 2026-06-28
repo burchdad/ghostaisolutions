@@ -166,8 +166,13 @@ function buildPortalView(portalData) {
     highlights: Array.isArray(portalData?.highlights) && portalData.highlights.length ? portalData.highlights : highlights,
     services: dynamicServices.length ? dynamicServices : services,
     geo: portalData?.geo || null,
+    valueLedger: portalData?.valueLedger || null,
     moneyRows: Array.isArray(portalData?.moneyRows) && portalData.moneyRows.length ? portalData.moneyRows : moneyRows,
     projectItems: Array.isArray(portalData?.progress) && portalData.progress.length ? portalData.progress : projectItems,
+    serviceOnboarding: Array.isArray(portalData?.serviceOnboarding) ? portalData.serviceOnboarding : [],
+    nextRequiredAction: portalData?.nextRequiredAction || null,
+    eventTimeline: Array.isArray(portalData?.eventTimeline) ? portalData.eventTimeline : [],
+    monthlyReport: portalData?.monthlyReport || null,
     recommendations: Array.isArray(portalData?.recommendations) && portalData.recommendations.length ? portalData.recommendations : recommendations,
     supportActions: Array.isArray(portalData?.support?.actions) && portalData.support.actions.length ? portalData.support.actions : supportActions,
     supportUrl: portalData?.support?.supportUrl || "",
@@ -221,6 +226,40 @@ function ServiceCard({ service }) {
   );
 }
 
+function NextActionCard({ action }) {
+  if (!action) return null;
+  return (
+    <article className="rounded-2xl border border-cyan-300/25 bg-cyan-300/10 p-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-100">Next Required Action</p>
+          <h3 className="mt-2 text-xl font-semibold text-white">{action.title}</h3>
+        </div>
+        <span className="rounded-full border border-white/10 bg-slate-950/70 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-slate-200">
+          {action.service || "Portal"}
+        </span>
+      </div>
+      <p className="mt-3 text-sm leading-6 text-slate-200">{action.detail}</p>
+    </article>
+  );
+}
+
+function MonthlyReportCard({ report }) {
+  if (!report) return null;
+  return (
+    <article className="rounded-2xl border border-emerald-300/25 bg-emerald-300/10 p-5">
+      <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-100">{report.period || "Monthly Report"}</p>
+      <h3 className="mt-2 text-xl font-semibold text-white">{report.title || "Monthly growth report"}</h3>
+      <p className="mt-3 text-sm leading-6 text-slate-200">{report.summary}</p>
+      <div className="mt-4 grid gap-2 text-sm">
+        {(report.wins || []).slice(0, 3).map((win) => (
+          <div key={win} className="rounded-xl border border-white/10 bg-slate-950/50 px-3 py-2 text-slate-100">{win}</div>
+        ))}
+      </div>
+    </article>
+  );
+}
+
 function OverviewTab({ view }) {
   return (
     <div className="grid gap-5">
@@ -229,6 +268,12 @@ function OverviewTab({ view }) {
           <MetricCard key={metric.label} metric={metric} />
         ))}
       </div>
+      {(view.nextRequiredAction || view.monthlyReport) ? (
+        <div className="grid gap-5 xl:grid-cols-2">
+          <NextActionCard action={view.nextRequiredAction} />
+          <MonthlyReportCard report={view.monthlyReport} />
+        </div>
+      ) : null}
       <div className="grid gap-5 xl:grid-cols-[1fr_0.74fr]">
         <Panel eyebrow="Today's Highlights" title="What Ghost Is Moving">
           <div className="grid gap-3">
@@ -332,14 +377,32 @@ function GeoTab({ view }) {
 function MoneyTab({ view }) {
   const totalLeads = view.moneyRows.reduce((sum, row) => sum + Number(row.leads || 0), 0);
   const totalWon = view.moneyRows.reduce((sum, row) => sum + Number(row.won || 0), 0);
+  const ledger = view.valueLedger;
 
   return (
     <div className="grid gap-5">
       <div className="grid gap-3 sm:grid-cols-3">
         <MetricCard metric={{ label: "Tracked Leads", value: String(totalLeads), detail: "This month", tone: "cyan" }} />
         <MetricCard metric={{ label: "Won Deals", value: String(totalWon), detail: "Attributed in CRM", tone: "emerald" }} />
-        <MetricCard metric={{ label: "Estimated ROI", value: "3.6x", detail: "Based on tracked value", tone: "amber" }} />
+        <MetricCard metric={{ label: "Requested Value", value: ledger?.label || "Mapped", detail: ledger?.paidStatus || "Based on tracked value", tone: "amber" }} />
       </div>
+      {ledger?.serviceRows?.length ? (
+        <Panel eyebrow="Client Value Ledger" title="What They Asked Ghost To Manage">
+          <div className="grid gap-3 md:grid-cols-2">
+            {ledger.serviceRows.map((row) => (
+              <article key={row.id} className="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-white">{row.name}</p>
+                    <p className="mt-1 text-xs text-slate-400">{row.pricingLabel || "Pricing mapped in Mission Control"}</p>
+                  </div>
+                  <span className="rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-cyan-100">{row.status}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </Panel>
+      ) : null}
       <Panel eyebrow="Revenue Story" title="Where Momentum Is Coming From">
         <div className="overflow-hidden rounded-2xl border border-white/10">
           <div className="grid grid-cols-[1.2fr_0.5fr_0.5fr_0.7fr] bg-slate-900/90 px-4 py-3 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
@@ -365,26 +428,80 @@ function MoneyTab({ view }) {
   );
 }
 
+function formatPortalDate(value) {
+  if (!value) return "Logged";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Logged";
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
 function ProgressTab({ view }) {
   return (
-    <Panel eyebrow="Project Progress" title="Deliverables And Open Work">
-      <div className="grid gap-4">
-        {view.projectItems.map((item) => (
-          <article key={item.title} className="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="font-semibold text-white">{item.title}</p>
-                <p className="mt-1 text-sm text-slate-400">{item.status}</p>
+    <div className="grid gap-5">
+      <Panel eyebrow="Project Progress" title="Deliverables And Open Work">
+        <div className="grid gap-4">
+          {view.projectItems.map((item) => (
+            <article key={item.title} className="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-white">{item.title}</p>
+                  <p className="mt-1 text-sm text-slate-400">{item.status}</p>
+                </div>
+                <span className="text-sm font-semibold text-cyan-100">{item.percent}%</span>
               </div>
-              <span className="text-sm font-semibold text-cyan-100">{item.percent}%</span>
-            </div>
-            <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
-              <div className="h-full rounded-full bg-cyan-300" style={{ width: `${item.percent}%` }} />
-            </div>
-          </article>
-        ))}
-      </div>
-    </Panel>
+              <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full rounded-full bg-cyan-300" style={{ width: `${item.percent}%` }} />
+              </div>
+            </article>
+          ))}
+        </div>
+      </Panel>
+      {view.serviceOnboarding.length ? (
+        <Panel eyebrow="Service Onboarding" title="What Is Ready Before Work Starts">
+          <div className="grid gap-4">
+            {view.serviceOnboarding.map((service) => (
+              <article key={service.serviceId} className="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-white">{service.serviceName}</p>
+                    <p className="mt-1 text-sm text-slate-400">{service.status}</p>
+                  </div>
+                  <span className="text-sm font-semibold text-cyan-100">{service.percent}% ready</span>
+                </div>
+                <div className="mt-4 grid gap-2">
+                  {(service.items || []).map((item) => (
+                    <div key={`${service.serviceId}-${item.title}`} className="flex items-start gap-3 rounded-xl border border-white/10 bg-slate-950/50 p-3 text-sm">
+                      <span className={`mt-1 h-2.5 w-2.5 rounded-full ${item.complete ? "bg-emerald-300" : "bg-amber-300"}`} />
+                      <div>
+                        <p className="font-semibold text-white">{item.title}</p>
+                        <p className="mt-1 text-slate-400">{item.detail}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </Panel>
+      ) : null}
+      {view.eventTimeline.length ? (
+        <Panel eyebrow="Activity Timeline" title="What Has Happened So Far">
+          <div className="grid gap-3">
+            {view.eventTimeline.map((event, index) => (
+              <article key={`${event.label}-${event.at}-${index}`} className="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-white">{event.label}</p>
+                    <p className="mt-1 text-sm text-slate-400">{event.detail}</p>
+                  </div>
+                  <span className="rounded-full border border-white/10 bg-slate-950/70 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-slate-300">{formatPortalDate(event.at)}</span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </Panel>
+      ) : null}
+    </div>
   );
 }
 
@@ -392,7 +509,8 @@ function SupportTab({ view }) {
   return (
     <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
       <Panel eyebrow="Support" title="What Do You Need?">
-        <div className="grid gap-3">
+        <NextActionCard action={view.nextRequiredAction} />
+        <div className="mt-4 grid gap-3">
           {view.supportActions.map((action) => (
             <a
               key={action}
