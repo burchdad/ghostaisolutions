@@ -61,6 +61,12 @@ export default async function ClientPortalPage({ searchParams }) {
                   Request Portal Access
                 </TrackCTA>
                 <Link
+                  href="/admin/login"
+                  className="inline-flex rounded-xl border border-cyan-300/35 px-6 py-3 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-300/10 hover:text-white"
+                >
+                  Sign In
+                </Link>
+                <Link
                   href="/process"
                   className="inline-flex rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:border-cyan-300/60 hover:bg-cyan-300/10"
                 >
