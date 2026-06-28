@@ -55,10 +55,10 @@ export default async function ClientPortalPage({ searchParams }) {
                   event="client_portal_request_access"
                   section="client_portal"
                   placement="hero"
-                  label="Request Portal Access"
+                  label="Create New Account"
                   className="inline-flex rounded-xl bg-amber-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-200"
                 >
-                  Request Portal Access
+                  Create New Account
                 </TrackCTA>
                 <Link
                   href="/admin/login"
