@@ -5,7 +5,11 @@ export const metadata = {
   description: "Activate a Ghost Growth Portal account after discovery, proposal approval, or client onboarding.",
 };
 
-export default function ClientPortalCreateAccountPage() {
+export default function ClientPortalCreateAccountPage({ searchParams }) {
+  const error = typeof searchParams?.error === "string" ? searchParams.error : "";
+  const invite = typeof searchParams?.invite === "string" ? searchParams.invite : "";
+  const email = typeof searchParams?.email === "string" ? searchParams.email : "";
+
   return (
     <main className="relative overflow-hidden">
       <section className="relative py-16 sm:py-20">
@@ -22,12 +26,40 @@ export default function ClientPortalCreateAccountPage() {
               Portal accounts are created after discovery, proposal approval, or onboarding. Enter the invite key from Ghost AI Solutions to activate your client view.
             </p>
 
-            <form action="/client-portal" method="get" className="mt-8 grid gap-4">
+            {error ? (
+              <div className="mt-6 rounded-2xl border border-amber-300/25 bg-amber-300/10 p-4 text-sm text-amber-100">
+                {error}
+              </div>
+            ) : null}
+
+            <form action="/api/client-portal/create-account" method="post" className="mt-8 grid gap-4">
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold text-slate-200">Name</span>
+                <input
+                  name="name"
+                  autoComplete="name"
+                  placeholder="Your name"
+                  className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/20"
+                />
+              </label>
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold text-slate-200">Account email</span>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  defaultValue={email}
+                  autoComplete="email"
+                  placeholder="you@company.com"
+                  className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/20"
+                />
+              </label>
               <label className="grid gap-2">
                 <span className="text-sm font-semibold text-slate-200">Portal invite key</span>
                 <input
-                  name="key"
+                  name="inviteKey"
                   required
+                  defaultValue={invite}
                   autoComplete="one-time-code"
                   placeholder="Paste your invite key"
                   className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-amber-300/70 focus:ring-2 focus:ring-amber-300/20"

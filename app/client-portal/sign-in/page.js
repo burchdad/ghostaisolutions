@@ -5,7 +5,10 @@ export const metadata = {
   description: "Sign in to the Ghost Growth Portal with your client portal access key.",
 };
 
-export default function ClientPortalSignInPage() {
+export default function ClientPortalSignInPage({ searchParams }) {
+  const error = typeof searchParams?.error === "string" ? searchParams.error : "";
+  const email = typeof searchParams?.email === "string" ? searchParams.email : "";
+
   return (
     <main className="relative overflow-hidden">
       <section className="relative py-16 sm:py-20">
@@ -22,11 +25,29 @@ export default function ClientPortalSignInPage() {
               Use the portal access key Ghost AI Solutions sent after your client workspace was created.
             </p>
 
-            <form action="/client-portal" method="get" className="mt-8 grid gap-4">
+            {error ? (
+              <div className="mt-6 rounded-2xl border border-amber-300/25 bg-amber-300/10 p-4 text-sm text-amber-100">
+                {error}
+              </div>
+            ) : null}
+
+            <form action="/api/client-portal/sign-in" method="post" className="mt-8 grid gap-4">
+              <label className="grid gap-2">
+                <span className="text-sm font-semibold text-slate-200">Account email</span>
+                <input
+                  name="email"
+                  type="email"
+                  required
+                  defaultValue={email}
+                  autoComplete="email"
+                  placeholder="you@company.com"
+                  className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-cyan-300/70 focus:ring-2 focus:ring-cyan-300/20"
+                />
+              </label>
               <label className="grid gap-2">
                 <span className="text-sm font-semibold text-slate-200">Portal access key</span>
                 <input
-                  name="key"
+                  name="accessKey"
                   required
                   autoComplete="one-time-code"
                   placeholder="Paste your portal key"
