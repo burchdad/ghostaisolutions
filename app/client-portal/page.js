@@ -51,7 +51,7 @@ export default async function ClientPortalPage({ searchParams }) {
               </div>
               <div className="mt-8 flex flex-wrap gap-4">
                 <TrackCTA
-                  href="/start"
+                  href="/client-portal/create-account"
                   event="client_portal_request_access"
                   section="client_portal"
                   placement="hero"
@@ -61,7 +61,7 @@ export default async function ClientPortalPage({ searchParams }) {
                   Create New Account
                 </TrackCTA>
                 <Link
-                  href="/admin/login"
+                  href="/client-portal/sign-in"
                   className="inline-flex rounded-xl border border-cyan-300/35 px-6 py-3 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-300/10 hover:text-white"
                 >
                   Sign In
