@@ -52,36 +52,39 @@ export default async function ClientPortalPage({ searchParams }) {
                 ) : null}
               </div>
               <div className="mt-8 flex flex-wrap gap-4">
-                <TrackCTA
-                  href="/client-portal/create-account"
-                  event="client_portal_request_access"
-                  section="client_portal"
-                  placement="hero"
-                  label="Create New Account"
-                  className="inline-flex rounded-xl bg-amber-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-200"
-                >
-                  Create New Account
-                </TrackCTA>
-                <Link
-                  href="/client-portal/sign-in"
-                  className="inline-flex rounded-xl border border-cyan-300/35 px-6 py-3 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-300/10 hover:text-white"
-                >
-                  Sign In
-                </Link>
+                {!isConnected ? (
+                  <>
+                    <TrackCTA
+                      href="/client-portal/create-account"
+                      event="client_portal_request_access"
+                      section="client_portal"
+                      placement="hero"
+                      label="Create New Account"
+                      className="inline-flex rounded-xl bg-amber-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-200"
+                    >
+                      Create New Account
+                    </TrackCTA>
+                    <Link
+                      href="/client-portal/sign-in"
+                      className="inline-flex rounded-xl border border-cyan-300/35 px-6 py-3 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-300/10 hover:text-white"
+                    >
+                      Sign In
+                    </Link>
+                  </>
+                ) : (
+                  <Link
+                    href="/client-portal/account"
+                    className="inline-flex rounded-xl bg-cyan-300 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-200"
+                  >
+                    Account Settings
+                  </Link>
+                )}
                 <Link
                   href="/process"
                   className="inline-flex rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:border-cyan-300/60 hover:bg-cyan-300/10"
                 >
                   See How Ghost Works
                 </Link>
-                {isConnected ? (
-                  <Link
-                    href="/client-portal/account"
-                    className="inline-flex rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white transition hover:border-cyan-300/60 hover:bg-cyan-300/10"
-                  >
-                    Account Settings
-                  </Link>
-                ) : null}
               </div>
             </div>
 

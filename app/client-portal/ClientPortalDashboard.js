@@ -145,6 +145,11 @@ function buildPortalView(portalData) {
 
   return {
     connected: Boolean(portalData?.ok),
+    clientName: portalData?.client?.name || "",
+    accountEmail: portalData?.account?.email || "",
+    accountRole: portalData?.account?.role || "",
+    plan: portalData?.client?.plan || "",
+    stageLabel: portalData?.client?.stageLabel || "",
     greeting: snapshot.greeting || "Good Morning, Gray Matters",
     mode: snapshot.mode || "Demo data showing how a connected client portal will feel.",
     monthLabel: snapshot.monthLabel || "This Month",
@@ -192,7 +197,7 @@ function MetricCard({ metric }) {
 
 function ServiceCard({ service }) {
   return (
-    <article className="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
+    <article className="rounded-2xl border border-white/10 bg-slate-900/70 p-4 transition hover:border-cyan-300/35 hover:bg-slate-900">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-lg font-semibold text-white">{service.name}</p>
@@ -420,6 +425,23 @@ export default function ClientPortalDashboard({ portalData = null }) {
             </button>
           ))}
         </div>
+
+        {view.connected ? (
+          <div className="mt-5 grid gap-3 rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-4 text-sm text-slate-200 sm:grid-cols-3">
+            <div>
+              <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-cyan-200">Client</p>
+              <p className="mt-1 font-semibold text-white">{view.clientName || "Connected account"}</p>
+            </div>
+            <div>
+              <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-cyan-200">Portal</p>
+              <p className="mt-1 font-semibold text-white">{view.accountEmail || "Signed in"}</p>
+            </div>
+            <div>
+              <p className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-cyan-200">Current Motion</p>
+              <p className="mt-1 font-semibold text-white">{view.stageLabel || view.plan || "Mission Control"}</p>
+            </div>
+          </div>
+        ) : null}
       </div>
 
       <div className="mt-4">
