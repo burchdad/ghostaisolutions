@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 const tabs = [
   { id: "overview", label: "Overview" },
   { id: "services", label: "Services" },
+  { id: "geo", label: "GEO" },
   { id: "money", label: "Money Made" },
   { id: "progress", label: "Progress" },
   { id: "support", label: "Support" },
@@ -164,6 +165,7 @@ function buildPortalView(portalData) {
       : overviewStats,
     highlights: Array.isArray(portalData?.highlights) && portalData.highlights.length ? portalData.highlights : highlights,
     services: dynamicServices.length ? dynamicServices : services,
+    geo: portalData?.geo || null,
     moneyRows: Array.isArray(portalData?.moneyRows) && portalData.moneyRows.length ? portalData.moneyRows : moneyRows,
     projectItems: Array.isArray(portalData?.progress) && portalData.progress.length ? portalData.progress : projectItems,
     recommendations: Array.isArray(portalData?.recommendations) && portalData.recommendations.length ? portalData.recommendations : recommendations,
@@ -262,6 +264,68 @@ function ServicesTab({ view }) {
         ))}
       </div>
     </Panel>
+  );
+}
+
+function GeoTab({ view }) {
+  const geo = view.geo;
+  if (!geo) {
+    return (
+      <Panel eyebrow="GEO Visibility" title="Search Intelligence Workspace">
+        <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-5 text-sm leading-6 text-slate-300">
+          GEO data appears here when a client is connected through geo.ghostai.solutions or has SEO / AEO / GEO reporting active.
+        </div>
+      </Panel>
+    );
+  }
+
+  const engineScores = geo.engineScores || {};
+  const engines = [
+    { label: "SEO", value: engineScores.seo },
+    { label: "AEO", value: engineScores.aeo },
+    { label: "GEO", value: engineScores.geo },
+    { label: "Discovery", value: engineScores.discovery },
+  ].filter((item) => item.value !== undefined && item.value !== null);
+
+  return (
+    <div className="grid gap-5">
+      <div className="grid gap-3 sm:grid-cols-4">
+        <MetricCard metric={{ label: "Visibility Score", value: String(geo.visibilityScore ?? "Pending"), detail: "Latest GEO audit", tone: "cyan" }} />
+        <MetricCard metric={{ label: "Opportunities", value: String(geo.opportunityCount || 0), detail: "Mapped next moves", tone: "emerald" }} />
+        <MetricCard metric={{ label: "Competitors", value: String(geo.competitorCount || 0), detail: "Tracked in research", tone: "amber" }} />
+        <MetricCard metric={{ label: "Agent Tasks", value: String(geo.taskCount || 0), detail: "Queued execution", tone: "violet" }} />
+      </div>
+      <Panel eyebrow="Engine Breakdown" title="Visibility Across Search And AI">
+        <div className="grid gap-3 md:grid-cols-2">
+          {engines.map((engine) => (
+            <article key={engine.label} className="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
+              <div className="flex items-center justify-between gap-4">
+                <p className="font-semibold text-white">{engine.label}</p>
+                <span className="text-xl font-bold text-cyan-100">{engine.value}</span>
+              </div>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full rounded-full bg-cyan-300" style={{ width: `${Math.max(0, Math.min(100, Number(engine.value) || 0))}%` }} />
+              </div>
+            </article>
+          ))}
+        </div>
+      </Panel>
+      <Panel eyebrow="GEO Opportunities" title="What Ghost Should Move Next">
+        <div className="grid gap-3">
+          {(geo.topOpportunities?.length ? geo.topOpportunities : geo.topRecommendations?.map((item) => ({ title: item, priority: "medium", status: "open", category: "Recommendation" })) || []).slice(0, 5).map((item, index) => (
+            <article key={`${item.title}-${index}`} className="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <p className="font-semibold text-white">{item.title}</p>
+                <span className="rounded-full border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-cyan-100">
+                  {item.priority || item.category || "GEO"}
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-slate-400">{item.status || item.category || "Open visibility move"}</p>
+            </article>
+          ))}
+        </div>
+      </Panel>
+    </div>
   );
 }
 
@@ -387,6 +451,7 @@ export default function ClientPortalDashboard({ portalData = null }) {
   const view = useMemo(() => buildPortalView(portalData), [portalData]);
   const ActivePanel = useMemo(() => {
     if (activeTab === "services") return ServicesTab;
+    if (activeTab === "geo") return GeoTab;
     if (activeTab === "money") return MoneyTab;
     if (activeTab === "progress") return ProgressTab;
     if (activeTab === "support") return SupportTab;
@@ -410,7 +475,7 @@ export default function ClientPortalDashboard({ portalData = null }) {
         </div>
 
         <div className="mt-5 flex flex-wrap gap-2 border-t border-white/10 pt-5">
-          {tabs.map((tab) => (
+          {tabs.filter((tab) => tab.id !== "geo" || view.geo).map((tab) => (
             <button
               key={tab.id}
               type="button"
