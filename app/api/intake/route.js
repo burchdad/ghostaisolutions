@@ -83,6 +83,7 @@ function normalizePayload(body = {}) {
     budget: clean(body.budget, 80),
     timeline: clean(body.timeline, 80),
     highIntent: Boolean(body.highIntent),
+    testMode: Boolean(body.testMode),
     submittedAt: new Date().toISOString(),
   };
 
@@ -259,7 +260,7 @@ async function createMissionControlLead(payload) {
     depositInvoiceSent: false,
     proposalSigned: false,
     depositPaid: false,
-    notes: buildMissionControlNotes(payload),
+    notes: `${payload.testMode ? "[TEST MODE] Synthetic intake. Do not contact.\n\n" : ""}${buildMissionControlNotes(payload)}`,
   };
 
   const headers = { "Content-Type": "application/json" };
@@ -474,6 +475,9 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const payload = normalizePayload(body);
+    if (request.headers.get("x-ghost-test-mode") === "true") {
+      payload.testMode = true;
+    }
 
     if (!payload.name || !payload.email || !payload.primaryNeed || !payload.offerPath || !payload.desiredOutcome) {
       return NextResponse.json({ error: "Missing required intake fields" }, { status: 400 });
@@ -484,17 +488,21 @@ export async function POST(request) {
       console.error("Mission Control lead creation failed", error);
       return { error: "Mission Control lead creation failed" };
     });
-    const email = await sendIntakeEmail(payload);
-    const confirmation = await sendConfirmationEmail(payload).catch((error) => {
-      console.error("Intake confirmation email failed", error);
-      return { error: "Confirmation email failed" };
-    });
-    const slack = await postIntakeToSlack(payload).catch((error) => {
-      console.error("Intake Slack notification failed", error);
-      return { error: "Slack notification failed" };
-    });
+    const email = payload.testMode ? { skipped: "test mode" } : await sendIntakeEmail(payload);
+    const confirmation = payload.testMode
+      ? { skipped: "test mode" }
+      : await sendConfirmationEmail(payload).catch((error) => {
+          console.error("Intake confirmation email failed", error);
+          return { error: "Confirmation email failed" };
+        });
+    const slack = payload.testMode
+      ? { skipped: "test mode" }
+      : await postIntakeToSlack(payload).catch((error) => {
+          console.error("Intake Slack notification failed", error);
+          return { error: "Slack notification failed" };
+        });
 
-    return NextResponse.json({ success: true, leadId: lead.id, missionControl, email, confirmation, slack });
+    return NextResponse.json({ success: true, testMode: payload.testMode, leadId: lead.id, missionControl, email, confirmation, slack });
   } catch (error) {
     console.error("Intake submission failed", error);
     return NextResponse.json({ error: "Failed to submit intake" }, { status: 500 });
