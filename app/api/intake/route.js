@@ -223,13 +223,13 @@ function getMissionServices(payload) {
   const needs = new Set([payload.primaryNeed, ...(payload.primaryNeeds || [])].filter(Boolean));
   const mapped = new Set(["website-build"]);
 
-  if (selected.has("seo-aeo-geo") || needs.has("seo")) mapped.add("search-intelligence");
-  if (selected.has("social-management") || selected.has("video-commercials") || needs.has("social")) mapped.add("content-social");
-  if (selected.has("google-ads") || selected.has("social-ads") || needs.has("ads")) mapped.add("paid-ads");
+  if (selected.has("seo-aeo-geo") || selected.has("search-intelligence") || needs.has("seo")) mapped.add("search-intelligence");
+  if (selected.has("social-management") || selected.has("content-social") || selected.has("video-commercials") || needs.has("social")) mapped.add("content-social");
+  if (selected.has("google-ads") || selected.has("social-ads") || selected.has("paid-ads") || needs.has("ads")) mapped.add("paid-ads");
   if (selected.has("ai-automation") || needs.has("automation")) mapped.add("ai-automation");
-  if (selected.has("mobile-app") || selected.has("saas-build") || needs.has("software")) mapped.add("software-tool");
-  if (selected.has("fractional-cto") || needs.has("strategy")) mapped.add("reporting");
-  if (needs.has("more-leads") || selected.size > 1 || payload.offerPath === "package") mapped.add("lead-funnel");
+  if (selected.has("mobile-app") || selected.has("saas-build") || selected.has("software-tool") || needs.has("software")) mapped.add("software-tool");
+  if (selected.has("fractional-cto") || selected.has("reporting") || needs.has("strategy")) mapped.add("reporting");
+  if (selected.has("lead-funnel") || needs.has("more-leads") || selected.size > 1 || payload.offerPath === "package") mapped.add("lead-funnel");
 
   return [...mapped];
 }
