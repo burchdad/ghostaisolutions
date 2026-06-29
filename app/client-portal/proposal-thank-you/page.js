@@ -24,15 +24,15 @@ export default function ClientPortalProposalThankYouPage({ searchParams }) {
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200">Proposal Approved</p>
             <h1 className="mt-3 text-4xl font-bold tracking-tight text-white sm:text-6xl">Welcome to the next step</h1>
             <p className="mt-5 max-w-2xl text-lg text-slate-300">
-              Your proposal response has been received. Use the client portal to track what Ghost AI Solutions is building,
-              what is active, and what comes next.
+              Your proposal response has been received. Create or open your Ghost Growth Portal account to track onboarding,
+              purchased services, project progress, support requests, and next growth moves.
             </p>
 
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl border border-amber-300/20 bg-amber-300/10 p-5">
                 <h2 className="text-xl font-bold text-white">New client portal account</h2>
                 <p className="mt-2 text-sm text-slate-300">
-                  Use this if this is your first Ghost portal account or your proposal email included an invite key.
+                  Use this if this is your first Ghost portal account. Your proposal approval or follow-up email should include the invite key.
                 </p>
                 <Link
                   href={createHref}
@@ -45,7 +45,7 @@ export default function ClientPortalProposalThankYouPage({ searchParams }) {
               <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-5">
                 <h2 className="text-xl font-bold text-white">Already have a portal?</h2>
                 <p className="mt-2 text-sm text-slate-300">
-                  Sign in with the portal email and access key that Ghost AI Solutions previously issued.
+                  Sign in with the email and password you created for a previous Ghost client portal account.
                 </p>
                 <Link
                   href={signInHref}
@@ -56,8 +56,10 @@ export default function ClientPortalProposalThankYouPage({ searchParams }) {
               </div>
             </div>
 
-            <div className="mt-6 rounded-2xl border border-white/10 bg-slate-900/70 p-4 text-sm text-slate-300">
-              If you do not have an invite key yet, Ghost AI Solutions will send it after your proposal is processed.
+            <div className="mt-6 grid gap-3 rounded-2xl border border-white/10 bg-slate-900/70 p-4 text-sm text-slate-300 sm:grid-cols-3">
+              <div><span className="font-semibold text-white">1. Approval logged</span><br />Ghost confirms the scope and account invite.</div>
+              <div><span className="font-semibold text-white">2. Portal activated</span><br />You see services, blockers, and next steps.</div>
+              <div><span className="font-semibold text-white">3. Kickoff starts</span><br />We collect assets/access and begin delivery.</div>
             </div>
           </div>
         </div>

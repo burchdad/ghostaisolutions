@@ -506,6 +506,7 @@ function ProgressTab({ view }) {
 }
 
 function SupportTab({ view }) {
+  const supportHref = view.supportUrl || "mailto:support@ghostai.solutions?subject=Client%20Portal%20Support%20Request";
   return (
     <div className="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
       <Panel eyebrow="Support" title="What Do You Need?">
@@ -514,7 +515,7 @@ function SupportTab({ view }) {
           {view.supportActions.map((action) => (
             <a
               key={action}
-              href={view.supportUrl || "/start"}
+              href={supportHref}
               className="rounded-2xl border border-white/10 bg-slate-900/70 p-4 text-left text-sm font-semibold text-slate-100 transition hover:border-cyan-300/50 hover:bg-cyan-300/10"
             >
               {action}

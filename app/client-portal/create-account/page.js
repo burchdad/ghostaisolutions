@@ -23,7 +23,7 @@ export default function ClientPortalCreateAccountPage({ searchParams }) {
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-200">Account Activation</p>
             <h1 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-5xl">Create your client portal account</h1>
             <p className="mt-4 text-base text-slate-300">
-              Portal accounts are created after discovery, proposal approval, or onboarding. Enter the invite key from Ghost AI Solutions to activate your client view.
+              Portal accounts are invite-only. Use this after Ghost sends your invite from discovery, proposal approval, or onboarding.
             </p>
 
             {error ? (
@@ -87,7 +87,7 @@ export default function ClientPortalCreateAccountPage({ searchParams }) {
 
             <div className="mt-6 grid gap-3 text-sm text-slate-300 sm:grid-cols-2">
               <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
-                <span className="font-semibold text-white">Not a client yet?</span> Start with the free website audit so we can route you correctly.
+                <span className="font-semibold text-white">Need an invite?</span> Reply to your Ghost proposal, discovery, or onboarding email and we will resend it.
               </div>
               <div className="rounded-2xl border border-cyan-300/15 bg-cyan-300/5 p-4">
                 <span className="font-semibold text-cyan-100">Already have access?</span>{" "}

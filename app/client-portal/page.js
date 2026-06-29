@@ -41,7 +41,7 @@ export default async function ClientPortalPage({ searchParams }) {
                     </>
                   ) : (
                     <>
-                      <span className="font-semibold text-cyan-100">V1:</span> portal experience and client entry point. <span className="font-semibold text-cyan-100">V2:</span> live HighLevel, website, ads, SEO, and Mission Control data.
+                      <span className="font-semibold text-cyan-100">Client entry:</span> create an account after Ghost sends an invite from discovery, proposal approval, or onboarding.
                     </>
                   )}
                 </div>
@@ -56,7 +56,7 @@ export default async function ClientPortalPage({ searchParams }) {
                   <>
                     <TrackCTA
                       href="/client-portal/create-account"
-                      event="client_portal_request_access"
+                      event="client_portal_create_account"
                       section="client_portal"
                       placement="hero"
                       label="Create New Account"

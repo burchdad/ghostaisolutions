@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Client Portal Sign In - Ghost AI Solutions",
-  description: "Sign in to the Ghost Growth Portal with your client portal access key.",
+  description: "Sign in to the Ghost Growth Portal with your client account email and password.",
 };
 
 export default function ClientPortalSignInPage({ searchParams }) {
@@ -22,7 +22,7 @@ export default function ClientPortalSignInPage({ searchParams }) {
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-cyan-200">Client Portal</p>
             <h1 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-5xl">Sign in to your portal</h1>
             <p className="mt-4 text-base text-slate-300">
-              Use the portal access key Ghost AI Solutions sent after your client workspace was created.
+              Use the email and password you created when activating your Ghost Growth Portal account.
             </p>
 
             {error ? (
