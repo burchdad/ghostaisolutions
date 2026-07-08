@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://ghostai.solutions/sitemap.xml
-Host: ghostai.solutions
+Sitemap: https://www.ghostai.solutions/sitemap.xml
+Host: www.ghostai.solutions

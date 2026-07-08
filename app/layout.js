@@ -24,7 +24,7 @@ const bodyFont = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://ghostai.solutions"),
+  metadataBase: new URL("https://www.ghostai.solutions"),
   title: "Ghost AI Solutions - Websites, Automation, and AI Systems",
   description: "Modern websites, lead funnels, automations, and AI-powered systems for businesses that need a sharper digital presence and cleaner operations.",
   keywords: [
@@ -54,6 +54,7 @@ export const metadata = {
     ...(bingSiteVerification ? { "msvalidate.01": bingSiteVerification } : {}),
   },
   alternates: {
+    canonical: "https://www.ghostai.solutions",
     types: {
       "application/rss+xml": "/feed",
     },
