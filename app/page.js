@@ -7,6 +7,46 @@ import ScrollDepthTracker from "@/components/ScrollDepthTracker";
 import SectionViewTracker from "@/components/SectionViewTracker";
 import TrackCTA from "@/components/TrackCTA";
 
+export const metadata = {
+  title: "Ghost AI Solutions | Websites, Automation, and AI Systems",
+  description:
+    "Ghost AI Solutions builds custom websites, lead funnels, workflow automation, and AI systems for businesses that need cleaner operations and measurable growth.",
+  alternates: {
+    canonical: "https://www.ghostai.solutions/",
+  },
+};
+
+const homepageFaqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "What does Ghost AI Solutions build?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Ghost AI Solutions builds custom websites, lead funnels, workflow automation, AI agents, and operational systems for businesses that need clearer growth and execution workflows.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Who is Ghost AI Solutions best for?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Ghost AI Solutions is best for growing businesses with repeatable workflows, lead capture needs, operational complexity, or teams outgrowing disconnected tools and spreadsheets.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "How does a project start?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "A project starts with discovery, strategy, and a clear read on the website or workflow before Ghost AI Solutions designs the right website, automation, or AI build path.",
+      },
+    },
+  ],
+};
+
 const stageSolutions = [
   {
     title: "Launch A Website That Builds Trust",
@@ -112,6 +152,11 @@ export default function Page() {
     <>
       <ScrollDepthTracker />
       <SectionViewTracker />
+      <script
+        type="application/ld+json"
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageFaqJsonLd) }}
+      />
       <HeroSection />
 
       <SectionWrapper
