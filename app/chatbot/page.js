@@ -4,9 +4,9 @@ import TrackCTA from "@/components/TrackCTA";
 import { BOOKING_URL } from "@/lib/constants";
 
 export const metadata = {
-  title: "AI Chatbot for Lead Capture | Ghost AI Solutions",
+  title: "AI Chatbot for Lead Capture and Booking | Ghost AI Solutions",
   description:
-    "See how Ghostbot turns website visitors into qualified conversations with lead capture, routing, and implementation support from Ghost AI Solutions.",
+    "See how Ghostbot qualifies website visitors, captures project context, and routes ready buyers toward a walkthrough or chatbot blueprint.",
 };
 
 const faqItems = [
@@ -22,6 +22,12 @@ const faqItems = [
     "What happens after someone starts chatting?",
     "The flow gathers context, identifies fit, and points qualified visitors toward the next conversion step such as a blueprint request or walkthrough.",
   ],
+];
+
+const conversionSteps = [
+  ["1", "Visitor intent", "Ghostbot asks what the visitor needs, their timing, and what kind of help they are evaluating."],
+  ["2", "Lead context", "The flow captures contact details, company context, and the next best handoff path."],
+  ["3", "Booked action", "Qualified visitors are sent toward a walkthrough, blueprint request, or live demo instead of a vague contact form."],
 ];
 
 export default function ChatbotPage() {
@@ -58,34 +64,45 @@ export default function ChatbotPage() {
         />
 
         <h1 className="text-4xl font-extrabold tracking-tight">
-          AI chatbot built to turn website traffic into booked conversations
+          Turn chatbot traffic into booked conversations
         </h1>
         <p className="mt-3 max-w-2xl text-slate-600 dark:text-slate-300 leading-relaxed">
-          Ghostbot captures visitor intent, qualifies fit, and routes high-intent leads
-          toward a blueprint request or walkthrough instead of letting them drift away.
+          Ghostbot qualifies visitor intent, captures the details a sales team needs,
+          and gives ready buyers a clear next step: book a walkthrough, request a
+          chatbot blueprint, or review the live demo.
         </p>
+        <div className="mt-5 max-w-2xl rounded-2xl border border-brand-200 bg-brand-50/70 p-5 dark:border-brand-900 dark:bg-brand-950/30">
+          <p className="text-sm font-semibold uppercase tracking-widest text-brand-700 dark:text-brand-200">
+            Best next step
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+            If you are comparing chatbot options, book the walkthrough first. You will
+            see the lead-capture flow, handoff path, and tracking events before deciding
+            whether Ghostbot should be embedded on your site.
+          </p>
+        </div>
         <div className="mt-6 flex flex-wrap gap-3">
-          <TrackCTA
-            href="/contact#blueprint"
-            className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white shadow-glow hover:bg-brand-700"
-            event="chatbot_blueprint_hero_cta"
-            section="chatbot"
-            placement="hero_primary"
-            label="Get My Chatbot Blueprint"
-          >
-            Get My Chatbot Blueprint
-          </TrackCTA>
           <TrackCTA
             href={BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white shadow-glow hover:bg-brand-700"
+            event="book_chatbot_walkthrough_primary"
+            section="chatbot"
+            placement="hero_primary"
+            label="Book a Chatbot Walkthrough"
+          >
+            Book a Chatbot Walkthrough
+          </TrackCTA>
+          <TrackCTA
+            href="/contact#blueprint"
             className="inline-flex items-center gap-2 rounded-xl border px-6 py-3 font-semibold hover:bg-slate-50 dark:hover:bg-slate-900"
-            event="book_chatbot_walkthrough"
+            event="chatbot_blueprint_secondary"
             section="chatbot"
             placement="hero_secondary"
-            label="Book a Walkthrough"
+            label="Request the Blueprint"
           >
-            Book a Walkthrough
+            Request the Blueprint
           </TrackCTA>
         </div>
 
@@ -156,6 +173,21 @@ export default function ChatbotPage() {
         </div>
 
         <section className="mt-10 rounded-2xl border bg-white p-6 dark:bg-slate-900">
+          <h2 className="text-2xl font-bold tracking-tight">How Ghostbot moves a visitor to action</h2>
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            {conversionSteps.map(([step, title, body]) => (
+              <div key={title} className="rounded-xl border p-4 dark:border-slate-800">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-sm font-bold text-brand-700 dark:bg-brand-950 dark:text-brand-200">
+                  {step}
+                </span>
+                <h3 className="mt-3 font-semibold">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10 rounded-2xl border bg-white p-6 dark:bg-slate-900">
           <h2 className="text-2xl font-bold tracking-tight">What the chatbot improves first</h2>
           <div className="mt-5 grid gap-4 md:grid-cols-3">
             {[
@@ -189,7 +221,7 @@ export default function ChatbotPage() {
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white shadow-glow hover:bg-brand-700"
-            event="book_chatbot_walkthrough"
+            event="book_chatbot_walkthrough_bottom"
             section="chatbot"
             placement="primary"
             label="Book a Chatbot Walkthrough"
