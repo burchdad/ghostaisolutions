@@ -127,10 +127,10 @@ export default function ChatbotPage() {
             </pre>
 
             <ul className="mt-5 space-y-2 text-sm text-slate-600 dark:text-slate-300">
-              <li>? Captures email, company, goal, and project context</li>
-              <li>? Routes qualified visitors toward booking or blueprint requests</li>
-              <li>? Works on desktop and mobile viewports</li>
-              <li>? Opens as a floating launcher and iframe panel</li>
+              <li>- Captures email, company, goal, and project context</li>
+              <li>- Routes qualified visitors toward booking or blueprint requests</li>
+              <li>- Works on desktop and mobile viewports</li>
+              <li>- Opens as a floating launcher and iframe panel</li>
             </ul>
 
             <a
