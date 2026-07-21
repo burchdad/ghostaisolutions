@@ -41,6 +41,14 @@ Recommended for full agent stack:
 - `SLACK_APP_LEVEL_TOKEN`
 - `SLACK_ACTION_TOKEN`
 - `SLACK_COMMAND_TOKEN`
+
+Slack Interactivity can keep using the shared request URL:
+
+```text
+https://www.ghostai.solutions/api/slack/interactivity
+```
+
+The shared Slack route handles existing social approval actions and forwards `web_support_*` button clicks to Mission Control at `GHOST_MISSION_CONTROL_URL`.
 - `SOCIAL_APPROVAL_DAILY_LIMIT` (default `1`, maximum `3`)
 - `SOCIAL_ENGAGEMENT_DRAFT_LIMIT` (default `10`, maximum `20`)
 - `SOCIAL_ENGAGEMENT_PER_POST_LIMIT` (default `10`, maximum `50`)
