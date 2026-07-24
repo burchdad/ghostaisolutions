@@ -106,6 +106,31 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
     }
   };
 
+  const handleVerificationPublish = async () => {
+    setPublishing(true);
+    setError(null);
+
+    try {
+      const response = await fetch("/api/admin/agents/social/publish-test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const payload = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(payload?.error || "Failed to publish verification post");
+      }
+
+      setPublishResults(payload);
+      setSelectedPost(null);
+      setVariants(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setPublishing(false);
+    }
+  };
+
   return (
     <section className="py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -132,6 +157,13 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
               className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {publishing ? "Processing..." : "Run AI-Moderated Automation"}
+            </button>
+            <button
+              onClick={handleVerificationPublish}
+              disabled={publishing || !allConnected}
+              className="rounded-lg border border-emerald-300/40 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-emerald-300/10 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Publish Verification Post
             </button>
             <button
               onClick={() => {
