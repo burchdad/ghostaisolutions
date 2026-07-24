@@ -1,30 +1,32 @@
 import { NextResponse } from "next/server";
 import { withCronLogging } from "@/lib/cronRuns";
+import { getProviderConnection, getTokenWithSource } from "@/lib/tokenStore";
 
 function getCronSecret() {
   return process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET || "";
 }
 
 async function checkLinkedIn() {
-  const token = process.env.LINKEDIN_ACCESS_TOKEN;
-  if (!token) return { platform: "linkedin", status: "missing", detail: "LINKEDIN_ACCESS_TOKEN not set" };
+  const { token, source, envKey } = getTokenWithSource("linkedin", { orgId: "default" });
+  if (!token) return { platform: "linkedin", status: "missing", source, detail: `${envKey || "LINKEDIN_ACCESS_TOKEN"} not set` };
 
   try {
     const res = await fetch("https://api.linkedin.com/v2/userinfo", {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (res.ok) return { platform: "linkedin", status: "ok" };
-    if (res.status === 401) return { platform: "linkedin", status: "expired", detail: "Token rejected (401)" };
+    if (res.ok) return { platform: "linkedin", status: "ok", source };
+    if (res.status === 401) return { platform: "linkedin", status: "expired", source, detail: "Token rejected (401)" };
     if (res.status === 403) {
       return {
         platform: "linkedin",
         status: "ok",
+        source,
         detail: "Token is present; /v2/userinfo returned 403, likely because the token lacks OIDC profile scope. Publishing permissions are validated during publish.",
       };
     }
-    return { platform: "linkedin", status: "error", detail: `HTTP ${res.status}` };
+    return { platform: "linkedin", status: "error", source, detail: `HTTP ${res.status}` };
   } catch (err) {
-    return { platform: "linkedin", status: "error", detail: err.message };
+    return { platform: "linkedin", status: "error", source, detail: err.message };
   }
 }
 
@@ -69,25 +71,26 @@ async function checkTwitter() {
 }
 
 async function checkFacebook() {
-  const token = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-  const pageId = process.env.FACEBOOK_PAGE_ID;
+  const { token, source, envKey, connection } = getTokenWithSource("facebook", { orgId: "default" });
+  const fallbackConnection = connection || getProviderConnection("facebook", { orgId: "default" }) || {};
+  const pageId = process.env.FACEBOOK_PAGE_ID || fallbackConnection.pageId;
 
-  if (!token) return { platform: "facebook", status: "missing", detail: "FACEBOOK_PAGE_ACCESS_TOKEN not set" };
-  if (!pageId) return { platform: "facebook", status: "missing", detail: "FACEBOOK_PAGE_ID not set" };
+  if (!token) return { platform: "facebook", status: "missing", source, detail: `${envKey || "FACEBOOK_PAGE_ACCESS_TOKEN"} not set` };
+  if (!pageId) return { platform: "facebook", status: "missing", source, detail: "FACEBOOK_PAGE_ID not set" };
 
   try {
     const res = await fetch(
       `https://graph.facebook.com/v18.0/${pageId}?fields=name,access_token&access_token=${token}`
     );
-    if (res.ok) return { platform: "facebook", status: "ok" };
+    if (res.ok) return { platform: "facebook", status: "ok", source };
     const body = await res.json().catch(() => ({}));
     const code = body?.error?.code;
     if (res.status === 401 || code === 190) {
-      return { platform: "facebook", status: "expired", detail: body?.error?.message || "Token expired (190)" };
+      return { platform: "facebook", status: "expired", source, detail: body?.error?.message || "Token expired (190)" };
     }
-    return { platform: "facebook", status: "error", detail: body?.error?.message || `HTTP ${res.status}` };
+    return { platform: "facebook", status: "error", source, detail: body?.error?.message || `HTTP ${res.status}` };
   } catch (err) {
-    return { platform: "facebook", status: "error", detail: err.message };
+    return { platform: "facebook", status: "error", source, detail: err.message };
   }
 }
 
@@ -103,7 +106,7 @@ async function notifySlack(results) {
 
   const fields = unhealthy.map((r) => ({
     type: "mrkdwn",
-    text: `*${r.platform.toUpperCase()}:* ${emoji(r.status)} ${label(r.status)}\n${r.detail || ""}`,
+    text: `*${r.platform.toUpperCase()}:* ${emoji(r.status)} ${label(r.status)}${r.source ? ` (${r.source})` : ""}\n${r.detail || ""}`,
   }));
 
   const blocks = [
