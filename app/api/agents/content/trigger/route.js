@@ -320,7 +320,7 @@ async function moderateAndPublish(post) {
   };
 }
 
-async function run(request) {
+export async function run(request) {
   const authHeader = request.headers.get("Authorization");
   const cronSecret = getCronSecret();
 
@@ -405,6 +405,10 @@ async function run(request) {
       timestamp: new Date().toISOString(),
     });
   } catch (err) {
+    console.error("Content trigger failed", {
+      message: err?.message || String(err),
+      stack: err?.stack || null,
+    });
     return NextResponse.json(
       { error: "Content trigger failed", details: err?.message || String(err) },
       { status: 500 }

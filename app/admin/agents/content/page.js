@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAllPosts } from "@/lib/allPosts";
 import { requireAdmin } from "@/lib/adminGuard";
+import ContentAgentClient from "./ContentAgentClient";
 
 function countWithinDays(posts, days) {
   const cutoff = Date.now() - days * 86400000;
@@ -42,6 +43,8 @@ export default function AdminContentAgentPage() {
             <li>Add one internal link target per new post to strengthen cluster depth.</li>
           </ul>
         </div>
+
+        <ContentAgentClient />
       </div>
     </section>
   );
