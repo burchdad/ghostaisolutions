@@ -50,7 +50,7 @@ async function notifySlackBlock(slug, title, reasons) {
   }
 }
 
-async function runTrigger(request) {
+export async function runTrigger(request) {
   try {
     // Validate cron secret
     const authHeader = request.headers.get("Authorization");
