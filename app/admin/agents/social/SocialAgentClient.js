@@ -145,6 +145,15 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
               Clear Preview
             </button>
           </div>
+
+          {publishResults && !selectedPost && (
+            <div className="mt-4 rounded-xl border border-emerald-300/30 bg-emerald-300/10 p-4">
+              <p className="font-semibold text-emerald-100">Automation response received.</p>
+              <pre className="mt-3 max-h-72 overflow-auto whitespace-pre-wrap text-xs text-emerald-50">
+                {JSON.stringify(publishResults, null, 2)}
+              </pre>
+            </div>
+          )}
         </div>
 
         <div className="mb-8 rounded-2xl border border-white/10 bg-slate-950/60 p-5">

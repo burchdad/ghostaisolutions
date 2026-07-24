@@ -152,6 +152,12 @@ export async function runTrigger(request) {
         });
 
         postResult.publish = publishAll.results;
+        console.info("Social trigger publish results", {
+          slug: post.slug,
+          linkedin: publishAll.results?.linkedin?.success || false,
+          facebook: publishAll.results?.facebook?.success || false,
+          x: publishAll.results?.x?.success || false,
+        });
         postResult.status = publishAll.success
           ? moderation.status === "review"
             ? "published_with_review_flags"
