@@ -12,7 +12,8 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
   const [publishResults, setPublishResults] = useState(null);
   const [error, setError] = useState(null);
 
-  const allConnected = accountChecks.every((item) => item.connected);
+  const requiredConnected = accountChecks.filter((item) => item.required !== false).every((item) => item.connected);
+  const enabledAccounts = accountChecks.filter((item) => item.connected).map((item) => item.name);
 
   const handleRepurpose = async (post) => {
     setLoading(true);
@@ -65,6 +66,9 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
           linkedinContent: variants.linkedin?.text,
           xContent: variants.x?.text,
           facebookContent: variants.facebook?.text,
+          blueskyContent: variants.bluesky?.text,
+          redditContent: variants.reddit?.text,
+          redditTitle: selectedPost?.title,
         }),
       });
 
@@ -153,14 +157,14 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
           <div className="mt-4 flex flex-wrap gap-3">
             <button
               onClick={handleTriggerAll}
-              disabled={publishing || !allConnected || !schedulerReady}
+              disabled={publishing || !requiredConnected || !schedulerReady}
               className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-semibold text-white hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {publishing ? "Processing..." : "Run AI-Moderated Automation"}
             </button>
             <button
               onClick={handleVerificationPublish}
-              disabled={publishing || !allConnected}
+              disabled={publishing || !requiredConnected}
               className="rounded-lg border border-emerald-300/40 px-4 py-2 text-sm font-semibold text-emerald-100 hover:bg-emerald-300/10 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Publish Verification Post
@@ -245,8 +249,11 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
           <div className="mt-4 rounded-xl border border-white/10 bg-slate-900/60 p-4 text-sm">
             <p className="text-slate-200">Scheduler secret: {schedulerReady ? "Ready" : "Missing"}</p>
             <p className="mt-1 text-slate-300">
-              Automation status: {allConnected && schedulerReady ? "Ready for AI-moderated live publishing" : "Waiting on account access"}
+              Automation status: {requiredConnected && schedulerReady ? "Ready for AI-moderated live publishing" : "Waiting on required account access"}
             </p>
+            {enabledAccounts.length > 0 && (
+              <p className="mt-1 text-slate-300">Connected channels: {enabledAccounts.join(", ")}</p>
+            )}
           </div>
         </div>
 
@@ -270,32 +277,26 @@ export default function SocialAgentClient({ queue, subagents, accountChecks, sch
                 </div>
               )}
 
-              <div className="rounded-xl border border-white/10 bg-slate-900/40 p-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <p className="flex items-center gap-2 font-semibold text-white">💼 LinkedIn Variant</p>
-                  <span className="text-xs text-slate-400">~{variants.linkedin?.text?.length} chars</span>
-                </div>
-                <p className="mb-3 line-clamp-6 text-sm text-slate-300">{variants.linkedin?.text}</p>
-                <p className="text-xs text-slate-400">Confidence {variants.linkedin?.analysis?.confidenceScore}% • {variants.linkedin?.analysis?.engagementScore} engagement</p>
-              </div>
-
-              <div className="rounded-xl border border-white/10 bg-slate-900/40 p-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <p className="flex items-center gap-2 font-semibold text-white">𝕏 X (Twitter) Variant</p>
-                  <span className="text-xs text-slate-400">~{variants.x?.text?.length} chars</span>
-                </div>
-                <p className="mb-3 line-clamp-6 text-sm text-slate-300">{variants.x?.text}</p>
-                <p className="text-xs text-slate-400">Confidence {variants.x?.analysis?.confidenceScore}% • {variants.x?.analysis?.engagementScore} engagement</p>
-              </div>
-
-              <div className="rounded-xl border border-white/10 bg-slate-900/40 p-4">
-                <div className="mb-2 flex items-center justify-between">
-                  <p className="flex items-center gap-2 font-semibold text-white">f Facebook Variant</p>
-                  <span className="text-xs text-slate-400">~{variants.facebook?.text?.length} chars</span>
-                </div>
-                <p className="mb-3 line-clamp-6 text-sm text-slate-300">{variants.facebook?.text}</p>
-                <p className="text-xs text-slate-400">Confidence {variants.facebook?.analysis?.confidenceScore}% • {variants.facebook?.analysis?.engagementScore} engagement</p>
-              </div>
+              {[
+                ["LinkedIn", "linkedin"],
+                ["X (Twitter)", "x"],
+                ["Facebook", "facebook"],
+                ["Bluesky", "bluesky"],
+                ["Reddit", "reddit"],
+              ]
+                .filter(([, key]) => variants[key])
+                .map(([label, key]) => (
+                  <div key={key} className="rounded-xl border border-white/10 bg-slate-900/40 p-4">
+                    <div className="mb-2 flex items-center justify-between">
+                      <p className="flex items-center gap-2 font-semibold text-white">{label} Variant</p>
+                      <span className="text-xs text-slate-400">~{variants[key]?.text?.length} chars</span>
+                    </div>
+                    <p className="mb-3 line-clamp-6 text-sm text-slate-300">{variants[key]?.text}</p>
+                    <p className="text-xs text-slate-400">
+                      Confidence {variants[key]?.analysis?.confidenceScore}% - {variants[key]?.analysis?.engagementScore} engagement
+                    </p>
+                  </div>
+                ))}
 
               {publishResults && (
                 <div className="rounded-xl border border-emerald-300/40 bg-emerald-300/10 p-4">

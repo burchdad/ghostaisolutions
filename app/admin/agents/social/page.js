@@ -26,7 +26,7 @@ export default async function AdminSocialAgentPage() {
       slug: post.slug,
       title: post.title,
       excerpt: post.excerpt || "",
-      channels: ["LinkedIn", "X", "Facebook"],
+      channels: ["LinkedIn", "X", "Facebook", "Bluesky", "Reddit"],
       fullPost: post,
     }));
 
@@ -60,6 +60,27 @@ export default async function AdminSocialAgentPage() {
       connected: facebookConnected,
       icon: "f",
     },
+    {
+      name: "Bluesky Subagent",
+      href: "/admin/agents/social",
+      description: "Short-form AT Protocol publisher",
+      env: "BLUESKY_HANDLE, BLUESKY_APP_PASSWORD",
+      connected: Boolean(process.env.BLUESKY_HANDLE && process.env.BLUESKY_APP_PASSWORD),
+      icon: "b",
+    },
+    {
+      name: "Reddit Subagent",
+      href: "/admin/agents/social",
+      description: "Community-first discussion publisher",
+      env: "REDDIT_CLIENT_ID, REDDIT_CLIENT_SECRET, REDDIT_REFRESH_TOKEN, REDDIT_SUBREDDIT",
+      connected: Boolean(
+        process.env.REDDIT_CLIENT_ID &&
+          process.env.REDDIT_CLIENT_SECRET &&
+          process.env.REDDIT_REFRESH_TOKEN &&
+          process.env.REDDIT_SUBREDDIT
+      ),
+      icon: "r",
+    },
   ];
 
   const accountChecks = [
@@ -68,6 +89,7 @@ export default async function AdminSocialAgentPage() {
       env: "LINKEDIN_ACCESS_TOKEN",
       connected: Boolean(process.env.LINKEDIN_ACCESS_TOKEN),
       scope: "w_member_social, r_organization_social",
+      required: true,
     },
     {
       name: "X (Twitter) Account",
@@ -79,12 +101,33 @@ export default async function AdminSocialAgentPage() {
           (process.env.X_ACCESS_SECRET || process.env.X_ACCESS_TOKEN_SECRET)
       ),
       scope: "Tweet create/read",
+      required: true,
     },
     {
       name: "Meta Business Account",
       env: "META_APP_ID / META_APP_SECRET / META_REDIRECT_URI",
       connected: facebookConnected,
       scope: "pages_manage_posts, pages_read_engagement, business_management, leads_retrieval",
+      required: true,
+    },
+    {
+      name: "Bluesky Account",
+      env: "BLUESKY_HANDLE / BLUESKY_APP_PASSWORD",
+      connected: Boolean(process.env.BLUESKY_HANDLE && process.env.BLUESKY_APP_PASSWORD),
+      scope: "AT Protocol app password session + createRecord",
+      required: false,
+    },
+    {
+      name: "Reddit Account",
+      env: "REDDIT_CLIENT_ID / REDDIT_CLIENT_SECRET / REDDIT_REFRESH_TOKEN / REDDIT_SUBREDDIT",
+      connected: Boolean(
+        process.env.REDDIT_CLIENT_ID &&
+          process.env.REDDIT_CLIENT_SECRET &&
+          process.env.REDDIT_REFRESH_TOKEN &&
+          process.env.REDDIT_SUBREDDIT
+      ),
+      scope: "submit",
+      required: false,
     },
   ];
 

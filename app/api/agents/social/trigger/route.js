@@ -149,6 +149,9 @@ export async function runTrigger(request) {
           linkedinContent: variants.linkedin?.text,
           xContent: variants.x?.text,
           facebookContent: variants.facebook?.text,
+          blueskyContent: variants.bluesky?.text,
+          redditContent: variants.reddit?.text,
+          redditTitle: post.title,
         });
 
         postResult.publish = publishAll.results;
@@ -157,6 +160,8 @@ export async function runTrigger(request) {
           linkedin: publishAll.results?.linkedin?.success || false,
           facebook: publishAll.results?.facebook?.success || false,
           x: publishAll.results?.x?.success || false,
+          bluesky: publishAll.results?.bluesky?.success || false,
+          reddit: publishAll.results?.reddit?.success || false,
         });
         postResult.status = publishAll.success
           ? moderation.status === "review"

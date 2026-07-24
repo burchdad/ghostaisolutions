@@ -35,6 +35,9 @@ export async function POST(request, { params }) {
       linkedinContent: draft.platformVariants?.linkedin?.text,
       xContent: draft.platformVariants?.x?.text,
       facebookContent: draft.platformVariants?.facebook?.text,
+      blueskyContent: draft.platformVariants?.bluesky?.text,
+      redditContent: draft.platformVariants?.reddit?.text,
+      redditTitle: draft.title,
     });
 
     const saved = await markDraftPublished(params.id, results.results);
