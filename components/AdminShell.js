@@ -21,6 +21,7 @@ const NAV_GROUPS = [
       { label: "SEO", href: "/admin/agents/seo" },
       { label: "CRO", href: "/admin/agents/cro" },
       { label: "Engagement", href: "/admin/agents/engagement" },
+      { label: "Reddit Intel", href: "/admin/agents/reddit" },
     ],
   },
   {

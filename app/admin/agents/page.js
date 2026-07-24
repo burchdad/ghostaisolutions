@@ -9,6 +9,7 @@ import { getTrendStats } from "@/lib/trendStore";
 import { listGeneratedImages } from "@/lib/imageGen";
 import { getSubscriberStats, getCampaignStats } from "@/lib/newsletterStore";
 import { getEngagementStats } from "@/lib/engagementStore";
+import { getRedditIntelligenceStats } from "@/lib/redditIntelligenceStore";
 import { getCalendarStats } from "@/lib/editorialStore";
 import { getCompetitorStats } from "@/lib/competitorStore";
 import { getOrchestratorState } from "@/lib/orchestratorStore";
@@ -98,6 +99,10 @@ export default async function AdminAgentsHubPage() {
   const engStats = safeRead(getEngagementStats, { total: 0, pending: 0, drafted: 0, replied: 0, dismissed: 0 });
   const engagementStatus = !process.env.OPENAI_API_KEY ? "Building" : engStats.replied > 0 ? "Healthy" : engStats.pending > 0 || engStats.drafted > 0 ? "Needs Review" : "Building";
 
+  const redditStats = await getRedditIntelligenceStats().catch(() => ({ total: 0, drafted: 0, posted: 0, highIntent: 0 }));
+  const redditConfigured = Boolean(process.env.REDDIT_CLIENT_ID && process.env.REDDIT_CLIENT_SECRET && process.env.REDDIT_REFRESH_TOKEN);
+  const redditStatus = !redditConfigured ? "Building" : redditStats.posted > 0 || redditStats.highIntent > 0 ? "Healthy" : redditStats.drafted > 0 ? "Needs Review" : "Building";
+
   const calStats = safeRead(getCalendarStats, { total: 0, thisWeek: 0 });
   const editorialStatus = calStats.total === 0 ? "Building" : calStats.thisWeek > 0 ? "Healthy" : "Needs Review";
 
@@ -137,6 +142,7 @@ export default async function AdminAgentsHubPage() {
     { name: "Video Script Agent", href: "/admin/agents/video", status: videoStatus, mission: "Generate short-form video scripts (Reels, LinkedIn, YouTube Shorts, Podcasts) from your blog content.", kpi: "Scripts generated per week" },
     { name: "Newsletter Agent", href: "/admin/agents/newsletter", status: newsletterStatus, mission: "Own your audience. Auto-generate weekly digests, manage subscribers, and build automated drip sequences.", kpi: "Active subscribers & sends" },
     { name: "Engagement Agent", href: "/admin/agents/engagement", status: engagementStatus, mission: "Monitor Reddit & HackerNews for relevant conversations. Draft authentic replies to build brand visibility.", kpi: "Opportunities replied vs. missed" },
+    { name: "Reddit Intelligence Agent", href: "/admin/agents/reddit", status: redditStatus, mission: "Find buyer-intent Reddit threads, draft helpful founder replies, and convert market questions into content angles.", kpi: "High-intent threads & approved replies" },
     { name: "X Thread Agent", href: "/admin/agents/thread", status: autoPosts.length > 0 ? "Needs Review" : "Building", mission: "Transform blog posts into scroll-stopping X/Twitter threads with hooks that demand attention.", kpi: "Threads published per week" },
     { name: "Editorial Calendar", href: "/admin/agents/editorial", status: editorialStatus, mission: "AI-planned 4-week content calendar. Strategy-aware: maps content to buyer journey stages and platforms.", kpi: "% planned content published" },
     { name: "Case Study Agent", href: "/admin/agents/case-study", status: caseStudyStatus, mission: "Turn client wins into social proof. Generate full case studies, LinkedIn posts, and testimonial request emails.", kpi: "Case studies published" },
