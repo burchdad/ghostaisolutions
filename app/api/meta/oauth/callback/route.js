@@ -8,7 +8,7 @@ import {
   fetchMetaUserProfile,
   verifyMetaOAuthState,
 } from "@/lib/oauthProviders/meta";
-import { saveTokens } from "@/lib/tokenStore";
+import { saveTokensAsync } from "@/lib/tokenStore";
 
 function buildRedirect(request, nextPath, params = {}) {
   const url = new URL(nextPath || "/admin/agents/social/facebook", request.url);
@@ -57,7 +57,7 @@ export async function GET(request) {
 
     const primaryPage = assets.pages[0] || null;
 
-    saveTokens(
+    await saveTokensAsync(
       "meta",
       {
         orgId,
@@ -77,7 +77,7 @@ export async function GET(request) {
     );
 
     if (primaryPage?.pageAccessToken && primaryPage?.id) {
-      saveTokens(
+      await saveTokensAsync(
         "facebook",
         {
           orgId,

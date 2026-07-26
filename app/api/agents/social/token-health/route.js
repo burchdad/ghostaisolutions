@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { withCronLogging } from "@/lib/cronRuns";
-import { getProviderConnection, getTokenWithSource } from "@/lib/tokenStore";
+import { fetchMetaConnectedAssets } from "@/lib/oauthProviders/meta";
+import { getProviderConnectionAsync, getTokenWithSource, saveTokensAsync } from "@/lib/tokenStore";
 
 function getCronSecret() {
   return process.env.CRON_SECRET || process.env.SOCIAL_AGENT_CRON_SECRET || "";
@@ -71,26 +72,53 @@ async function checkTwitter() {
 }
 
 async function checkFacebook() {
-  const { token, source, envKey, connection } = getTokenWithSource("facebook", { orgId: "default" });
-  const fallbackConnection = connection || getProviderConnection("facebook", { orgId: "default" }) || {};
-  const pageId = process.env.FACEBOOK_PAGE_ID || fallbackConnection.pageId;
+  const orgId = "default";
+  const storedFacebook = (await getProviderConnectionAsync("facebook", { orgId })) || {};
+  const pageId = process.env.FACEBOOK_PAGE_ID || storedFacebook.pageId;
+  const candidates = [
+    { token: storedFacebook.accessToken, source: "stored" },
+    { ...getTokenWithSource("facebook", { orgId }), source: "env" },
+  ].filter((candidate) => candidate.token);
 
-  if (!token) return { platform: "facebook", status: "missing", source, detail: `${envKey || "FACEBOOK_PAGE_ACCESS_TOKEN"} not set` };
-  if (!pageId) return { platform: "facebook", status: "missing", source, detail: "FACEBOOK_PAGE_ID not set" };
+  if (!pageId) return { platform: "facebook", status: "missing", source: "config", detail: "FACEBOOK_PAGE_ID not set" };
+
+  for (const candidate of candidates) {
+    try {
+      const res = await fetch(
+        `https://graph.facebook.com/v18.0/${pageId}?fields=name&access_token=${encodeURIComponent(candidate.token)}`,
+        { cache: "no-store" }
+      );
+      if (res.ok) return { platform: "facebook", status: "ok", source: candidate.source };
+    } catch (_) {
+      // Try the next source before reporting failure.
+    }
+  }
+
+  const metaConnection = await getProviderConnectionAsync("meta", { orgId });
+  if (!metaConnection?.accessToken) {
+    return { platform: "facebook", status: "expired", source: candidates[0]?.source || "missing", detail: "No durable Meta OAuth connection found; reconnect Meta Business Login." };
+  }
 
   try {
-    const res = await fetch(
-      `https://graph.facebook.com/v18.0/${pageId}?fields=name,access_token&access_token=${token}`
-    );
-    if (res.ok) return { platform: "facebook", status: "ok", source };
-    const body = await res.json().catch(() => ({}));
-    const code = body?.error?.code;
-    if (res.status === 401 || code === 190) {
-      return { platform: "facebook", status: "expired", source, detail: body?.error?.message || "Token expired (190)" };
+    const assets = await fetchMetaConnectedAssets(metaConnection.accessToken);
+    const page = assets.pages.find((candidate) => String(candidate.id) === String(pageId)) || assets.pages[0];
+    if (!page?.pageAccessToken) {
+      return { platform: "facebook", status: "missing", source: "meta", detail: "Meta connection did not return a page token." };
     }
-    return { platform: "facebook", status: "error", source, detail: body?.error?.message || `HTTP ${res.status}` };
+    await saveTokensAsync("facebook", {
+      orgId,
+      accessToken: page.pageAccessToken,
+      pageId: page.id,
+      pageName: page.name,
+      providerUserId: metaConnection.providerUserId,
+      metaUserId: metaConnection.metaUserId,
+      appScopedUserId: metaConnection.appScopedUserId,
+      assets,
+      connectedVia: "meta-token-health-refresh",
+    }, { orgId });
+    return { platform: "facebook", status: "ok", source: "meta-refresh" };
   } catch (err) {
-    return { platform: "facebook", status: "error", source, detail: err.message };
+    return { platform: "facebook", status: "expired", source: "meta", detail: err.message };
   }
 }
 

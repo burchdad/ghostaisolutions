@@ -1,16 +1,16 @@
 import Link from "next/link";
 import MetaConnectionPanel from "@/components/MetaConnectionPanel";
 import { requireAdmin } from "@/lib/adminGuard";
-import { getProviderConnection } from "@/lib/tokenStore";
+import { getProviderConnectionAsync } from "@/lib/tokenStore";
 
 export const metadata = { title: "Facebook Subagent — Admin", robots: { index: false, follow: false } };
 
-export default function FacebookSubagentPage({ searchParams }) {
+export default async function FacebookSubagentPage({ searchParams }) {
   requireAdmin("/admin/agents/social/facebook");
 
   const orgId = "default";
-  const metaConnection = getProviderConnection("meta", { orgId });
-  const facebookFallback = getProviderConnection("facebook", { orgId });
+  const metaConnection = await getProviderConnectionAsync("meta", { orgId });
+  const facebookFallback = await getProviderConnectionAsync("facebook", { orgId });
   const isConnected = Boolean(metaConnection?.accessToken || facebookFallback?.accessToken);
 
   const facebookStatus = {

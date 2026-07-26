@@ -7,7 +7,7 @@ import {
   exchangeForLongLivedMetaToken,
   fetchMetaConnectedAssets,
 } from "@/lib/oauthProviders/meta";
-import { getProviderConnection, saveTokens } from "@/lib/tokenStore";
+import { getProviderConnectionAsync, saveTokensAsync } from "@/lib/tokenStore";
 
 export async function POST(request) {
   const adminToken = cookies().get(ADMIN_SESSION_COOKIE)?.value || "";
@@ -17,7 +17,7 @@ export async function POST(request) {
 
   const body = await request.json().catch(() => ({}));
   const orgId = String(body?.orgId || "default");
-  const existing = getProviderConnection("meta", { orgId });
+  const existing = await getProviderConnectionAsync("meta", { orgId });
 
   if (!existing?.accessToken) {
     return NextResponse.json({ error: "No Meta connection found" }, { status: 404 });
@@ -28,7 +28,7 @@ export async function POST(request) {
     const assets = await fetchMetaConnectedAssets(refreshed.access_token);
     const primaryPage = assets.pages[0] || null;
 
-    saveTokens(
+    await saveTokensAsync(
       "meta",
       {
         ...existing,
@@ -43,7 +43,7 @@ export async function POST(request) {
     );
 
     if (primaryPage?.pageAccessToken && primaryPage?.id) {
-      saveTokens(
+      await saveTokensAsync(
         "facebook",
         {
           orgId,
