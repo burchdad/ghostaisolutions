@@ -19,6 +19,19 @@ function getDailyApprovalLimit() {
   return Math.max(1, Math.min(3, Math.floor(requested)));
 }
 
+async function getRequestBody(request) {
+  if (request.method === "GET") return {};
+  try {
+    return await request.clone().json();
+  } catch (_) {
+    return {};
+  }
+}
+
+function getPostContent(post) {
+  return post.sections?.map((s) => (typeof s === "string" ? s : s.text || s.items?.join(" ") || "")).join(" ") || "";
+}
+
 async function notifySlackBlock(slug, title, reasons) {
   const webhook = process.env.SLACK_ALERTS_WEBHOOK;
   if (!webhook) return;
@@ -62,6 +75,64 @@ export async function runTrigger(request) {
       );
     }
 
+    const body = await getRequestBody(request);
+    const allPosts = getAllPosts();
+
+    if (body.manualDraft || body.forceDraft) {
+      const post = body.slug
+        ? allPosts.find((candidate) => candidate.slug === body.slug)
+        : allPosts.find((candidate) => candidate.auto);
+
+      if (!post) {
+        return NextResponse.json(
+          { error: "Manual draft post not found", slug: body.slug || null },
+          { status: 404 }
+        );
+      }
+
+      const repurposed = await repurposeBlogPost({
+        title: post.title,
+        excerpt: post.excerpt || "",
+        content: getPostContent(post),
+        slug: post.slug,
+      });
+
+      if (repurposed.variants?.error) {
+        return NextResponse.json(
+          { error: "Repurpose failed", details: repurposed.variants.error },
+          { status: 500 }
+        );
+      }
+
+      const draft = await createSocialDraft({
+        slug: post.slug,
+        title: post.title,
+        excerpt: post.excerpt || "",
+        sourceType: body.sourceType || "manual-slack-approval",
+        status: "review",
+        platformVariants: repurposed.variants,
+      });
+
+      const slackNotified = await notifySlackSocialApproval({
+        draft,
+        moderation: repurposed.moderation,
+        reason: "Manual updated draft requested.",
+      });
+
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Manual social draft created",
+          draftId: draft.id,
+          slug: post.slug,
+          moderation: repurposed.moderation,
+          slackNotified,
+          timestamp: new Date().toISOString(),
+        },
+        { status: 201 }
+      );
+    }
+
     // Get already-published slugs from the persistent store — works across Vercel invocations
     const processedSlugs = await getPublishedSlugs();
     const existingDrafts = await listSocialDrafts().catch(() => []);
@@ -69,7 +140,6 @@ export async function runTrigger(request) {
     const dailyLimit = getDailyApprovalLimit();
 
     // Get queue of recent auto posts, skip any already in the draft store
-    const allPosts = getAllPosts();
     const autoPosts = allPosts
       .filter((p) => p.auto && !processedSlugs.has(p.slug) && !draftedSlugs.has(p.slug))
       .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
@@ -100,7 +170,7 @@ export async function runTrigger(request) {
       };
 
       try {
-        const content = post.sections?.map((s) => (typeof s === "string" ? s : s.text || s.items?.join(" ") || "")).join(" ") || "";
+        const content = getPostContent(post);
         const repurposed = await repurposeBlogPost({
           title: post.title,
           excerpt: post.excerpt || "",
