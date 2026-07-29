@@ -67,9 +67,8 @@ Current OAuth flow requests:
 - `pages_manage_metadata`
 - `pages_read_engagement`
 - `pages_manage_posts`
-- `pages_read_user_content`
-- `instagram_basic`
-- `instagram_manage_insights`
+- `pages_messaging`
+- `pages_manage_ads`
 - `business_management`
 - `ads_management`
 - `ads_read`

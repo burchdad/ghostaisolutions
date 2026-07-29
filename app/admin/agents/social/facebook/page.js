@@ -25,7 +25,13 @@ export default async function FacebookSubagentPage({ searchParams }) {
       "pages_manage_posts",
       "pages_read_engagement",
       "pages_manage_metadata",
-      "pages_read_user_content",
+      "pages_show_list",
+      "pages_messaging",
+      "pages_manage_ads",
+      "business_management",
+      "ads_management",
+      "ads_read",
+      "leads_retrieval",
     ],
   };
 
