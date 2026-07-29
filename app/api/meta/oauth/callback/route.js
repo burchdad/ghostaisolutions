@@ -6,6 +6,7 @@ import {
   exchangeMetaCodeForToken,
   fetchMetaConnectedAssets,
   fetchMetaUserProfile,
+  selectMetaPage,
   verifyMetaOAuthState,
 } from "@/lib/oauthProviders/meta";
 import { saveTokensAsync } from "@/lib/tokenStore";
@@ -55,7 +56,7 @@ export async function GET(request) {
       fetchMetaConnectedAssets(longLived.access_token),
     ]);
 
-    const primaryPage = assets.pages[0] || null;
+    const primaryPage = selectMetaPage(assets);
 
     await saveTokensAsync(
       "meta",

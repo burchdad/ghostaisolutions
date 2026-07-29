@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { withCronLogging } from "@/lib/cronRuns";
-import { fetchMetaConnectedAssets } from "@/lib/oauthProviders/meta";
+import { fetchMetaConnectedAssets, selectMetaPage } from "@/lib/oauthProviders/meta";
 import { getProviderConnectionAsync, getTokenWithSource, saveTokensAsync } from "@/lib/tokenStore";
 
 function getCronSecret() {
@@ -74,9 +74,15 @@ async function checkTwitter() {
 async function checkFacebook() {
   const orgId = "default";
   const storedFacebook = (await getProviderConnectionAsync("facebook", { orgId })) || {};
-  const pageId = process.env.FACEBOOK_PAGE_ID || storedFacebook.pageId;
+  const configuredPageId = process.env.FACEBOOK_PAGE_ID || "";
+  const pageId = configuredPageId || storedFacebook.pageId;
   const candidates = [
-    { token: storedFacebook.accessToken, source: "stored" },
+    {
+      token: !configuredPageId || String(storedFacebook.pageId || "") === String(configuredPageId)
+        ? storedFacebook.accessToken
+        : "",
+      source: "stored",
+    },
     { ...getTokenWithSource("facebook", { orgId }), source: "env" },
   ].filter((candidate) => candidate.token);
 
@@ -101,7 +107,7 @@ async function checkFacebook() {
 
   try {
     const assets = await fetchMetaConnectedAssets(metaConnection.accessToken);
-    const page = assets.pages.find((candidate) => String(candidate.id) === String(pageId)) || assets.pages[0];
+    const page = selectMetaPage(assets, pageId);
     if (!page?.pageAccessToken) {
       return { platform: "facebook", status: "missing", source: "meta", detail: "Meta connection did not return a page token." };
     }

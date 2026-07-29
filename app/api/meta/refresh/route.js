@@ -6,6 +6,7 @@ import {
   computeExpiryDate,
   exchangeForLongLivedMetaToken,
   fetchMetaConnectedAssets,
+  selectMetaPage,
 } from "@/lib/oauthProviders/meta";
 import { getProviderConnectionAsync, saveTokensAsync } from "@/lib/tokenStore";
 
@@ -26,7 +27,7 @@ export async function POST(request) {
   try {
     const refreshed = await exchangeForLongLivedMetaToken(existing.accessToken);
     const assets = await fetchMetaConnectedAssets(refreshed.access_token);
-    const primaryPage = assets.pages[0] || null;
+    const primaryPage = selectMetaPage(assets);
 
     await saveTokensAsync(
       "meta",
