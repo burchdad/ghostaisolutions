@@ -39,6 +39,9 @@ Recommended for full agent stack:
 - `SLACK_CLIENT_ID`
 - `SLACK_CLIENT_SECRET`
 - `SLACK_REDIRECT_URI=https://www.ghostai.solutions/api/slack/oauth/callback`
+- `SLACK_SOCIAL_APPROVAL_TEAM_NAME=Design Haven Build`
+- `SLACK_SOCIAL_APPROVAL_CHANNEL_ID` if the app install does not return an incoming webhook channel id
+- `SLACK_SOCIAL_APPROVAL_ALLOW_ENV_FALLBACK=false` to prevent monthly-client approval tests from falling back to the Ghost workspace webhook
 - `SLACK_BOT_TOKEN`
 - `SLACK_SIGNING_SECRET`
 - `SLACK_APP_LEVEL_TOKEN`
@@ -60,6 +63,23 @@ https://www.ghostai.solutions/api/slack/oauth/callback
 ```
 
 The callback exchanges Slack's temporary `code`, stores the workspace install under the Slack team id, and redirects back to `/admin?slack=connected`.
+
+Verify the stored Slack installs and active approval destination from the admin dashboard:
+
+```js
+fetch('/api/slack/connections')
+  .then((response) => response.json())
+  .then(console.log)
+```
+
+Send a protected approval routing test:
+
+```js
+fetch('/api/slack/test-approval', { method: 'POST' })
+  .then((response) => response.json())
+  .then(console.log)
+```
+
 - `SOCIAL_APPROVAL_DAILY_LIMIT` (default `1`, maximum `3`)
 - `SOCIAL_ENGAGEMENT_DRAFT_LIMIT` (default `10`, maximum `20`)
 - `SOCIAL_ENGAGEMENT_PER_POST_LIMIT` (default `10`, maximum `50`)
