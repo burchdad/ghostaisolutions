@@ -36,6 +36,9 @@ Recommended for full agent stack:
 - `SLACK_OPS_SUMMARY_WEBHOOK`
 - `SLACK_SOCIAL_APPROVAL_WEBHOOK` (optional; falls back to `SLACK_ALERTS_WEBHOOK`)
 - `SLACK_APPROVAL_SECRET` (optional; falls back to `CRON_SECRET`)
+- `SLACK_CLIENT_ID`
+- `SLACK_CLIENT_SECRET`
+- `SLACK_REDIRECT_URI=https://www.ghostai.solutions/api/slack/oauth/callback`
 - `SLACK_BOT_TOKEN`
 - `SLACK_SIGNING_SECRET`
 - `SLACK_APP_LEVEL_TOKEN`
@@ -49,6 +52,14 @@ https://www.ghostai.solutions/api/slack/interactivity
 ```
 
 The shared Slack route handles existing social approval actions and forwards `web_support_*` button clicks to Mission Control at `GHOST_MISSION_CONTROL_URL`.
+
+Slack app distribution should use this OAuth redirect URL:
+
+```text
+https://www.ghostai.solutions/api/slack/oauth/callback
+```
+
+The callback exchanges Slack's temporary `code`, stores the workspace install under the Slack team id, and redirects back to `/admin?slack=connected`.
 - `SOCIAL_APPROVAL_DAILY_LIMIT` (default `1`, maximum `3`)
 - `SOCIAL_ENGAGEMENT_DRAFT_LIMIT` (default `10`, maximum `20`)
 - `SOCIAL_ENGAGEMENT_PER_POST_LIMIT` (default `10`, maximum `50`)
