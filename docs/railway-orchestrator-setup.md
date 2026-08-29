@@ -1,5 +1,7 @@
 # Railway Orchestrator Setup
 
+> Phase 5E source-patch smoke note: documentation-only verification for the approved GitHub executor.
+
 This project now supports a single adaptive scheduler driven by the Orchestrator Agent.
 
 ## Why this setup
