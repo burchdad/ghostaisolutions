@@ -1,0 +1,141 @@
+{
+  "slug": "2026-10-07-harnessing-new-ai-tools-for-operational-efficiency",
+  "title": "Harnessing New AI Tools for Operational Efficiency",
+  "date": "2026-10-07",
+  "excerpt": "Explore how the latest AI developments can enhance your operations and drive growth. Discover actionable steps to implement these technologies this week.",
+  "category": "automation",
+  "tags": [
+    "AI tools",
+    "operational efficiency",
+    "growth strategies"
+  ],
+  "sections": [
+    {
+      "type": "p",
+      "text": "In the fast-paced world of B2B operations, staying ahead means adapting to the latest technologies. Recent tech stories highlight a range of AI tools and frameworks that can enhance operational efficiency for growth-stage companies."
+    },
+    {
+      "type": "h2",
+      "text": "AI Usage Insights"
+    },
+    {
+      "type": "p",
+      "text": "The 'nextroad-dev/aiusage' app allows users to monitor AI subscription usage across platforms like Codex and Copilot. For COOs and RevOps leads, tracking these metrics can optimize costs and ensure that teams are leveraging their AI tools effectively."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Evaluate your current AI subscriptions and usage levels.",
+        "Identify underutilized tools and consider reallocating resources.",
+        "Set up alerts to monitor usage and stay within budget."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Building with Laravel AI"
+    },
+    {
+      "type": "p",
+      "text": "The 'awesome-laravel-ai' repository provides curated resources for building AI applications using Laravel. Growth PMs can leverage these tools to create custom applications that meet specific business needs without relying on off-the-shelf solutions."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Explore the curated packages and tools for Laravel AI.",
+        "Begin a pilot project using these resources to address a specific operational challenge.",
+        "Engage your development team in discussions about potential use cases."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Rethinking AI Video Tools"
+    },
+    {
+      "type": "p",
+      "text": "A recent article discusses how to move beyond traditional AI video generation that relies on empty prompts. Instead, consider developing tailored video content that speaks directly to your audience's needs."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Collect data on customer preferences to inform video content.",
+        "Test different approaches to video creation that focus on audience engagement.",
+        "Consider integrating buyer-filtered insights into your marketing strategy."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Motion Graphics and AI"
+    },
+    {
+      "type": "p",
+      "text": "The 'Tejashmakwana/motionmaxxing' project aims to enhance video quality using AI, transforming average videos into professional-looking content. This could significantly reduce production costs and time for marketing campaigns."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Evaluate your current video production processes for efficiency.",
+        "Experiment with AI tools to enhance video content quality.",
+        "Develop a strategy to integrate higher quality visuals into your marketing efforts."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Open Source AI Infrastructure"
+    },
+    {
+      "type": "p",
+      "text": "The shift in open-source AI toward better tooling and infrastructure can provide leverage for companies looking to build scalable solutions. Understanding the trade-offs involved will help you make informed decisions."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Research open-source AI tools that fit your company’s needs.",
+        "Consider investing in training for your team on these new tools.",
+        "Engage with the open-source community to stay updated on best practices."
+      ]
+    },
+    {
+      "type": "callout",
+      "text": "This week's takeaway — Review your AI tools and subscriptions, identify areas for improvement, and start implementing one new AI-driven process to enhance your operational efficiency."
+    }
+  ],
+  "sources": [
+    {
+      "title": "nextroad-dev/aiusage",
+      "url": "https://github.com/nextroad-dev/aiusage",
+      "source": "GitHub Trending",
+      "relevanceScore": 7
+    },
+    {
+      "title": "mahdyaralipor/awesome-laravel-ai",
+      "url": "https://github.com/mahdyaralipor/awesome-laravel-ai",
+      "source": "GitHub Trending",
+      "relevanceScore": 7
+    },
+    {
+      "title": "How we built buyer-filtered Reel inspiration (not blank-prompt AI)",
+      "url": "https://dev.to/bereel_c40468d4736fb20d2e/how-we-built-buyer-filtered-reel-inspiration-not-blank-prompt-ai-d0h",
+      "source": "Dev.to",
+      "relevanceScore": 7
+    },
+    {
+      "title": "Tejashmakwana/motionmaxxing",
+      "url": "https://github.com/Tejashmakwana/motionmaxxing",
+      "source": "GitHub Trending",
+      "relevanceScore": 6
+    },
+    {
+      "title": "kingenbomb/futuresearch-box",
+      "url": "https://github.com/kingenbomb/futuresearch-box",
+      "source": "GitHub Trending",
+      "relevanceScore": 6
+    },
+    {
+      "title": "The open-source AI infrastructure layer is being rebuilt in public, with real trade-offs",
+      "url": "https://dev.to/wiaia/the-open-source-ai-infrastructure-layer-is-being-rebuilt-in-public-with-real-trade-offs-4do4",
+      "source": "Dev.to",
+      "relevanceScore": 5
+    }
+  ],
+  "auto": true
+}
