@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import Link from "next/link";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { siteConfig } from "@/lib/siteConfig";
@@ -141,14 +142,11 @@ const sections = [
   },
 ];
 
-export const metadata = {
+export const metadata = pageMetadata("/privacy-policy", {
   title: "Privacy Policy - Ghost AI Solutions",
   description:
     "Read the Ghost AI Solutions Privacy Policy covering data collection, API-connected platform data use, security, retention, rights, and contact information.",
-  alternates: {
-    canonical: "https://ghostai.solutions/privacy-policy",
-  },
-};
+});
 
 export default function PrivacyPolicyPage() {
   return (

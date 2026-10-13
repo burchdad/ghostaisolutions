@@ -1,12 +1,13 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TrackCTA from "@/components/TrackCTA";
 import { BOOKING_URL } from "@/lib/constants";
 
-export const metadata = {
+export const metadata = pageMetadata("/ai-native", {
   title: "AI-Native Growth Engine — Ghost AI Solutions",
   description:
     "A focused AI-native sprint to deploy revenue and ops agents in 14-30 days with governance built in.",
-};
+});
 
 export default function AINativePage() {
   const bullets = [

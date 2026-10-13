@@ -1,6 +1,7 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-export const metadata = { title: "FAQ — Ghost AI Solutions" };
+export const metadata = pageMetadata("/faq", { title: "FAQ — Ghost AI Solutions" });
 
 export default function FAQ() {
   const faqs = [

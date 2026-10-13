@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import TrackCTA from "@/components/TrackCTA";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Newsletter from "@/components/Newsletter";
@@ -5,7 +6,7 @@ import QualificationIntake from "@/components/QualificationIntake";
 import { siteConfig } from "@/lib/siteConfig";
 import { BOOKING_URL } from "@/lib/constants";
 
-export const metadata = { title: "Start - Ghost AI Solutions" };
+export const metadata = pageMetadata("/start", { title: "Website Audit and Project Intake - Ghost AI Solutions", description: "Request a free website audit or tell Ghost AI Solutions about your website, CRM, automation, or custom AI project." });
 
 export default function Contact() {
   const hasGoogleForm = siteConfig.googleFormEmbedUrl.startsWith("https://docs.google.com/forms/");
@@ -16,14 +17,14 @@ export default function Contact() {
         <Breadcrumbs />
         <div className="grid items-start gap-10 lg:grid-cols-[0.82fr_1.35fr]">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight">Start with a free growth fit review</h1>
+            <h1 className="text-4xl font-extrabold tracking-tight">Start with a free website audit</h1>
             <p className="mt-4 text-slate-600 dark:text-slate-300">
-              Share your goals, current bottleneck, and the kind of help you need. We will route you to the right package, one-time project, or custom build path.
+              Share your website and what you want to improve. Looking for CRM, automation, or a custom AI system? Tell us here too.
             </p>
             <ul className="mt-6 space-y-2 text-slate-600 dark:text-slate-300">
-              <li>- Free first-pass growth and offer review</li>
-              <li>- Qualification response within 1 business day</li>
-              <li>- Optional onboarding call after the intake</li>
+              <li>- For new websites, redesigns, and connected workflows</li>
+              <li>- Tell us about your current website and goals</li>
+              <li>- We will review the details to recommend a next step</li>
             </ul>
             <TrackCTA
               href={BOOKING_URL}
@@ -55,9 +56,9 @@ export default function Contact() {
               </iframe>
             ) : (
               <div className="p-6" id="blueprint">
-                <h2 className="text-2xl font-bold tracking-tight">Growth package and build intake</h2>
+                <h2 className="text-2xl font-bold tracking-tight">Website audit and project intake</h2>
                 <p className="mt-3 text-slate-600 dark:text-slate-300">
-                  Start light. Tell us what you want to improve first, then we will recommend the right partner tier or one-time project path.
+                  Tell us a little about your business, website, and goals so we can understand the help you need.
                 </p>
                 <div className="mt-6">
                   <QualificationIntake supportEmail={siteConfig.supportEmail} />

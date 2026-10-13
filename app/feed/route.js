@@ -1,7 +1,8 @@
+import { SITE_ORIGIN } from "@/lib/seo.mjs";
 import { getAllPosts } from "@/lib/allPosts";
 
 export async function GET() {
-  const site = "https://ghostai.solutions";
+  const site = SITE_ORIGIN;
   const items = getAllPosts().map(p => `
     <item>
       <title><![CDATA[${p.title}]]></title>

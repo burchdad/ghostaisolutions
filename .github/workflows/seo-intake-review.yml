@@ -1,0 +1,60 @@
+name: SEO and intake review
+
+on:
+  pull_request:
+    paths:
+      - 'app/**'
+      - 'components/**'
+      - 'lib/**'
+      - 'tests/**'
+      - 'scripts/check-*.mjs'
+      - 'scripts/check-*.cjs'
+      - 'package*.json'
+      - '.github/workflows/seo-intake-review.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seo-intake-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:seo
+      - run: npm run build
+      # Separate temporary tooling keeps the app's dependencies unchanged.
+      - run: npm install --prefix /tmp/ghost-browser-qa --no-save --package-lock=false playwright@1.57.0
+      - run: /tmp/ghost-browser-qa/node_modules/.bin/playwright install --with-deps chromium
+      - name: Crawl build and inspect desktop/mobile intake
+        env:
+          SEO_CHECK_URL: http://127.0.0.1:3100
+          PLAYWRIGHT_MODULE_PATH: /tmp/ghost-browser-qa/node_modules/playwright
+        run: |
+          npm run start -- -p 3100 > /tmp/ghost-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            curl --fail --silent http://127.0.0.1:3100/start > /dev/null && break
+            sleep 1
+          done
+          npm run check:seo
+          node scripts/check-intake-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ghost-seo-intake-review
+          path: qa-results/
+          retention-days: 7

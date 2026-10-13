@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import SectionWrapper from '@/components/SectionWrapper';
 import CardGrid from '@/components/CardGrid';
 
@@ -46,10 +47,10 @@ const technologies = [
   },
 ];
 
-export const metadata = {
+export const metadata = pageMetadata("/technology", {
   title: 'Technology | Ghost AI Solutions',
   description: 'Explore the Ghost ecosystem of custom-built systems and internal platforms.',
-};
+});
 
 export default function TechnologyPage() {
   return (

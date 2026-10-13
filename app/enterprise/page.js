@@ -1,11 +1,12 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import TrackCTA from "@/components/TrackCTA";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-export const metadata = {
+export const metadata = pageMetadata("/enterprise", {
   title: "Enterprise AI Transformation - Ghost AI Solutions",
   description:
     "Enterprise-grade AI transformation and secure custom infrastructure for modernization, automation, and executive intelligence.",
-};
+});
 
 const enterpriseThemes = [
   {

@@ -1,15 +1,13 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Link from "next/link";
 import { siteConfig } from "@/lib/siteConfig";
 
-export const metadata = {
+export const metadata = pageMetadata("/data-deletion", {
   title: "Data Deletion Request - Ghost AI Solutions",
   description:
     "How to request deletion of user data associated with Ghost AI Solutions services and connected platform integrations.",
-  alternates: {
-    canonical: "https://ghostai.solutions/data-deletion",
-  },
-};
+});
 
 const deletionSteps = [
   {

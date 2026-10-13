@@ -1,11 +1,12 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TrackCTA from "@/components/TrackCTA";
 import PortfolioShowcase from "@/components/PortfolioShowcase";
 
-export const metadata = {
+export const metadata = pageMetadata("/work", {
   title: "Work - Ghost AI Solutions",
   description: "Live website builds, product surfaces, and digital systems created by Ghost AI Solutions.",
-};
+});
 
 export default function Work() {
   const topStats = [

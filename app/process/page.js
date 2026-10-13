@@ -1,6 +1,7 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-export const metadata = { title: 'Process — Ghost AI Solutions' };
+export const metadata = pageMetadata("/process", { title: 'Process — Ghost AI Solutions' });
 
 export default function Process(){
   const steps = [

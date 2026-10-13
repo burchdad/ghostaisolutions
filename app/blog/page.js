@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import Link from "next/link";
 import { getAllPosts } from "@/lib/allPosts";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Newsletter from "@/components/Newsletter";
 
-export const metadata = {
+export const metadata = pageMetadata("/blog", {
   title: "Blog — Ghost AI Solutions",
   description:
     "Practical reads on AI agents, workflow automation, and growth — updated daily by our research agent.",
-};
+});
 
 const CATEGORIES = [
   { key: "all", label: "All" },

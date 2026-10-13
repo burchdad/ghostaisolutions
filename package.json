@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "blog:generate": "node scripts/generate-blog-post.mjs",
-    "env:check": "node scripts/validate-prod-env.mjs --target=all --strict"
+    "env:check": "node scripts/validate-prod-env.mjs --target=all --strict",
+    "test:seo": "node --test tests/*.test.mjs",
+    "check:seo": "node scripts/check-seo.mjs"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.16",

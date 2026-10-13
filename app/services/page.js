@@ -1,11 +1,12 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TrackCTA from "@/components/TrackCTA";
 import { siteConfig } from "@/lib/siteConfig";
 
-export const metadata = {
+export const metadata = pageMetadata("/services", {
   title: "Capabilities - Ghost AI Solutions",
   description: "Website, automation, AI, voice, data intelligence, and custom platform capabilities from Ghost AI Solutions.",
-};
+});
 
 export default function ServicesPage() {
   const servicesJsonLd = {

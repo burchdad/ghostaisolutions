@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 // app/chatbot/page.js
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TrackCTA from "@/components/TrackCTA";
 import { BOOKING_URL } from "@/lib/constants";
 
-export const metadata = {
+export const metadata = pageMetadata("/chatbot", {
   title: "AI Chatbot for Lead Capture and Booking | Ghost AI Solutions",
   description:
     "See how Ghostbot qualifies website visitors, captures project context, and routes ready buyers toward a walkthrough or chatbot blueprint.",
-};
+});
 
 const faqItems = [
   [
