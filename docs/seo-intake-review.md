@@ -6,7 +6,8 @@ This is a review-only change set. Do not merge to production until preview verif
 
 - Centralized the preferred production origin, https://www.ghostai.solutions, for canonical links, Open Graph URLs, structured data, RSS links, and sitemap entries.
 - Removed the root-layout homepage canonical inherited by unrelated pages. Each public page now supplies explicit metadata. Blog articles use their own title, excerpt, canonical, and article Open Graph fields.
-- Replaced route scanning with an explicit public sitemap allowlist. All 130 existing articles remain included. Admin, client-portal, duplicate /contact, and redirected /privacy URLs are excluded. Static pages no longer claim a new modification date on every build.
+- Replaced route scanning with an explicit public sitemap allowlist. All 130 existing articles remain included. Admin, client-portal, internal growth-lab, duplicate /contact, and redirected /privacy URLs are excluded. Static pages no longer claim a new modification date on every build.
+- RSS item IDs retain their historical values (as opaque GUIDs) so the host correction does not replay old articles in feed readers.
 - /contact remains a working intake alias and canonicalizes to /start. /privacy receives an HTTP 308 to its existing /privacy-policy destination before rendering.
 - Added inherited noindex, nofollow directives to admin and client-portal layouts. Authentication, authorization, cookies, API routes, and security configuration are unchanged. Search directives are not access controls.
 - Matched the intake heading to the existing homepage's free website audit CTA while retaining CRM, automation, and advanced AI inquiries. No new audit scope, deadline, price, or contract promise was introduced; the previously unverified one-business-day promise was removed from this draft.

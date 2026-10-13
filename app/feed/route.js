@@ -3,11 +3,13 @@ import { getAllPosts } from "@/lib/allPosts";
 
 export async function GET() {
   const site = SITE_ORIGIN;
+  // Preserve historical opaque item IDs so the host cleanup cannot replay the archive.
+  const feedIdBase = "https://ghostai.solutions";
   const items = getAllPosts().map(p => `
     <item>
       <title><![CDATA[${p.title}]]></title>
       <link>${site}/blog/${p.slug}</link>
-      <guid>${site}/blog/${p.slug}</guid>
+      <guid isPermaLink="false">${feedIdBase}/blog/${p.slug}</guid>
       <pubDate>${new Date(p.date).toUTCString()}</pubDate>
       <description><![CDATA[${p.excerpt}]]></description>
     </item>`).join("");

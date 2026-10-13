@@ -15,7 +15,7 @@ for (const path of INDEXABLE_ROUTES) assert.ok(urls.includes(canonicalUrl(path))
 for (const url of urls) {
   assert.ok(url === SITE_ORIGIN || url.startsWith(`${SITE_ORIGIN}/`), `wrong host: ${url}`);
   const path = new URL(url).pathname;
-  assert.ok(!/^\/(admin|client-portal|api|contact|privacy)(\/|$)/.test(path), `utility/duplicate in sitemap: ${path}`);
+  assert.ok(!/^\/(admin|client-portal|growth-lab|api|contact|privacy)(\/|$)/.test(path), `utility/duplicate in sitemap: ${path}`);
   const { response, html } = await get(path);
   assert.equal(response.status, 200, `non-200 sitemap entry: ${path}`);
   const canonicals = [...html.matchAll(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"[^>]*>/g)].map(match => match[1]);
@@ -29,7 +29,7 @@ for (const url of urls) {
     assert.ok(html.includes('<meta property="og:type" content="article"'), `missing article metadata: ${path}`);
   }
 }
-for (const path of ['/admin/login', '/client-portal', '/client-portal/sign-in', '/client-portal/create-account', '/client-portal/reset-password', '/client-portal/proposal-thank-you']) {
+for (const path of ['/growth-lab', '/admin/login', '/client-portal', '/client-portal/sign-in', '/client-portal/create-account', '/client-portal/reset-password', '/client-portal/proposal-thank-you']) {
   const { response, html } = await get(path);
   assert.equal(response.status, 200, `utility route unavailable: ${path}`);
   assert.match(html, /<meta\b[^>]*name="robots"[^>]*content="[^"]*noindex/, `utility lacks noindex: ${path}`);
@@ -47,4 +47,5 @@ assert.ok(robots.html.includes(`Sitemap: ${SITE_ORIGIN}/sitemap.xml`));
 const feed = await get('/feed');
 assert.equal(feed.response.status, 200);
 assert.ok(feed.html.includes(`<link>${SITE_ORIGIN}/blog/`));
+assert.ok(feed.html.includes('<guid isPermaLink="false">https://ghostai.solutions/blog/'), 'historical RSS item IDs must remain stable');
 console.log(`PASS: ${urls.length} sitemap pages have successful, indexable, self-canonical responses; utility noindex, duplicate, redirect, missing-post, robots and RSS checks passed.`);

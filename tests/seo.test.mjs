@@ -29,7 +29,7 @@ test('sitemap excludes utility/duplicate routes and retains every reviewed publi
   assert.equal(new Set(entries.map(entry => entry.url)).size, INDEXABLE_ROUTES.length);
   for (const entry of entries) {
     assert.ok(entry.url === SITE_ORIGIN || entry.url.startsWith(`${SITE_ORIGIN}/`));
-    assert.ok(!/\/(admin|client-portal|api|contact|privacy)(\/|$)/.test(entry.url));
+    assert.ok(!/\/(admin|client-portal|growth-lab|api|contact|privacy)(\/|$)/.test(entry.url));
     assert.equal(entry.lastModified, undefined, 'static pages must not receive a fake build-time modification date');
   }
   for (const route of INDEXABLE_ROUTES) {
@@ -60,4 +60,17 @@ test('admin and client-portal layouts inherit noindex without authentication cha
   for (const section of ['admin', 'client-portal']) {
     assert.match(fs.readFileSync(`app/${section}/layout.js`, 'utf8'), /robots: \{ index: false, follow: false \}/);
   }
+});
+
+
+test('internal growth diagnostics stay noindex and outside the sitemap', () => {
+  assert.ok(!INDEXABLE_ROUTES.includes('/growth-lab'));
+  assert.match(fs.readFileSync('app/growth-lab/page.js', 'utf8'), /robots: \{ index: false, follow: false \}/);
+});
+
+test('RSS keeps historical item identities while links use the canonical host', () => {
+  const source = fs.readFileSync('app/feed/route.js', 'utf8');
+  assert.ok(source.includes('const site = SITE_ORIGIN'));
+  assert.ok(source.includes('const feedIdBase = "https://ghostai.solutions"'));
+  assert.ok(source.includes('<guid isPermaLink="false">${feedIdBase}/blog/${p.slug}</guid>'));
 });
