@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import SectionWrapper from '@/components/SectionWrapper';
 import CardGrid from '@/components/CardGrid';
 
@@ -40,10 +41,10 @@ const projects = [
   },
 ];
 
-export const metadata = {
+export const metadata = pageMetadata("/projects", {
   title: 'Projects | Ghost AI Solutions',
   description: 'Case-study structured projects showing custom systems built for real-world outcomes.',
-};
+});
 
 export default function ProjectsPage() {
   return (

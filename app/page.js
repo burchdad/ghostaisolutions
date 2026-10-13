@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import Link from "next/link";
 import HeroSection from "@/components/HeroSection";
 import SectionWrapper from "@/components/SectionWrapper";
@@ -7,14 +8,11 @@ import ScrollDepthTracker from "@/components/ScrollDepthTracker";
 import SectionViewTracker from "@/components/SectionViewTracker";
 import TrackCTA from "@/components/TrackCTA";
 
-export const metadata = {
+export const metadata = pageMetadata("/", {
   title: "Ghost AI Solutions | Websites, Automation, and AI Systems",
   description:
     "Ghost AI Solutions builds custom websites, lead funnels, workflow automation, and AI systems for businesses that need cleaner operations and measurable growth.",
-  alternates: {
-    canonical: "https://www.ghostai.solutions/",
-  },
-};
+});
 
 const homepageFaqJsonLd = {
   "@context": "https://schema.org",

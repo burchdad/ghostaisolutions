@@ -1,11 +1,12 @@
+import { pageMetadata, SITE_ORIGIN } from "@/lib/seo.mjs";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TrackCTA from "@/components/TrackCTA";
 import { siteConfig } from "@/lib/siteConfig";
 
-export const metadata = {
+export const metadata = pageMetadata("/services", {
   title: "Capabilities - Ghost AI Solutions",
   description: "Website, automation, AI, voice, data intelligence, and custom platform capabilities from Ghost AI Solutions.",
-};
+});
 
 export default function ServicesPage() {
   const servicesJsonLd = {
@@ -15,7 +16,7 @@ export default function ServicesPage() {
     provider: {
       "@type": "Organization",
       name: "Ghost AI Solutions",
-      url: "https://ghostai.solutions",
+      url: SITE_ORIGIN,
       contactPoint: [
         {
           "@type": "ContactPoint",
@@ -34,7 +35,7 @@ export default function ServicesPage() {
       "Custom Platform Engineering",
     ],
     areaServed: "US",
-    url: "https://ghostai.solutions/services",
+    url: `${SITE_ORIGIN}/services`,
   };
 
   const cards = [

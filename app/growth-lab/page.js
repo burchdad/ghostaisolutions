@@ -1,10 +1,12 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import AttributionConsole from "@/components/AttributionConsole";
 
-export const metadata = {
+export const metadata = pageMetadata("/growth-lab", {
+  robots: { index: false, follow: false },
   title: "Growth Lab — Ghost AI Solutions",
   description: "Internal growth diagnostics for attribution, campaign routing, and experiment state.",
-};
+});
 
 export default function GrowthLabPage() {
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useId, useMemo, useState } from "react";
 import Link from "next/link";
 import TrackCTA from "@/components/TrackCTA";
 import { BOOKING_URL } from "@/lib/constants";
@@ -73,6 +73,10 @@ const initialForm = {
 
 const fieldClass =
   "w-full rounded-xl border border-white/15 bg-white/[0.06] px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-400 focus:border-cyan-300/70 focus:bg-white/[0.09] focus:ring-2 focus:ring-cyan-300/20";
+
+function isValidContactEmail(value) {
+  return typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
 
 function selectedLabel(options, value) {
   return options.find(([id]) => id === value)?.[1] || value || "Not provided";
@@ -150,7 +154,20 @@ function SectionIntro({ step, children }) {
   );
 }
 
+function IntakeField({ id, label, children, className = "" }) {
+  return (
+    <div className={`space-y-2 ${className}`}>
+      <label htmlFor={id} className="block text-sm font-medium text-slate-200">
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
 export default function QualificationIntake({ supportEmail }) {
+  const intakeId = useId();
+  const fieldId = (name) => `${intakeId}-${name}`;
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -166,6 +183,7 @@ export default function QualificationIntake({ supportEmail }) {
   );
 
   const progress = Math.round(((step + 1) / steps.length) * 100);
+  const emailIsInvalid = Boolean(form.email.trim()) && !isValidContactEmail(form.email);
 
   const routePreview = useMemo(() => {
     const selectedNeeds = form.primaryNeeds?.length ? form.primaryNeeds : form.primaryNeed ? [form.primaryNeed] : [];
@@ -217,7 +235,7 @@ export default function QualificationIntake({ supportEmail }) {
   };
 
   const canContinue = useMemo(() => {
-    if (step === 0) return form.name.trim() && form.email.trim();
+    if (step === 0) return form.name.trim() && isValidContactEmail(form.email);
     if (step === 1) return form.primaryNeeds.length > 0 && form.desiredOutcome.trim();
     if (step === 2) return form.offerPath;
     if (step === 3) {
@@ -343,8 +361,8 @@ export default function QualificationIntake({ supportEmail }) {
 
           {submitted ? (
             <div className="mb-5 rounded-xl border border-cyan-300/25 bg-cyan-300/10 p-4 text-sm text-cyan-100">
-              Thank you. Your intake was submitted, a confirmation email is on the way, and we will follow up with the
-              right next step. The form has been reset for a fresh submission.
+              Thank you. Your intake was submitted, and we will follow up with the right next step.
+              The form has been reset for a fresh submission.
             </div>
           ) : null}
 
@@ -352,11 +370,24 @@ export default function QualificationIntake({ supportEmail }) {
             <div>
               <SectionIntro step={step} />
               <div className="grid gap-3.5">
-                <input value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Full name" className={fieldClass} />
-                <input value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="Work email" className={fieldClass} />
-                <input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="Mobile phone (optional)" className={fieldClass} />
-                <label className="flex items-start gap-3 rounded-xl border border-white/15 bg-white/[0.06] p-4 text-xs leading-5 text-slate-200">
+                <IntakeField id={fieldId("name")} label="Full name (required)">
+                  <input id={fieldId("name")} name="name" type="text" autoComplete="name" required value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Full name" className={fieldClass} />
+                </IntakeField>
+                <IntakeField id={fieldId("email")} label="Work email (required)">
+                  <input id={fieldId("email")} name="email" type="email" autoComplete="email" required aria-invalid={emailIsInvalid} aria-describedby={emailIsInvalid ? fieldId("email-error") : undefined} value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="Work email" className={fieldClass} />
+                  {emailIsInvalid ? (
+                    <p id={fieldId("email-error")} className="text-xs text-red-200">
+                      Enter an email address like name@example.com.
+                    </p>
+                  ) : null}
+                </IntakeField>
+                <IntakeField id={fieldId("phone")} label="Mobile phone (optional)">
+                  <input id={fieldId("phone")} name="phone" type="tel" autoComplete="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="Mobile phone (optional)" className={fieldClass} />
+                </IntakeField>
+                <label htmlFor={fieldId("smsConsent")} className="flex items-start gap-3 rounded-xl border border-white/15 bg-white/[0.06] p-4 text-xs leading-5 text-slate-200">
                   <input
+                    id={fieldId("smsConsent")}
+                    name="smsConsent"
                     type="checkbox"
                     checked={form.smsConsent}
                     onChange={(e) => update("smsConsent", e.target.checked)}
@@ -377,8 +408,12 @@ export default function QualificationIntake({ supportEmail }) {
                     .
                   </span>
                 </label>
-                <input value={form.company} onChange={(e) => update("company", e.target.value)} placeholder="Company" className={fieldClass} />
-                <input value={form.industry} onChange={(e) => update("industry", e.target.value)} placeholder="Industry / business type" className={fieldClass} />
+                <IntakeField id={fieldId("company")} label="Company (optional)">
+                  <input id={fieldId("company")} name="company" type="text" autoComplete="organization" value={form.company} onChange={(e) => update("company", e.target.value)} placeholder="Company" className={fieldClass} />
+                </IntakeField>
+                <IntakeField id={fieldId("industry")} label="Industry / business type (optional)">
+                  <input id={fieldId("industry")} name="industry" type="text" autoComplete="off" value={form.industry} onChange={(e) => update("industry", e.target.value)} placeholder="Industry / business type" className={fieldClass} />
+                </IntakeField>
               </div>
             </div>
           ) : null}
@@ -398,8 +433,10 @@ export default function QualificationIntake({ supportEmail }) {
                   />
                 ))}
               </div>
-              <textarea value={form.desiredOutcome} onChange={(e) => update("desiredOutcome", e.target.value)} placeholder="What is the first win you want from this?" rows={3} className={`${fieldClass} mt-4`} />
-              <p className="mt-2 text-xs text-slate-400">
+              <IntakeField id={fieldId("desiredOutcome")} label="What is the first win you want from this? (required)" className="mt-4">
+                <textarea id={fieldId("desiredOutcome")} name="desiredOutcome" autoComplete="off" required aria-describedby={fieldId("desiredOutcome-help")} value={form.desiredOutcome} onChange={(e) => update("desiredOutcome", e.target.value)} placeholder="What is the first win you want from this?" rows={3} className={fieldClass} />
+              </IntakeField>
+              <p id={fieldId("desiredOutcome-help")} className="mt-2 text-xs text-slate-400">
                 Example: more booked calls, a cleaner website, better local search visibility, or automating follow-up.
               </p>
             </div>
@@ -427,35 +464,43 @@ export default function QualificationIntake({ supportEmail }) {
             <div>
               <SectionIntro step={step} />
               <div className="grid gap-3.5">
-                <input value={form.websiteUrl} onChange={(e) => update("websiteUrl", e.target.value)} placeholder="Current website URL (optional)" className={fieldClass} />
+                <IntakeField id={fieldId("websiteUrl")} label="Current website URL (optional)">
+                  <input id={fieldId("websiteUrl")} name="websiteUrl" type="url" autoComplete="url" spellCheck={false} value={form.websiteUrl} onChange={(e) => update("websiteUrl", e.target.value)} placeholder="Current website URL (optional)" className={fieldClass} />
+                </IntakeField>
 
                 {form.offerPath === "package" ? (
                   <div className="grid gap-3 sm:grid-cols-3">
-                    <select value={form.businessStage} onChange={(e) => update("businessStage", e.target.value)} className={fieldClass}>
-                      <option value="">Business stage</option>
-                      <option value="new">New / launching</option>
-                      <option value="early">Early traction</option>
-                      <option value="growing">Growing and needs systems</option>
-                      <option value="scaling">Scaling operations</option>
-                      <option value="enterprise">Enterprise / multi-location</option>
-                    </select>
-                    <select value={form.teamSize} onChange={(e) => update("teamSize", e.target.value)} className={fieldClass}>
-                      <option value="">Team size</option>
-                      <option value="solo">Solo / founder led</option>
-                      <option value="1-5">1-5 employees</option>
-                      <option value="6-20">6-20 employees</option>
-                      <option value="21-50">21-50 employees</option>
-                      <option value="50+">50+ employees</option>
-                    </select>
-                    <select value={form.revenueRange} onChange={(e) => update("revenueRange", e.target.value)} className={fieldClass}>
-                      <option value="">Annual revenue range</option>
-                      <option value="under-100k">Under 100k</option>
-                      <option value="100k-250k">100k - 250k</option>
-                      <option value="250k-2m">250k - 2M</option>
-                      <option value="2m-10m">2M - 10M</option>
-                      <option value="10m+">10M+</option>
-                      <option value="not-sure">Not sure / prefer not to say</option>
-                    </select>
+                    <IntakeField id={fieldId("businessStage")} label="Business stage (required)">
+                      <select id={fieldId("businessStage")} name="businessStage" autoComplete="off" required value={form.businessStage} onChange={(e) => update("businessStage", e.target.value)} className={fieldClass}>
+                        <option value="">Business stage</option>
+                        <option value="new">New / launching</option>
+                        <option value="early">Early traction</option>
+                        <option value="growing">Growing and needs systems</option>
+                        <option value="scaling">Scaling operations</option>
+                        <option value="enterprise">Enterprise / multi-location</option>
+                      </select>
+                    </IntakeField>
+                    <IntakeField id={fieldId("teamSize")} label="Team size (required)">
+                      <select id={fieldId("teamSize")} name="teamSize" autoComplete="off" required value={form.teamSize} onChange={(e) => update("teamSize", e.target.value)} className={fieldClass}>
+                        <option value="">Team size</option>
+                        <option value="solo">Solo / founder led</option>
+                        <option value="1-5">1-5 employees</option>
+                        <option value="6-20">6-20 employees</option>
+                        <option value="21-50">21-50 employees</option>
+                        <option value="50+">50+ employees</option>
+                      </select>
+                    </IntakeField>
+                    <IntakeField id={fieldId("revenueRange")} label="Annual revenue range (required)">
+                      <select id={fieldId("revenueRange")} name="revenueRange" autoComplete="off" required value={form.revenueRange} onChange={(e) => update("revenueRange", e.target.value)} className={fieldClass}>
+                        <option value="">Annual revenue range</option>
+                        <option value="under-100k">Under 100k</option>
+                        <option value="100k-250k">100k - 250k</option>
+                        <option value="250k-2m">250k - 2M</option>
+                        <option value="2m-10m">2M - 10M</option>
+                        <option value="10m+">10M+</option>
+                        <option value="not-sure">Not sure / prefer not to say</option>
+                      </select>
+                    </IntakeField>
                   </div>
                 ) : null}
 
@@ -466,6 +511,7 @@ export default function QualificationIntake({ supportEmail }) {
                       {services.map(([value, label]) => (
                         <label
                           key={value}
+                          htmlFor={fieldId(`service-${value}`)}
                           className={`flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-3 text-sm transition ${
                             form.selectedServices.includes(value)
                               ? "border-cyan-300/80 bg-cyan-300/15 text-cyan-100"
@@ -473,6 +519,9 @@ export default function QualificationIntake({ supportEmail }) {
                           }`}
                         >
                           <input
+                            id={fieldId(`service-${value}`)}
+                            name="selectedServices"
+                            value={value}
                             type="checkbox"
                             checked={form.selectedServices.includes(value)}
                             onChange={() => toggleService(value)}
@@ -486,27 +535,37 @@ export default function QualificationIntake({ supportEmail }) {
                 ) : null}
 
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <select value={form.investmentComfort} onChange={(e) => update("investmentComfort", e.target.value)} className={fieldClass}>
-                    <option value="">Investment comfort if the plan is a clear fit</option>
-                    <option value="under-500">Under $500/month</option>
-                    <option value="500-1500">$500 - $1,500/month</option>
-                    <option value="1500-3k">$1,500 - $3,000/month</option>
-                    <option value="3k-5k">$3,000 - $5,000/month</option>
-                    <option value="5k+">$5,000+/month</option>
-                    <option value="one-time">I prefer one-time project pricing</option>
-                    <option value="not-sure">Not sure yet</option>
-                  </select>
-                  <select value={form.timeline} onChange={(e) => update("timeline", e.target.value)} className={fieldClass}>
-                    <option value="">Desired start timeline</option>
-                    <option value="now">Ready now</option>
-                    <option value="30-days">Within 30 days</option>
-                    <option value="60-90-days">60-90 days</option>
-                    <option value="planning">Still planning</option>
-                  </select>
+                  <IntakeField id={fieldId("investmentComfort")} label="Investment comfort if the plan is a clear fit (required)">
+                    <select id={fieldId("investmentComfort")} name="investmentComfort" autoComplete="off" required value={form.investmentComfort} onChange={(e) => update("investmentComfort", e.target.value)} className={fieldClass}>
+                      <option value="">Investment comfort if the plan is a clear fit</option>
+                      <option value="under-500">Under $500/month</option>
+                      <option value="500-1500">$500 - $1,500/month</option>
+                      <option value="1500-3k">$1,500 - $3,000/month</option>
+                      <option value="3k-5k">$3,000 - $5,000/month</option>
+                      <option value="5k+">$5,000+/month</option>
+                      <option value="one-time">I prefer one-time project pricing</option>
+                      <option value="not-sure">Not sure yet</option>
+                    </select>
+                  </IntakeField>
+                  <IntakeField id={fieldId("timeline")} label="Desired start timeline (required)">
+                    <select id={fieldId("timeline")} name="timeline" autoComplete="off" required value={form.timeline} onChange={(e) => update("timeline", e.target.value)} className={fieldClass}>
+                      <option value="">Desired start timeline</option>
+                      <option value="now">Ready now</option>
+                      <option value="30-days">Within 30 days</option>
+                      <option value="60-90-days">60-90 days</option>
+                      <option value="planning">Still planning</option>
+                    </select>
+                  </IntakeField>
                 </div>
-                <textarea value={form.currentProblem} onChange={(e) => update("currentProblem", e.target.value)} placeholder="What feels missing, unclear, outdated, or not working right now?" rows={3} className={fieldClass} />
-                <textarea value={form.visualDirection} onChange={(e) => update("visualDirection", e.target.value)} placeholder="Any ideas for the look, feel, style, or systems you want?" rows={3} className={fieldClass} />
-                <textarea value={form.exampleSites} onChange={(e) => update("exampleSites", e.target.value)} placeholder="Example websites, apps, competitors, or references you like, if any" rows={3} className={fieldClass} />
+                <IntakeField id={fieldId("currentProblem")} label={`What feels missing, unclear, outdated, or not working right now? (${form.offerPath === "unsure" ? "required" : "optional"})`}>
+                  <textarea id={fieldId("currentProblem")} name="currentProblem" autoComplete="off" required={form.offerPath === "unsure"} value={form.currentProblem} onChange={(e) => update("currentProblem", e.target.value)} placeholder="What feels missing, unclear, outdated, or not working right now?" rows={3} className={fieldClass} />
+                </IntakeField>
+                <IntakeField id={fieldId("visualDirection")} label="Ideas for the look, feel, style, or systems (optional)">
+                  <textarea id={fieldId("visualDirection")} name="visualDirection" autoComplete="off" value={form.visualDirection} onChange={(e) => update("visualDirection", e.target.value)} placeholder="Any ideas for the look, feel, style, or systems you want?" rows={3} className={fieldClass} />
+                </IntakeField>
+                <IntakeField id={fieldId("exampleSites")} label="Example websites, apps, competitors, or references (optional)">
+                  <textarea id={fieldId("exampleSites")} name="exampleSites" autoComplete="off" value={form.exampleSites} onChange={(e) => update("exampleSites", e.target.value)} placeholder="Example websites, apps, competitors, or references you like, if any" rows={3} className={fieldClass} />
+                </IntakeField>
               </div>
             </div>
           ) : null}
@@ -562,7 +621,7 @@ export default function QualificationIntake({ supportEmail }) {
               </TrackCTA>
             )}
 
-            <a href="#blueprint" className="text-sm font-semibold text-cyan-200 underline underline-offset-4">
+            <a href={`mailto:${supportEmail}`} className="text-sm font-semibold text-cyan-200 underline underline-offset-4">
               Prefer to start with email?
             </a>
           </div>

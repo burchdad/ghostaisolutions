@@ -1,7 +1,8 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import Link from "next/link";
 import { siteConfig } from "@/lib/siteConfig";
 
-export const metadata = { title: "Terms of Service - Ghost AI Solutions" };
+export const metadata = pageMetadata("/terms", { title: "Terms of Service - Ghost AI Solutions" });
 
 export default function Terms() {
   return (

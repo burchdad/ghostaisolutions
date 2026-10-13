@@ -1,11 +1,12 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import TrackCTA from "@/components/TrackCTA";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-export const metadata = {
+export const metadata = pageMetadata("/for-growth", {
   title: "For Growth Businesses - Ghost AI Solutions",
   description:
     "Custom AI systems for established businesses that need to remove bottlenecks, improve visibility, and scale operations.",
-};
+});
 
 const growthOutcomes = [
   {

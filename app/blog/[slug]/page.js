@@ -1,3 +1,4 @@
+import { canonicalUrl, pageMetadata } from "@/lib/seo.mjs";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Newsletter from "@/components/Newsletter";
@@ -6,6 +7,20 @@ import { getAllPosts, getPostBySlug } from "@/lib/allPosts";
 
 export async function generateStaticParams() {
   return getAllPosts().map((p) => ({ slug: p.slug }));
+}
+
+export function generateMetadata({ params }) {
+  const post = getPostBySlug(params.slug);
+  if (!post) return notFound();
+  return pageMetadata(`/blog/${post.slug}`, {
+    title: `${post.title} | Ghost AI Solutions`,
+    description: post.excerpt,
+    openGraph: {
+      type: "article",
+      publishedTime: post.date,
+      modifiedTime: post.updatedAt || post.date,
+    },
+  });
 }
 
 /** Renders structured sections from auto-generated JSON posts */
@@ -82,7 +97,7 @@ export default function PostPage({ params }) {
 
   const { title, date, excerpt, slug, category, auto, sections, sources, Content } = post;
 
-  const url = `https://ghostai.solutions/blog/${slug}`;
+  const url = canonicalUrl(`/blog/${slug}`);
   const blogJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -95,7 +110,7 @@ export default function PostPage({ params }) {
     publisher: {
       "@type": "Organization",
       name: "Ghost AI Solutions",
-      logo: { "@type": "ImageObject", url: "https://ghostai.solutions/FullLogo_Transparent.png" },
+      logo: { "@type": "ImageObject", url: canonicalUrl("/FullLogo_Transparent.png") },
     },
     url,
   };

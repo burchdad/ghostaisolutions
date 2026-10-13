@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react';
 import Script from "next/script";
 import SiteChrome from "@/components/SiteChrome";
 import UTMTracker from "@/components/UTMTracker";
+import { SITE_ORIGIN } from "@/lib/seo.mjs";
 import { siteConfig } from "@/lib/siteConfig";
 import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
 
@@ -24,7 +25,7 @@ const bodyFont = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://www.ghostai.solutions"),
+  metadataBase: new URL(SITE_ORIGIN),
   title: "Ghost AI Solutions - Websites, Automation, and AI Systems",
   description: "Modern websites, lead funnels, automations, and AI-powered systems for businesses that need a sharper digital presence and cleaner operations.",
   keywords: [
@@ -39,12 +40,11 @@ export const metadata = {
   openGraph: {
     title: "Ghost AI Solutions - Websites, Automation, and AI Systems",
     description: "Websites, intake funnels, automations, and AI systems for businesses ready to capture leads and operate cleaner.",
-    url: "https://ghostai.solutions",
     siteName: "Ghost AI Solutions",
-    images: ["/og-image.png"],
+    images: [`${SITE_ORIGIN}/og-image.png`],
     type: "website",
   },
-  twitter: { card: "summary_large_image", images: ["/og-image.png"] },
+  twitter: { card: "summary_large_image", images: [`${SITE_ORIGIN}/og-image.png`] },
   icons: { icon: "/favicon.ico" },
   authors: [{ name: siteConfig.companyName, url: `mailto:${siteConfig.supportEmail}` }],
   creator: "Ghost AI Solutions",
@@ -54,7 +54,6 @@ export const metadata = {
     ...(bingSiteVerification ? { "msvalidate.01": bingSiteVerification } : {}),
   },
   alternates: {
-    canonical: "https://www.ghostai.solutions",
     types: {
       "application/rss+xml": "/feed",
     },
@@ -66,8 +65,8 @@ export default function RootLayout({ children }) {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Ghost AI Solutions",
-    url: "https://ghostai.solutions",
-    logo: "https://ghostai.solutions/FullLogo_Transparent.png",
+    url: SITE_ORIGIN,
+    logo: `${SITE_ORIGIN}/FullLogo_Transparent.png`,
     sameAs: ["https://www.linkedin.com/company/ghostaisolutions"],
     contactPoint: [
       {
@@ -87,7 +86,7 @@ export default function RootLayout({ children }) {
     provider: {
       "@type": "Organization",
       name: "Ghost AI Solutions",
-      url: "https://ghostai.solutions",
+      url: SITE_ORIGIN,
     },
     serviceType: [
       "Website Design and Development",
@@ -98,14 +97,14 @@ export default function RootLayout({ children }) {
       "Data Pipeline and Intelligence Systems",
     ],
     areaServed: "US",
-    url: "https://ghostai.solutions/services",
+    url: `${SITE_ORIGIN}/services`,
   };
 
   const websiteJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Ghost AI Solutions",
-    url: "https://ghostai.solutions",
+    url: SITE_ORIGIN,
   };
 
   return (

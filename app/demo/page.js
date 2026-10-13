@@ -1,9 +1,10 @@
+import { pageMetadata } from "@/lib/seo.mjs";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TrackCTA from "@/components/TrackCTA";
 import DemoPlayer from "@/components/DemoPlayer";
 import { BOOKING_URL } from "@/lib/constants";
 
-export const metadata = { title: "Live Demo — Ghost AI Solutions" };
+export const metadata = pageMetadata("/demo", { title: "Live Demo — Ghost AI Solutions" });
 
 export default function Demo() {
   return (
