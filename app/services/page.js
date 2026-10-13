@@ -1,4 +1,4 @@
-import { pageMetadata } from "@/lib/seo.mjs";
+import { pageMetadata, SITE_ORIGIN } from "@/lib/seo.mjs";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import TrackCTA from "@/components/TrackCTA";
 import { siteConfig } from "@/lib/siteConfig";
@@ -16,7 +16,7 @@ export default function ServicesPage() {
     provider: {
       "@type": "Organization",
       name: "Ghost AI Solutions",
-      url: "https://ghostai.solutions",
+      url: SITE_ORIGIN,
       contactPoint: [
         {
           "@type": "ContactPoint",
@@ -35,7 +35,7 @@ export default function ServicesPage() {
       "Custom Platform Engineering",
     ],
     areaServed: "US",
-    url: "https://ghostai.solutions/services",
+    url: `${SITE_ORIGIN}/services`,
   };
 
   const cards = [

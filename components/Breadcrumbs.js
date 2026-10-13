@@ -1,5 +1,6 @@
 "use client";
 import { usePathname } from "next/navigation";
+import { canonicalUrl } from "@/lib/seo.mjs";
 
 export default function Breadcrumbs() {
   const pathname = usePathname(); // e.g. /services
@@ -26,7 +27,7 @@ export default function Breadcrumbs() {
       "@type": "ListItem",
       position: idx + 1,
       name: it.name,
-      item: `https://ghostai.solutions${it.href === "/" ? "" : it.href}`,
+      item: canonicalUrl(it.href === "/contact" ? "/start" : it.href),
     })),
   };
 

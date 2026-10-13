@@ -18,6 +18,8 @@ test('page metadata is self-canonical and retains page-specific social metadata'
   assert.equal(metadata.openGraph.url, metadata.alternates.canonical);
   assert.equal(metadata.openGraph.type, 'article');
   assert.equal(metadata.openGraph.title, 'Article title');
+  assert.deepEqual(metadata.openGraph.images, [`${SITE_ORIGIN}/og-image.png`]);
+  assert.deepEqual(metadata.twitter.images, [`${SITE_ORIGIN}/og-image.png`]);
   assert.equal(metadata.twitter.description, 'Article excerpt');
   assert.equal(metadata.alternates.types['application/rss+xml'], '/feed');
 });

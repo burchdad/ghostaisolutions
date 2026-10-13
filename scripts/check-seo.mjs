@@ -20,6 +20,9 @@ for (const url of urls) {
   assert.equal(response.status, 200, `non-200 sitemap entry: ${path}`);
   const canonicals = [...html.matchAll(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"[^>]*>/g)].map(match => match[1]);
   assert.deepEqual(canonicals, [url], `canonical mismatch: ${path}`);
+  assert.ok(html.includes(`<meta property="og:image" content="${SITE_ORIGIN}/og-image.png"`), `wrong social image host: ${path}`);
+  const structuredData = [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/g)].map(match => match[1]);
+  assert.ok(structuredData.every(json => !json.includes('https://ghostai.solutions')), `non-preferred structured data host: ${path}`);
   assert.ok(!/<meta\b[^>]*name="robots"[^>]*content="[^"]*noindex/.test(html), `noindex sitemap entry: ${path}`);
   if (path.startsWith('/blog/')) {
     assert.ok(!html.includes('<title>Ghost AI Solutions - Websites, Automation, and AI Systems</title>'), `generic article title: ${path}`);
