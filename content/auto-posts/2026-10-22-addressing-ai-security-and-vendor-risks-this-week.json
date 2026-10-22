@@ -1,0 +1,141 @@
+{
+  "slug": "2026-10-22-addressing-ai-security-and-vendor-risks-this-week",
+  "title": "Addressing AI Security and Vendor Risks This Week",
+  "date": "2026-10-22",
+  "excerpt": "This week, we explore essential tech updates that highlight AI security vulnerabilities and vendor lock-in risks. Learn actionable steps to safeguard your systems and maintain flexibility in your AI stack.",
+  "category": "strategy",
+  "tags": [
+    "AI security",
+    "vendor lock-in",
+    "automation"
+  ],
+  "sections": [
+    {
+      "type": "p",
+      "text": "As AI continues to mature, so do the complexities and risks that accompany its integration into business operations. Recent developments in AI security and vendor management underscore the importance of proactive strategies for growth-stage companies."
+    },
+    {
+      "type": "h2",
+      "text": "Identifying Security Gaps in Your AI Applications"
+    },
+    {
+      "type": "p",
+      "text": "The GitHub project 'Othm1ne/appsecradar' serves as a zero-config scanner designed to detect security vulnerabilities in applications built with popular AI tools. This includes identifying issues such as leaked keys, open database access, and SQL injection vulnerabilities."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Conduct a security audit of your AI applications using appsecradar.",
+        "Implement fixes provided by the tool for any vulnerabilities found.",
+        "Schedule regular security reviews to stay ahead of potential threats."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Understanding Vendor Lock-In Risks"
+    },
+    {
+      "type": "p",
+      "text": "As companies increasingly rely on LLM-powered workflows, understanding vendor lock-in risks is crucial. A recent article on Dev.to outlines lessons learned from letting AI agents run unattended, revealing potential pitfalls that could disrupt operations."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Review your current AI vendor agreements for flexibility in switching providers.",
+        "Evaluate the performance of your AI models regularly to ensure they meet evolving business needs.",
+        "Consider building in-house capabilities to reduce reliance on single vendors."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Planning for Future AI Developments"
+    },
+    {
+      "type": "p",
+      "text": "The 'AI Roadmap 2026' on GitHub provides a structured guide for beginners in AI, covering foundational concepts to advanced production techniques. This resource can help your team stay informed and prepared for future enhancements in AI technology."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Encourage your team to explore the AI Roadmap 2026 for skill development.",
+        "Identify areas for improvement in your current AI strategy based on the roadmap.",
+        "Plan a knowledge-sharing session to discuss insights gained from the roadmap."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Staying Updated on API Changes"
+    },
+    {
+      "type": "p",
+      "text": "With continuous updates from AI vendors, staying informed about API changes is critical. The recent update to the Claude API highlights changes that could affect your workflows."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Review the latest API documentation to understand changes and impacts.",
+        "Plan for necessary upgrades in your systems to accommodate API modifications.",
+        "Test your applications thoroughly after implementing updates."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Leveraging OpenAI CLI"
+    },
+    {
+      "type": "p",
+      "text": "OpenAI's CLI tool offers a straightforward way to interact with their models, making it easier to integrate AI capabilities into your applications. Familiarizing your team with this tool can streamline workflows."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Assign a team member to experiment with the OpenAI CLI this week.",
+        "Identify potential use cases for the CLI in your current projects.",
+        "Document findings and share with the team for broader implementation."
+      ]
+    },
+    {
+      "type": "callout",
+      "text": "This week's takeaway — Prioritize a security audit of your AI applications and assess your vendor agreements to ensure flexibility and security as you scale."
+    }
+  ],
+  "sources": [
+    {
+      "title": "Othm1ne/appsecradar",
+      "url": "https://github.com/Othm1ne/appsecradar",
+      "source": "GitHub Trending",
+      "relevanceScore": 13
+    },
+    {
+      "title": "How to Audit Your LLM Stack for Vendor Lock-In Before It's Too Late",
+      "url": "https://dev.to/renev3408/how-to-audit-your-llm-stack-for-vendor-lock-in-before-its-too-late-47j7",
+      "source": "Dev.to",
+      "relevanceScore": 12
+    },
+    {
+      "title": "h9-tec/ai-roadmap-2026",
+      "url": "https://github.com/h9-tec/ai-roadmap-2026",
+      "source": "GitHub Trending",
+      "relevanceScore": 10
+    },
+    {
+      "title": "Alejandros17487/ai-jailbreaks",
+      "url": "https://github.com/Alejandros17487/ai-jailbreaks",
+      "source": "GitHub Trending",
+      "relevanceScore": 9
+    },
+    {
+      "title": "Claude API 2026-10-21: What Breaks and How to Upgrade",
+      "url": "https://dev.to/tokely/claude-api-2026-10-21-what-breaks-and-how-to-upgrade-1954",
+      "source": "Dev.to",
+      "relevanceScore": 8
+    },
+    {
+      "title": "OpenAI CLI",
+      "url": "https://github.com/openai/openai-cli",
+      "source": "HackerNews",
+      "relevanceScore": 7
+    }
+  ],
+  "auto": true
+}
