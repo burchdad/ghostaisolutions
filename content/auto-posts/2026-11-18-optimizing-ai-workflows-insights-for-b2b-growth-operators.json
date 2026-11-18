@@ -1,0 +1,133 @@
+{
+  "slug": "2026-11-18-optimizing-ai-workflows-insights-for-b2b-growth-operators",
+  "title": "Optimizing AI Workflows: Insights for B2B Growth Operators",
+  "date": "2026-11-18",
+  "excerpt": "This post connects recent tech developments in AI automation to actionable steps for growth-stage companies. Learn how to enhance your AI systems and evaluate your automation strategies effectively.",
+  "category": "automation",
+  "tags": [
+    "AI Workflow",
+    "Automation Strategy",
+    "Operational Efficiency"
+  ],
+  "sections": [
+    {
+      "type": "p",
+      "text": "As AI continues to evolve, understanding the intricacies of AI workflow automation is crucial for B2B operators. Recent discussions highlight the importance of evaluating AI automation platforms and the economic implications of scaling beyond initial usage."
+    },
+    {
+      "type": "h2",
+      "text": "Understanding the Cost Implications of Automation"
+    },
+    {
+      "type": "p",
+      "text": "The article 'The Hidden Math of AI Workflow Automation' reveals that costs can significantly increase as usage scales, particularly around the 100,000 run mark. This has direct implications for your budget and ROI calculations."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Monitor your current run metrics to anticipate cost spikes.",
+        "Evaluate your automation platform's pricing structure.",
+        "Consider long-term vs. short-term costs in your decision-making."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Instrumenting AI Agents for Better Performance"
+    },
+    {
+      "type": "p",
+      "text": "Effective monitoring of AI agents is crucial for maximizing performance. The guide on 'How to Instrument Your AI Agent With OpenTelemetry' provides quick and practical steps to set up monitoring."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Implement OpenTelemetry in your AI systems this week.",
+        "Define clear metrics to track agent performance.",
+        "Use the right spans and attributes for better insights."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Setting Up Online Evaluations for AI Agents"
+    },
+    {
+      "type": "p",
+      "text": "Establishing a robust evaluation mechanism for AI agents is essential for ongoing improvement. The article on 'How to Set Up Online Evals for AI Agents in Production' outlines a systematic approach."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Create narrow judge rubrics to evaluate agent performance.",
+        "Capture evidence and calibrate results against human labels.",
+        "Set up alerts for immediate feedback on agent performance."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Leveraging Open-Source AI Solutions"
+    },
+    {
+      "type": "p",
+      "text": "The AI Manus project on GitHub shows the growing trend of general-purpose AI agent systems. While leveraging open-source solutions can save costs, ensure you assess their fit for your business needs."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Explore open-source AI systems like AI Manus to understand their capabilities.",
+        "Evaluate community support and documentation before adoption.",
+        "Test integration with your existing systems to gauge compatibility."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Final Thoughts: Aligning AI Strategies with Business Goals"
+    },
+    {
+      "type": "p",
+      "text": "As automation becomes a core part of your operations, aligning your AI strategies with business objectives is crucial. This week's insights provide a solid foundation for optimizing your AI implementations."
+    },
+    {
+      "type": "callout",
+      "text": "This week's takeaway — Assess your current AI usage, implement OpenTelemetry, and set up evaluation systems to enhance performance and ROI."
+    }
+  ],
+  "sources": [
+    {
+      "title": "The Hidden Math of AI Workflow Automation: Why Sticker Prices Break at 100k Runs",
+      "url": "https://dev.to/sharad4ai/the-hidden-math-of-ai-workflow-automation-why-sticker-prices-break-at-100k-runs-674",
+      "source": "Dev.to",
+      "relevanceScore": 13
+    },
+    {
+      "title": "How to Instrument Your AI Agent With OpenTelemetry in 2 Minutes",
+      "url": "https://dev.to/shubhampalriwala/how-to-instrument-your-ai-agent-with-opentelemetry-in-2-minutes-550m",
+      "source": "Dev.to",
+      "relevanceScore": 10
+    },
+    {
+      "title": "alphafalcongamer-creator/ai--manus2.0",
+      "url": "https://github.com/alphafalcongamer-creator/ai--manus2.0",
+      "source": "GitHub Trending",
+      "relevanceScore": 7
+    },
+    {
+      "title": "Hypertrainer-The-First/ai--manus2.0",
+      "url": "https://github.com/Hypertrainer-The-First/ai--manus2.0",
+      "source": "GitHub Trending",
+      "relevanceScore": 7
+    },
+    {
+      "title": "eluyonga/ai--manus2.0",
+      "url": "https://github.com/eluyonga/ai--manus2.0",
+      "source": "GitHub Trending",
+      "relevanceScore": 7
+    },
+    {
+      "title": "How to Set Up Online Evals for AI Agents in Production",
+      "url": "https://dev.to/shubhampalriwala/how-to-set-up-online-evals-for-ai-agents-in-production-2d3p",
+      "source": "Dev.to",
+      "relevanceScore": 7
+    }
+  ],
+  "auto": true
+}
