@@ -1,0 +1,129 @@
+{
+  "slug": "2026-11-23-navigating-ai-advances-practical-steps-for-growth-stage-b2b-",
+  "title": "Navigating AI Advances: Practical Steps for Growth-Stage B2B Operators",
+  "date": "2026-11-23",
+  "excerpt": "This week, we'll explore how recent developments in AI can enhance your operations. Learn actionable steps to leverage AI tools effectively without falling into common pitfalls.",
+  "category": "ai-agents",
+  "tags": [
+    "AI",
+    "Automation",
+    "B2B Growth"
+  ],
+  "sections": [
+    {
+      "type": "p",
+      "text": "As growth-stage companies expand, the need for reliable and effective AI solutions becomes paramount. Recent articles highlight developments in AI technology that can streamline operations and improve efficiency."
+    },
+    {
+      "type": "h2",
+      "text": "Reliable JSON from LLMs: A Key for API Integration"
+    },
+    {
+      "type": "p",
+      "text": "One of the core challenges in implementing AI agents is ensuring they can communicate effectively with existing backend systems. The article on reliable JSON from LLMs discusses how improved prompting and constrained decoding can enhance API integration."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Evaluate your current API integration processes.",
+        "Consider adopting LLMs that focus on generating reliable JSON.",
+        "Test new techniques to see if they reduce error rates in data exchange."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Securing Your AI Agents: Tools and Best Practices"
+    },
+    {
+      "type": "p",
+      "text": "Security is a crucial concern when deploying AI agents. The discussion on agents' tool registries emphasizes the importance of treating these registries as APIs rather than static configurations."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Review your tool registries for potential vulnerabilities.",
+        "Implement security checks similar to API validations.",
+        "Train your team on best practices for securing AI tools."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Optimizing Local AI Deployments"
+    },
+    {
+      "type": "p",
+      "text": "For many businesses, the flexibility of local AI can provide significant advantages. The GitHub project on running local AI on standard machines demonstrates that powerful AI tools can be accessible without relying on the cloud."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Assess your infrastructure for local AI deployment.",
+        "Experiment with local tools to reduce dependency on cloud services.",
+        "Evaluate cost savings from running AI locally."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "Engaging with AI Through Interactive Platforms"
+    },
+    {
+      "type": "p",
+      "text": "Innovative approaches to AI engagement can create new opportunities for team collaboration and training. The interactive game designed around LLMs provides insights into how users can better understand AI functionalities."
+    },
+    {
+      "type": "ul",
+      "items": [
+        "Explore gamified tools to educate your team about AI.",
+        "Consider implementing training sessions using interactive platforms.",
+        "Gather feedback on engagement tools to refine their use."
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "This Week's Action Plan"
+    },
+    {
+      "type": "callout",
+      "text": "This week's takeaway — Prioritize reviewing your API integrations and tool registries for security and reliability. Experiment with local AI solutions to optimize your operations."
+    }
+  ],
+  "sources": [
+    {
+      "title": "Reliable JSON from LLMs: From Prompting to Constrained Decoding",
+      "url": "https://dev.to/tanmay2627/reliable-json-from-llms-from-prompting-to-constrained-decoding-13fk",
+      "source": "Dev.to",
+      "relevanceScore": 13
+    },
+    {
+      "title": "Your agent's tool registry is an API. Stop reviewing it like config.",
+      "url": "https://dev.to/cyclopt_dimitrisk/your-agents-tool-registry-is-an-api-stop-reviewing-it-like-config-40op",
+      "source": "Dev.to",
+      "relevanceScore": 8
+    },
+    {
+      "title": "Built for the main thread: notes on nRouter's Android SDK",
+      "url": "https://dev.to/nrouterai/built-for-the-main-thread-notes-on-nrouters-android-sdk-9mo",
+      "source": "Dev.to",
+      "relevanceScore": 8
+    },
+    {
+      "title": "Show HN: I built a game where you are an LLM's subagent",
+      "url": "https://github.com/gulivan/worker755",
+      "source": "HackerNews",
+      "relevanceScore": 6
+    },
+    {
+      "title": "TarelGo/tarelgo-captchai",
+      "url": "https://github.com/TarelGo/tarelgo-captchai",
+      "source": "GitHub Trending",
+      "relevanceScore": 6
+    },
+    {
+      "title": "rsvikas/llama-launcher",
+      "url": "https://github.com/rsvikas/llama-launcher",
+      "source": "GitHub Trending",
+      "relevanceScore": 5
+    }
+  ],
+  "auto": true
+}
